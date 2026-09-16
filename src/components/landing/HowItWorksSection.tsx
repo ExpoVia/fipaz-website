@@ -38,7 +38,7 @@ export function HowItWorksSection() {
   ];
 
   return (
-    <section id="como-funciona" className="bg-white py-16 md:py-24 border-t-2 border-[var(--expo-line)]">
+    <section id="como-funciona" className="scroll-mt-24 bg-white py-16 md:py-24 border-t-2 border-[var(--expo-line)]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Header */}

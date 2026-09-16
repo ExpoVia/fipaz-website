@@ -1,7 +1,13 @@
 import type { LucideIcon } from "lucide-react";
-import { House, Map, ScanLine, Trophy, UserRound } from "lucide-react";
+import { Compass, House, Map, ScanLine, Trophy, UserRound } from "lucide-react";
 
-export type DemoTab = "home" | "map" | "scan" | "missions" | "profile";
+export type DemoTab =
+  | "home"
+  | "explore"
+  | "map"
+  | "scan"
+  | "missions"
+  | "profile";
 
 export interface FeatureScreenProps {
   onNavigate?: (tab: DemoTab) => void;
@@ -25,6 +31,14 @@ export const DEMO_NAVIGATION: readonly DemoNavigationItem[] = [
     title: "ExpoVia",
     description: "Resumen del evento y recomendaciones",
     icon: House,
+  },
+  {
+    id: "explore",
+    label: "Explorar",
+    shortLabel: "Explorar",
+    title: "Explorar",
+    description: "Busca y filtra los stands de la feria",
+    icon: Compass,
   },
   {
     id: "map",

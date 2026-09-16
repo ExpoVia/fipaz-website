@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDemoStore } from "@/store/demo-store";
 import {
   selectFavoriteStandIds,
@@ -9,9 +9,11 @@ import {
   selectPoints,
   selectRecentVisits,
   selectResetDemo,
+  selectToggleFavorite,
   selectVisitedStandIds,
 } from "@/store/demo-selectors";
 import { getStandById } from "@/lib/demo-domain";
+import { StandCard, StandDetailOverlay } from "@/features/stands";
 import { ProfileStats } from "./components/ProfileStats";
 import { RecentVisits } from "./components/RecentVisits";
 import { Heart, History, RotateCcw, User } from "lucide-react";
@@ -25,7 +27,10 @@ export function ProfileScreen({ onNavigate }: FeatureScreenProps) {
   const visitedStandIds = useDemoStore(selectVisitedStandIds);
   const favoriteStandIds = useDemoStore(selectFavoriteStandIds);
   const recentVisits = useDemoStore(selectRecentVisits);
+  const toggleFavorite = useDemoStore(selectToggleFavorite);
   const resetDemo = useDemoStore(selectResetDemo);
+
+  const [openStandId, setOpenStandId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!useDemoStore.persist.hasHydrated()) {
@@ -61,8 +66,16 @@ export function ProfileScreen({ onNavigate }: FeatureScreenProps) {
     .filter(Boolean);
 
   return (
-    <section className="flex flex-col gap-5 px-4 py-6">
-      {/* Encabezado */}
+    <>
+      <StandDetailOverlay
+        dismissId="stand-detail:profile"
+        standId={openStandId}
+        onClose={() => setOpenStandId(null)}
+        onNavigate={onNavigate}
+      />
+
+      <section className="flex flex-col gap-5 px-4 py-6">
+        {/* Encabezado */}
       <header className="flex flex-col items-center gap-2 text-center">
         {/* Avatar genérico */}
         <div
@@ -113,31 +126,21 @@ export function ProfileScreen({ onNavigate }: FeatureScreenProps) {
 
         {favoriteStands.length === 0 ? (
           <p className="text-sm text-slate-400 py-3 text-center">
-            Aún no tienes favoritos. Agrega stands desde el mapa.
+            Aún no tienes favoritos. Agrega stands desde Explorar o Inicio.
           </p>
         ) : (
-          <ul className="flex flex-col gap-2" aria-label="Stands favoritos">
+          <div className="grid grid-cols-2 gap-3" aria-label="Stands favoritos">
             {favoriteStands.map((stand) => (
-              <li
+              <StandCard
                 key={stand!.id}
-                className="flex items-center gap-3 rounded-xl border border-[var(--expo-line)] bg-white px-3 py-2.5"
-              >
-                <Heart
-                  size={14}
-                  className="text-[var(--expo-pink)] fill-[var(--expo-pink)] flex-shrink-0"
-                  aria-hidden="true"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-[var(--expo-navy)] text-sm truncate">
-                    {stand!.name}
-                  </p>
-                  <p className="text-xs text-slate-400 font-mono">
-                    {stand!.boothCode}
-                  </p>
-                </div>
-              </li>
+                stand={stand!}
+                isFavorite
+                isVisited={visitedStandIds.includes(stand!.id)}
+                onOpen={() => setOpenStandId(stand!.id)}
+                onToggleFavorite={() => toggleFavorite(stand!.id)}
+              />
             ))}
-          </ul>
+          </div>
         )}
       </div>
 
@@ -155,6 +158,7 @@ export function ProfileScreen({ onNavigate }: FeatureScreenProps) {
           Vuelve al estado inicial de la demo
         </p>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

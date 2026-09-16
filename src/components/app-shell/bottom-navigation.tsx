@@ -13,7 +13,7 @@ export function BottomNavigation({
 }: BottomNavigationProps) {
   return (
     <nav className="app-bottom-nav" aria-label="Navegación principal de la demo">
-      <div className="grid grid-cols-5 items-end gap-1 px-2 pt-2">
+      <div className="grid grid-cols-6 items-end gap-1 px-2 pt-2">
         {DEMO_NAVIGATION.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Compass, Gift, MapPinned, Trophy } from "lucide-react";
+import { Gift, MapPinned, Trophy } from "lucide-react";
 
 import { AppShell, type AppShellScreens } from "@/components/app-shell";
 import { ModulePlaceholder } from "@/components/shared";
+import { ExploreShellScreen } from "@/features/explore";
+import { HomeShellScreen } from "@/features/home";
 import { MissionsScreen } from "@/features/missions/MissionsScreen";
 import { NfcShellScreen } from "@/features/nfc";
 import { ProfileShellScreen } from "@/features/profile";
@@ -68,42 +70,8 @@ function GamificationHub() {
  */
 export function DemoAppClient() {
   const screens: AppShellScreens = {
-    home: (
-      <ModulePlaceholder
-        eyebrow="Experiencia visitante"
-        title="Tu feria, a tu manera"
-        description="Aquí se integrarán el resumen, las recomendaciones y los accesos rápidos de Saul."
-        icon={<Compass aria-hidden="true" size={25} strokeWidth={2.5} />}
-        accent="blue"
-      >
-        <div className="pixel-card p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="pixel-label text-[var(--expo-purple)]">Tu progreso</p>
-              <p className="mt-1 text-2xl font-black text-[var(--expo-navy)]">
-                150 puntos
-              </p>
-            </div>
-            <span className="grid size-12 place-items-center rounded-xl bg-[#ffe7a0] text-2xl" aria-hidden="true">
-              ★
-            </span>
-          </div>
-          <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-100">
-            <div className="h-full w-2/5 bg-[var(--expo-blue)]" />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="pixel-card min-h-28 p-4">
-            <p className="pixel-label text-[var(--expo-green)]">Siguiente</p>
-            <p className="mt-2 font-bold text-[var(--expo-navy)]">Explora el mapa</p>
-          </div>
-          <div className="pixel-card min-h-28 p-4">
-            <p className="pixel-label text-[var(--expo-coral)]">Misión</p>
-            <p className="mt-2 font-bold text-[var(--expo-navy)]">Visita 3 de 5 stands</p>
-          </div>
-        </div>
-      </ModulePlaceholder>
-    ),
+    home: <HomeShellScreen />,
+    explore: <ExploreShellScreen />,
     map: (
       <ModulePlaceholder
         eyebrow="Croquis interactivo"

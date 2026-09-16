@@ -1,6 +1,7 @@
 "use client";
 
 import { Star, Trophy, MapPin } from "lucide-react";
+import { LEVEL_COLORS, LEVEL_LABELS, LEVEL_THRESHOLDS } from "@/lib/demo-domain";
 
 interface ProfileStatsProps {
   points: number;
@@ -8,22 +9,8 @@ interface ProfileStatsProps {
   visitedCount: number;
 }
 
-const LEVEL_NAMES: Record<number, string> = {
-  1: "Explorador Novato",
-  2: "Explorador",
-  3: "Explorador Senior",
-  4: "Explorador Élite",
-};
-
-const LEVEL_COLORS: Record<number, string> = {
-  1: "var(--expo-mint)",
-  2: "var(--expo-blue)",
-  3: "var(--expo-purple)",
-  4: "var(--expo-yellow)",
-};
-
 export function ProfileStats({ points, level, visitedCount }: ProfileStatsProps) {
-  const levelName = LEVEL_NAMES[level] ?? "Explorador";
+  const levelName = LEVEL_LABELS[level] ?? "Explorador";
   const levelColor = LEVEL_COLORS[level] ?? "var(--expo-blue)";
 
   return (
@@ -100,7 +87,7 @@ function LevelProgress({
   points: number;
   level: number;
 }) {
-  const thresholds = [0, 100, 300, 600];
+  const thresholds = LEVEL_THRESHOLDS;
   const nextThreshold = thresholds[level] ?? null;
 
   if (level >= 4 || nextThreshold === null) {

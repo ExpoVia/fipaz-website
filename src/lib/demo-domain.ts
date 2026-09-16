@@ -22,6 +22,25 @@ export function getLevelForPoints(points: number): number {
   return 1;
 }
 
+/** Umbral de puntos requerido para alcanzar cada nivel (índice = nivel - 1). */
+export const LEVEL_THRESHOLDS = [0, 100, 300, 600] as const;
+
+/** Nombre de explorador mostrado para cada nivel. Única fuente de verdad. */
+export const LEVEL_LABELS: Record<number, string> = {
+  1: "Explorador Novato",
+  2: "Explorador",
+  3: "Explorador Senior",
+  4: "Explorador Élite",
+};
+
+/** Color de acento por nivel, reutilizado en el pasaporte y el perfil. */
+export const LEVEL_COLORS: Record<number, string> = {
+  1: "var(--expo-mint)",
+  2: "var(--expo-blue)",
+  3: "var(--expo-purple)",
+  4: "var(--expo-yellow)",
+};
+
 // ─── Progreso de misiones ─────────────────────────────────────────────────────
 
 export interface MissionProgress {

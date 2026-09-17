@@ -1,12 +1,36 @@
 // Config del panel publica el contrato de rol; se reexporta para evitar una
 // segunda unión que pueda divergir (mismo criterio que src/types/demo.ts con DemoTab).
 import type { PanelRole } from "@/config/panel-navigation";
-import type { Stand } from "@/types/demo";
+import type { Stand, StandCategory } from "@/types/demo";
 
 export type { PanelRole };
 
-/** Alias semántico: en el panel, un Stand es el perfil de una empresa expositora. */
-export type ExhibitorProfile = Stand;
+/**
+ * En el panel, una empresa expositora es un `Stand` con un dato de contacto
+ * adicional (no existe en el catálogo público de la demo del visitante).
+ */
+export interface ExhibitorProfile extends Stand {
+  contactEmail?: string;
+}
+
+/** Datos capturados en el formulario público de registro de una nueva empresa. */
+export interface CompanyRegistrationInput {
+  name: string;
+  category: StandCategory;
+  description: string;
+  contactEmail: string;
+}
+
+/** Subconjunto editable desde "Mi stand" tras el registro inicial. */
+export interface CompanyProfileInput {
+  name: string;
+  category: StandCategory;
+  description: string;
+  contactEmail: string;
+  tags: string[];
+  activity?: string;
+  promotion?: string;
+}
 
 export interface PanelLead {
   id: string;

@@ -42,13 +42,13 @@ export function MultiEventSection() {
   ];
 
   return (
-    <section className="bg-white py-16 md:py-24 border-t-2 border-[var(--expo-line)] relative overflow-hidden">
+    <section id="multi-evento" className="scroll-mt-24 bg-white py-16 md:py-24 border-t-2 border-[var(--expo-line)] relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="mx-auto max-w-3xl text-center">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--expo-sky)]/30 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-[var(--expo-blue)] border border-sky-300 mb-3">
-            <Globe className="h-3.5 w-3.5" />
+            <Globe aria-hidden="true" className="h-3.5 w-3.5" />
             VISIÓN MULTI-EVENTO
           </div>
 
@@ -67,9 +67,9 @@ export function MultiEventSection() {
           <div className="hidden lg:block absolute top-1/2 left-12 right-12 h-1 bg-[linear-gradient(to_right,#1677B8_0%,#B984B6_50%,#FFC21A_100%)] -translate-y-1/2 z-0" />
 
           {/* Cards Grid */}
-          <div className="relative z-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="relative z-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {events.map((evt, idx) => (
-              <motion.div
+              <motion.li
                 key={evt.name}
                 initial={{ opacity: 0, y: 25 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -92,7 +92,7 @@ export function MultiEventSection() {
                   </h3>
 
                   <p className="mt-1 flex items-center gap-1 font-mono text-xs font-bold text-slate-500">
-                    <MapPin className="h-3.5 w-3.5 text-rose-500" />
+                    <MapPin aria-hidden="true" className="h-3.5 w-3.5 text-rose-500" />
                     {evt.location}
                   </p>
 
@@ -105,9 +105,9 @@ export function MultiEventSection() {
                   <span>Plataforma</span>
                   <span className="font-bold text-[var(--expo-navy)]">ExpoVia</span>
                 </div>
-              </motion.div>
+              </motion.li>
             ))}
-          </div>
+          </ul>
         </div>
 
       </div>

@@ -34,7 +34,7 @@ export function ProblemSection() {
   ];
 
   return (
-    <section id="problema" className="relative bg-white py-16 md:py-24 border-t-2 border-[var(--expo-line)]">
+    <section id="problema" className="scroll-mt-24 relative bg-white py-16 md:py-24 border-t-2 border-[var(--expo-line)]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

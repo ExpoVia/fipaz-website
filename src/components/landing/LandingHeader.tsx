@@ -11,10 +11,10 @@ export function LandingHeader() {
   const navLinks = [
     { name: "Inicio", href: "#inicio" },
     { name: "¿Qué es ExpoVia?", href: "#problema" },
-    { name: "Beneficios", href: "#beneficios" },
     { name: "Cómo funciona", href: "#como-funciona" },
     { name: "Mapa", href: "#mapa" },
-    { name: "Para empresas", href: "#expositores" },
+    { name: "Para expositores", href: "#expositores" },
+    { name: "Para organizadores", href: "#organizadores" },
     { name: "Contacto", href: "#contacto" },
   ];
 

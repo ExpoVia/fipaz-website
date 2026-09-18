@@ -11,7 +11,7 @@ export function MapShowcaseSection() {
   const [selectedStandId, setSelectedStandId] = useState<string | null>("tec-01");
 
   return (
-    <section id="mapa" className="bg-white py-16 md:py-24 border-t-2 border-[var(--expo-line)] relative overflow-hidden">
+    <section id="mapa" className="scroll-mt-24 bg-white py-16 md:py-24 border-t-2 border-[var(--expo-line)] relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Header */}

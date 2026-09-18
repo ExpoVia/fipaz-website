@@ -8,7 +8,7 @@ import { ArrowRight, MessageSquareCheck, Sparkles } from "lucide-react";
 
 export function FinalCTASection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[var(--expo-navy)] via-[#3D2D5B] to-[var(--expo-blue)] py-20 text-white">
+    <section id="contacto" className="scroll-mt-24 relative overflow-hidden bg-gradient-to-br from-[var(--expo-navy)] via-[#3D2D5B] to-[var(--expo-blue)] py-20 text-white">
       
       {/* Decorative Pixel Grid Overlay */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] opacity-10" />

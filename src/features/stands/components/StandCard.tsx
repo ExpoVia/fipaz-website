@@ -24,7 +24,7 @@ export function StandCard({
   className = "",
 }: StandCardProps) {
   return (
-    <article className={`pixel-card relative flex flex-col gap-2 p-3 text-left ${className}`}>
+    <article className={`pixel-card relative flex min-w-0 flex-col gap-2 overflow-hidden p-3 text-left ${className}`}>
       <button
         type="button"
         onClick={onToggleFavorite}
@@ -41,7 +41,7 @@ export function StandCard({
         />
       </button>
 
-      <button type="button" onClick={onOpen} className="flex flex-1 flex-col gap-2 text-left">
+      <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 flex-col gap-2 overflow-hidden text-left">
         <div className="flex items-center justify-between gap-2 pr-8">
           <StandCategoryBadge category={stand.category} />
           {isVisited && (
@@ -55,7 +55,7 @@ export function StandCard({
         </div>
 
         <div>
-          <p className="font-black leading-tight text-[var(--expo-navy)]">{stand.name}</p>
+          <p className="truncate font-black leading-tight text-[var(--expo-navy)]">{stand.name}</p>
           <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-400">
             <MapPin size={11} aria-hidden="true" />
             {stand.boothCode}

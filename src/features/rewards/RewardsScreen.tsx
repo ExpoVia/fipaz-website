@@ -1,13 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import Image from "next/image";
+import { motion, AnimatePresence, type Transition } from "motion/react";
 import { CheckCircle2, Lock, Gift, Sparkles, Info, ScanLine, Trophy, Camera, Share2, RotateCcw } from "lucide-react";
 
 import { REWARDS } from "@/data/rewards";
 import { useDemoStore } from "@/store/demo-store";
 import { PointsPill } from "@/components/pixel/PointsPill";
 import type { Reward } from "@/lib/types";
+
+// ─── Floating animation variant (levitación suave) ──────────────────────────
+const floatTransition: Transition = {
+  duration: 2.8,
+  repeat: Infinity,
+  repeatType: "mirror",
+  ease: "easeInOut",
+};
+
 
 // ─── Redeem confirmation modal ──────────────────────────────────────────────
 
@@ -34,9 +44,19 @@ function RedeemModal({ reward, onConfirm, onCancel }: RedeemModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col items-center gap-4 text-center">
-          <div className="flex size-20 items-center justify-center rounded-2xl border-2 border-[var(--expo-navy)] bg-[#fbdbe7] shadow-[3px_3px_0_var(--expo-navy)]">
-            <Gift size={36} className="text-[var(--expo-navy)]" strokeWidth={2.5} />
-          </div>
+          <motion.div
+            className="relative size-24 drop-shadow-[0_8px_12px_rgba(0,0,0,0.15)]"
+            animate={{ y: [0, -8, 0] }}
+            transition={floatTransition}
+          >
+            <Image
+              src={reward.imagePath}
+              alt={reward.title}
+              fill
+              className="object-contain"
+              sizes="96px"
+            />
+          </motion.div>
           <div>
             <h2 className="text-xl font-black text-[var(--expo-navy)]">{reward.title}</h2>
             <p className="mt-1 text-sm text-slate-500">{reward.description}</p>
@@ -166,11 +186,21 @@ function RewardCard({ reward, points, isRedeemed, onRedeem }: RewardCardProps) {
         </div>
       )}
 
-      {/* Icon illustration area */}
-      <div className={`flex items-center justify-center p-4 pt-10 ${isLocked ? "grayscale opacity-60" : ""}`}>
-        <div className="flex size-16 items-center justify-center rounded-2xl border-2 border-[var(--expo-navy)] bg-[#fbdbe7] shadow-[3px_3px_0_var(--expo-navy)]">
-          <Gift size={30} className="text-[var(--expo-navy)]" strokeWidth={2.5} />
-        </div>
+      {/* Image illustration area — floating animation */}
+      <div className={`flex items-center justify-center p-4 pt-10 ${isLocked ? "grayscale opacity-50" : ""}`}>
+        <motion.div
+          className="relative size-20 drop-shadow-[0_6px_8px_rgba(0,0,0,0.18)]"
+          animate={{ y: [0, -7, 0] }}
+          transition={floatTransition}
+        >
+          <Image
+            src={reward.imagePath}
+            alt={reward.title}
+            fill
+            className="object-contain"
+            sizes="80px"
+          />
+        </motion.div>
       </div>
 
       {/* Content */}

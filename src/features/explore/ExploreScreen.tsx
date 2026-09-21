@@ -61,14 +61,16 @@ export function ExploreScreen({ onNavigate }: FeatureScreenProps) {
         onNavigate={onNavigate}
       />
 
-      <div className="flex flex-col gap-4 px-4 py-5 pb-8">
+      {/* Mismo patrón que HomeScreen: flex flex-col + px-4 fijo */}
+      <div className="flex flex-col gap-5 px-4 py-5 pb-8">
+
         {/* Encabezado */}
         <section className="pixel-panel relative overflow-hidden p-5 bg-[var(--expo-sky)] text-[var(--expo-navy)]">
           <span className="absolute -right-5 -top-5 size-24 rotate-12 border-8 border-white/30" aria-hidden="true" />
           <div className="relative">
             <p className="pixel-label opacity-75">Directorio de la feria</p>
             <h1 className="mt-2 text-2xl font-black leading-tight">Explorar</h1>
-            <p className="mt-2 max-w-xs text-sm font-medium leading-6 opacity-80">
+            <p className="mt-1 max-w-xs text-sm font-medium leading-6 opacity-80">
               Busca stands por nombre o categoría y encuentra tu próxima parada.
             </p>
           </div>
@@ -87,7 +89,7 @@ export function ExploreScreen({ onNavigate }: FeatureScreenProps) {
           />
         </div>
 
-        {/* Filtros */}
+        {/* Filtros de categoría — scroll horizontal */}
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1" role="group" aria-label="Filtrar por categoría">
           <button
             type="button"
@@ -129,11 +131,12 @@ export function ExploreScreen({ onNavigate }: FeatureScreenProps) {
           </button>
         </div>
 
-        {/* Resultados */}
-        <p className="text-xs font-bold text-slate-400" aria-live="polite">
+        {/* Contador de resultados */}
+        <p className="-mt-2 text-xs font-bold text-slate-400" aria-live="polite">
           {results.length} {results.length === 1 ? "stand encontrado" : "stands encontrados"}
         </p>
 
+        {/* Grid de stands o estado vacío */}
         {results.length === 0 ? (
           <div className="flex flex-col items-center rounded-2xl border-2 border-dashed border-[var(--expo-line)] bg-white py-10 text-center">
             <span

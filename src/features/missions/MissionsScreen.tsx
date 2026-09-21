@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import Image from "next/image";
+import { motion, AnimatePresence, type Transition } from "motion/react";
 import {
   ChevronDown,
   MapPin,
@@ -32,7 +33,7 @@ import { PointsPill } from "@/components/pixel/PointsPill";
 import type { Mission } from "@/lib/types";
 
 // ─── Pixel-art styled icon wrapper ─────────────────────────────────────────
-// Lucide icons inside a hard-shadow square container → retro/pixel look
+// Supports either a Lucide icon or a floating PNG image
 
 interface PixelIconProps {
   icon: LucideIcon;
@@ -40,16 +41,26 @@ interface PixelIconProps {
   color: string;
   size?: number;
   locked?: boolean;
+  imageSrc?: string;
+  imageAlt?: string;
 }
 
-function PixelIcon({ icon: Icon, bg, color, size = 20, locked = false }: PixelIconProps) {
+function PixelIcon({ icon: Icon, bg, color, size = 20, locked = false, imageSrc, imageAlt = "" }: PixelIconProps) {
   return (
     <span
-      className={`flex size-11 shrink-0 items-center justify-center rounded-lg border-2 border-[var(--expo-navy)] ${locked ? "bg-slate-100" : bg} shadow-[2px_2px_0_var(--expo-navy)]`}
+      className={`relative flex size-11 shrink-0 items-center justify-center rounded-lg border-2 border-[var(--expo-navy)] ${locked ? "bg-slate-100" : imageSrc ? "bg-white/60" : bg} shadow-[2px_2px_0_var(--expo-navy)] overflow-hidden`}
       aria-hidden="true"
     >
       {locked ? (
         <Lock size={18} className="text-slate-400" strokeWidth={2.5} />
+      ) : imageSrc ? (
+        <motion.span
+          className="relative flex size-8 shrink-0"
+          animate={{ y: [0, -3, 0] }}
+          transition={missionFloatTransition}
+        >
+          <Image src={imageSrc} alt={imageAlt} fill className="object-contain drop-shadow-sm" sizes="32px" />
+        </motion.span>
       ) : (
         <Icon size={size} className={color} strokeWidth={2.5} />
       )}
@@ -74,6 +85,29 @@ const MISSION_ICONS: Record<string, { icon: LucideIcon; bg: string; color: strin
 function getMissionIcon(missionId: string) {
   return MISSION_ICONS[missionId] ?? { icon: Trophy, bg: "bg-slate-100", color: "text-slate-600" };
 }
+
+// PNG assets for missions that have a matching image in /assets/missions/
+const MISSION_IMAGES: Record<string, string> = {
+  // Misiones con imagen propia
+  "primer-contacto":    "/assets/missions/stand.png",
+  "explorador-expovia": "/assets/missions/mapa.png",
+  "sabores-feria":      "/assets/missions/food.png",
+  "agenda-activa":      "/assets/missions/education.png",
+  "red-finanzas":       "/assets/missions/money.png",
+  "embajador-expovia":  "/assets/missions/redes-sociales.png",
+  "selfie-stand":       "/assets/missions/camara.png",
+  "maestro-mapa":       "/assets/missions/ubicacion.png",
+  "ruta-tecnologica":   "/assets/missions/startup.png",
+  "ruta-startups":      "/assets/missions/startup.png",
+};
+
+// Floating (levitating) animation shared across mission images
+const missionFloatTransition: Transition = {
+  duration: 2.6,
+  repeat: Infinity,
+  repeatType: "mirror",
+  ease: "easeInOut",
+};
 
 // ─── NFC Simulation Overlay ────────────────────────────────────────────────
 // Triggered per-stand from the mission expanded view
@@ -420,6 +454,7 @@ function MissionCard({
 
   const { completeMissionSpecialAction, points, visitedStandIds } = useDemoStore();
   const iconConfig = getMissionIcon(mission.id);
+  const missionImageSrc = MISSION_IMAGES[mission.id];
 
   const actionDone = mission.specialAction ? specialDone : isCompleted;
 
@@ -496,6 +531,8 @@ function MissionCard({
             bg={iconConfig.bg}
             color={iconConfig.color}
             locked={isLocked}
+            imageSrc={missionImageSrc}
+            imageAlt={mission.title}
           />
 
           <div className="min-w-0 flex-1">

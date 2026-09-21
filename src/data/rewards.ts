@@ -7,7 +7,7 @@ export const REWARDS: Reward[] = [
     description:
       'Sticker coleccionable edición especial "La Paz Expone". Diseño pixel-art exclusivo de esta edición. Ideal para tu laptop o cuaderno.',
     cost: 100,
-    imagePath: "/assets/rewards/reward-items.jpg",
+    imagePath: "/assets/rewards/ticket.png",
     stockLabel: "Demo · Sin stock real",
     emoji: "🎨",
   },
@@ -17,7 +17,7 @@ export const REWARDS: Reward[] = [
     description:
       "Un café gratis en el patio de la feria. Presenta tu código en el puesto de bebidas y disfruta tu merecido descanso entre stands.",
     cost: 200,
-    imagePath: "/assets/rewards/reward-items.jpg",
+    imagePath: "/assets/rewards/coffee.png",
     stockLabel: "Demo · Sin stock real",
     emoji: "☕",
   },
@@ -27,7 +27,7 @@ export const REWARDS: Reward[] = [
     description:
       "El paquete del explorador: cuadernillo A5, lapicera y pin metálico de ExpoVia. Para los visitantes más dedicados de la feria.",
     cost: 500,
-    imagePath: "/assets/rewards/reward-items.jpg",
+    imagePath: "/assets/rewards/backpack-removebg-preview.png",
     stockLabel: "Demo · Sin stock real",
     emoji: "🎒",
   },
@@ -37,7 +37,7 @@ export const REWARDS: Reward[] = [
     description:
       "Termo/tomatodo con el logo de La Paz Expone 2026. Acompáñate durante toda la feria con tu bebida favorita.",
     cost: 350,
-    imagePath: "/assets/rewards/reward-items.jpg",
+    imagePath: "/assets/rewards/tomatodo.png",
     stockLabel: "Demo · Sin stock real",
     emoji: "🍶",
   },
@@ -47,7 +47,7 @@ export const REWARDS: Reward[] = [
     description:
       "Llavero pixel-art en forma de estrella de La Paz Expone. Cada edición tiene un diseño diferente — ¡este es el de 2026!",
     cost: 150,
-    imagePath: "/assets/rewards/reward-items.jpg",
+    imagePath: "/assets/rewards/llavero.png",
     stockLabel: "Demo · Sin stock real",
     emoji: "🔑",
   },
@@ -57,7 +57,7 @@ export const REWARDS: Reward[] = [
     description:
       "Un póster personalizado generado con los stands que visitaste. Descárgalo, compártelo y muestra tu recorrido en la feria.",
     cost: 250,
-    imagePath: "/assets/rewards/reward-items.jpg",
+    imagePath: "/assets/rewards/poster.png",
     stockLabel: "Demo · Sin stock real",
     emoji: "🖼️",
   },

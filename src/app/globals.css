@@ -99,6 +99,8 @@ a {
   box-shadow: 3px 3px 0 color-mix(in srgb, var(--expo-navy) 10%, transparent);
 }
 
+/* ── Escenario y marco del celular ─────────────────────────────────── */
+
 .app-stage {
   display: grid;
   min-height: 100dvh;
@@ -113,34 +115,131 @@ a {
   padding: 24px;
 }
 
+/* Celular de tamaño fijo (390 × 844). Solo se acorta si la ventana es baja, para no recortarse. */
+.app-phone {
+  position: relative;
+  width: min(390px, 100%);
+  height: clamp(520px, calc(100dvh - 48px), 844px);
+  animation: app-phone-in 640ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@keyframes app-phone-in {
+  from {
+    opacity: 0;
+    translate: 0 32px;
+    scale: 0.96;
+  }
+}
+
+/* Botones laterales: silencio y volumen (izquierda), encendido (derecha). */
+.app-phone::before,
+.app-phone::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  background: #0d0e22;
+  pointer-events: none;
+}
+
+.app-phone::before {
+  top: 128px;
+  left: -4px;
+  height: 44px;
+  border-radius: 3px 0 0 3px;
+  box-shadow:
+    0 64px 0 #0d0e22,
+    0 128px 0 #0d0e22;
+}
+
+.app-phone::after {
+  top: 200px;
+  right: -4px;
+  height: 88px;
+  border-radius: 0 3px 3px 0;
+}
+
 .app-device {
+  --status-h: 34px;
+  --home-h: 22px;
   position: relative;
   display: flex;
-  width: min(390px, 100%);
-  height: min(844px, calc(100dvh - 48px));
-  min-height: 620px;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  border: 8px solid #fff;
-  border-radius: 36px;
+  border: 10px solid #15162f;
+  border-radius: 54px;
   background: var(--expo-bg);
   box-shadow:
+    0 0 0 2px #2b2d55,
     0 30px 90px rgb(10 14 40 / 42%),
-    8px 8px 0 rgb(19 20 48 / 55%);
+    10px 10px 0 rgb(19 20 48 / 55%);
+  /* Los overlays `fixed` (modales, fichas) se anclan a la pantalla del celular y
+     se recortan con sus esquinas redondeadas, no a la ventana ni al bisel. */
+  contain: layout;
   isolation: isolate;
 }
 
-.app-device-speaker {
+.app-device-island {
   position: absolute;
-  top: 6px;
+  top: 10px;
   left: 50%;
-  z-index: 30;
-  width: 44px;
+  z-index: 40;
+  width: 96px;
+  height: 28px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #05060f;
+  pointer-events: none;
+}
+
+.app-device-island::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  width: 9px;
+  height: 9px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #3b4a8a 0, #10142c 55%, #05060f 100%);
+}
+
+.app-statusbar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 35;
+  display: flex;
+  height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 28px 0;
+  color: #fff;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.app-statusbar-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.app-home-indicator {
+  position: absolute;
+  bottom: 7px;
+  left: 50%;
+  z-index: 40;
+  width: 128px;
   height: 5px;
   transform: translateX(-50%);
   border-radius: 999px;
-  background: rgb(255 255 255 / 65%);
+  background: rgb(47 45 76 / 82%);
   pointer-events: none;
 }
+
+/* ── Barra superior ────────────────────────────────────────────────── */
 
 .app-topbar {
   position: relative;
@@ -152,7 +251,7 @@ a {
   align-items: center;
   gap: 8px;
   padding:
-    max(10px, env(safe-area-inset-top))
+    calc(var(--status-h, 0px) + max(10px, env(safe-area-inset-top)))
     12px
     8px;
   background: linear-gradient(90deg, var(--expo-blue), var(--expo-lilac));
@@ -166,6 +265,7 @@ a {
   align-items: center;
   justify-content: center;
   gap: 4px;
+  padding-inline: 8px;
   justify-self: start;
   border: 2px solid rgb(255 255 255 / 55%);
   border-radius: 12px;
@@ -187,10 +287,58 @@ a {
   transform: translateY(1px);
 }
 
+.app-topbar-avatar {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  justify-self: end;
+  border: 2px solid rgb(255 255 255 / 60%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 14%);
+  color: #fff;
+  transition:
+    transform 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.app-topbar-avatar:hover {
+  background: rgb(255 255 255 / 26%);
+  transform: translateY(-1px);
+}
+
+.app-topbar-avatar:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.app-topbar-avatar.is-active {
+  border-color: #fff;
+  background: #fff;
+  color: var(--expo-blue);
+}
+
+/* ── Pantallas ─────────────────────────────────────────────────────── */
+
 .app-screen-stack {
   position: relative;
+  min-width: 0;
   min-height: 0;
   flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.app-screen-stack:focus-visible {
+  outline-offset: -4px;
+}
+
+/* Cada pantalla tiene su propio scroll: conserva su posición al volver a ella y
+   la que sale puede cruzarse con la que entra sin dejar la pantalla en blanco. */
+.app-screen-stack > section {
+  position: absolute;
+  inset: 0;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -198,22 +346,89 @@ a {
   scrollbar-width: thin;
 }
 
-.app-screen-stack:focus-visible {
-  outline-offset: -4px;
-}
-
 .app-screen-stack > section[hidden] {
   display: none;
 }
+
+/* Entra: desliza desde el lado del que viene. Sale: se desvanece hacia el lado contrario. */
+.app-screen-stack > section[data-state="active"] {
+  animation: app-screen-in 280ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.app-screen-stack > section[data-state="active"][data-direction="back"] {
+  animation-name: app-screen-in-back;
+}
+
+.app-screen-stack > section[data-state="leaving"] {
+  pointer-events: none;
+  animation: app-screen-out 200ms ease-in forwards;
+}
+
+.app-screen-stack > section[data-state="leaving"][data-direction="back"] {
+  animation-name: app-screen-out-back;
+}
+
+@keyframes app-screen-in {
+  from {
+    opacity: 0;
+    transform: translateX(22px);
+  }
+}
+
+@keyframes app-screen-in-back {
+  from {
+    opacity: 0;
+    transform: translateX(-22px);
+  }
+}
+
+@keyframes app-screen-out {
+  to {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+@keyframes app-screen-out-back {
+  to {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+/* ── Barra inferior: simétrica (mitad · botón central · mitad) ─────── */
 
 .app-bottom-nav {
   position: relative;
   z-index: 20;
   flex: 0 0 auto;
   border-top: 2px solid var(--expo-line);
-  background: rgb(255 255 255 / 96%);
+  background: rgb(255 255 255 / 97%);
   box-shadow: 0 -5px 18px rgb(47 45 76 / 8%);
-  padding-bottom: max(6px, env(safe-area-inset-bottom));
+  padding-bottom: max(6px, env(safe-area-inset-bottom), var(--home-h, 0px));
+}
+
+.app-nav-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 8px 8px 0;
+}
+
+/* Las dos mitades reparten el mismo ancho: el botón central queda exacto al centro. */
+.app-nav-group {
+  display: grid;
+  min-width: 0;
+  flex: 1 1 0;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 2px;
+}
+
+.app-nav-center {
+  display: flex;
+  flex: 0 0 84px;
+  justify-content: center;
 }
 
 .app-nav-item {
@@ -227,27 +442,33 @@ a {
   justify-content: center;
   gap: 3px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 14px;
   background: transparent;
   color: #55536e;
-  transition:
-    color 120ms ease,
-    background-color 120ms ease,
-    transform 120ms ease;
+  isolation: isolate;
+  transition: color 140ms ease;
 }
 
 .app-nav-item:hover {
-  background: #eef7fc;
   color: var(--expo-blue);
 }
 
-.app-nav-item:active {
-  transform: translateY(2px);
+.app-nav-item.is-active {
+  color: var(--expo-navy);
 }
 
-.app-nav-item.is-active {
+.app-nav-item.is-active .app-nav-icon {
+  color: var(--expo-blue);
+}
+
+.app-nav-pill {
+  position: absolute;
+  inset: 0 1px 2px;
+  z-index: -1;
+  border: 2px solid color-mix(in srgb, var(--expo-blue) 22%, transparent);
+  border-radius: 14px;
   background: #e8f4fb;
-  color: var(--expo-navy);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--expo-navy) 10%, transparent);
 }
 
 .app-nav-icon {
@@ -269,46 +490,109 @@ a {
 
 .app-nav-active-dot {
   position: absolute;
-  bottom: 2px;
-  width: 15px;
+  bottom: 4px;
+  width: 0;
   height: 3px;
   border-radius: 999px;
   background: var(--expo-blue);
 }
 
+/* Botón central (NFC): elevado, centrado y con ondas que invitan a tocar. */
 .app-nav-item-featured {
+  width: 100%;
   overflow: visible;
   color: var(--expo-blue);
 }
 
+.app-nav-item-featured:hover,
+.app-nav-item-featured.is-active {
+  color: var(--expo-blue);
+}
+
 .app-nav-item-featured .app-nav-icon {
-  width: 56px;
-  height: 56px;
-  margin-top: -28px;
+  position: relative;
+  overflow: visible;
+}
+
+.app-nav-fab,
+.app-nav-item-featured .app-nav-icon::before,
+.app-nav-item-featured .app-nav-icon::after {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  width: 58px;
+  height: 58px;
+  margin-left: -29px;
+  border-radius: 20px;
+}
+
+.app-nav-fab {
+  z-index: 1;
+  display: grid;
+  place-items: center;
   border: 4px solid #fff;
-  border-radius: 18px;
   background: var(--expo-blue);
   color: #fff;
   box-shadow:
     0 0 0 2px var(--expo-blue),
     4px 4px 0 rgb(47 45 76 / 25%);
-  transform: rotate(2deg);
   transition:
-    transform 120ms ease,
-    background-color 120ms ease;
+    transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 160ms ease,
+    box-shadow 160ms ease;
 }
 
-.app-nav-item-featured:hover,
-.app-nav-item-featured.is-active {
-  background: transparent;
-  color: var(--expo-blue);
-}
-
-.app-nav-item-featured:hover .app-nav-icon,
-.app-nav-item-featured.is-active .app-nav-icon {
+.app-nav-item-featured:hover .app-nav-fab {
   background: var(--expo-purple);
-  transform: translateY(-2px) rotate(-2deg);
+  box-shadow:
+    0 0 0 2px var(--expo-purple),
+    4px 4px 0 rgb(47 45 76 / 25%);
+  transform: translateY(-3px);
 }
+
+.app-nav-item-featured:active .app-nav-fab {
+  transform: scale(0.92);
+}
+
+.app-nav-item-featured.is-active .app-nav-fab {
+  background: var(--expo-purple);
+  box-shadow:
+    0 0 0 2px var(--expo-purple),
+    4px 4px 0 rgb(47 45 76 / 25%);
+}
+
+.app-nav-item-featured .app-nav-icon::before,
+.app-nav-item-featured .app-nav-icon::after {
+  content: "";
+  z-index: 0;
+  border: 3px solid var(--expo-blue);
+  opacity: 0;
+  pointer-events: none;
+  animation: app-fab-pulse 2.6s ease-out infinite;
+}
+
+.app-nav-item-featured .app-nav-icon::after {
+  animation-delay: 1.3s;
+}
+
+.app-nav-item-featured.is-active .app-nav-icon::before,
+.app-nav-item-featured.is-active .app-nav-icon::after {
+  animation: none;
+}
+
+@keyframes app-fab-pulse {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.95);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+/* ── Móvil real: pantalla completa, sin marco ──────────────────────── */
 
 @media (max-width: 639px) {
   .app-stage {
@@ -317,18 +601,26 @@ a {
     background: var(--expo-bg);
   }
 
-  .app-device {
-    width: 100dvw;
+  .app-phone {
+    width: 100%;
     height: 100dvh;
-    min-height: 0;
-    max-height: none;
+    animation: none;
+  }
+
+  .app-phone::before,
+  .app-phone::after,
+  .app-device-island,
+  .app-statusbar,
+  .app-home-indicator {
+    display: none;
+  }
+
+  .app-device {
+    --status-h: 0px;
+    --home-h: 0px;
     border: 0;
     border-radius: 0;
     box-shadow: none;
-  }
-
-  .app-device-speaker {
-    display: none;
   }
 }
 

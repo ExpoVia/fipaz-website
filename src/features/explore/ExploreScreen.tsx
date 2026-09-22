@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Heart, Search, SearchX } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { Heart, Search, SearchX, X } from "lucide-react";
 
 import type { FeatureScreenProps } from "@/config/navigation";
 import { categories, stands } from "@/data/demo-data";
@@ -16,6 +17,10 @@ import {
 import type { StandCategory } from "@/types/demo";
 
 type CategoryFilter = "all" | StandCategory;
+
+const CHIP_BASE = "shrink-0 rounded-xl border-2 px-3 py-1.5 text-xs font-black transition-colors";
+const CHIP_ACTIVE = "border-[var(--expo-navy)] bg-[var(--expo-navy)] text-white";
+const CHIP_IDLE = "border-[var(--expo-line)] bg-white text-[var(--expo-navy)]";
 
 export function ExploreScreen({ onNavigate }: FeatureScreenProps) {
   const hasHydrated = useDemoStore(selectHasHydrated);
@@ -61,8 +66,8 @@ export function ExploreScreen({ onNavigate }: FeatureScreenProps) {
         onNavigate={onNavigate}
       />
 
-      {/* Mismo patrón que HomeScreen: flex flex-col + px-4 fijo */}
-      <div className="flex flex-col gap-5 px-4 py-5 pb-8">
+      {/* Mismo patrón que HomeScreen: flex flex-col + px-4 fijo. min-w-0 evita que los hijos ensanchen la pantalla. */}
+      <div className="flex min-w-0 flex-col gap-5 px-4 py-5 pb-8">
 
         {/* Encabezado */}
         <section className="pixel-panel relative overflow-hidden p-5 bg-[var(--expo-sky)] text-[var(--expo-navy)]">
@@ -77,74 +82,114 @@ export function ExploreScreen({ onNavigate }: FeatureScreenProps) {
         </section>
 
         {/* Búsqueda */}
-        <div className="flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-white px-3 py-2.5 shadow-[2px_2px_0_var(--expo-navy)]">
-          <Search size={17} className="shrink-0 text-slate-400" aria-hidden="true" />
+        <div className="group flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-white px-3 py-2.5 shadow-[2px_2px_0_var(--expo-navy)] transition-all duration-200 focus-within:-translate-y-0.5 focus-within:shadow-[4px_4px_0_var(--expo-blue)]">
+          <Search
+            size={17}
+            className="shrink-0 text-slate-400 transition-colors group-focus-within:text-[var(--expo-blue)]"
+            aria-hidden="true"
+          />
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Busca por nombre, tema o etiqueta"
             aria-label="Buscar stands"
-            className="w-full bg-transparent text-sm font-medium text-[var(--expo-navy)] outline-none placeholder:text-slate-400"
+            className="min-w-0 flex-1 bg-transparent text-sm font-medium text-[var(--expo-navy)] outline-none placeholder:text-slate-400 [&::-webkit-search-cancel-button]:hidden"
           />
+          <AnimatePresence>
+            {query && (
+              <motion.button
+                key="clear-search"
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Borrar búsqueda"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                whileTap={{ scale: 0.85 }}
+                className="flex size-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500"
+              >
+                <X size={13} strokeWidth={3} aria-hidden="true" />
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Filtros de categoría — scroll horizontal */}
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1" role="group" aria-label="Filtrar por categoría">
-          <button
+        <div
+          className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          role="group"
+          aria-label="Filtrar por categoría"
+        >
+          <motion.button
             type="button"
             onClick={() => setActiveCategory("all")}
-            className={`shrink-0 rounded-xl border-2 px-3 py-1.5 text-xs font-black transition-colors ${
-              activeCategory === "all"
-                ? "border-[var(--expo-navy)] bg-[var(--expo-navy)] text-white"
-                : "border-[var(--expo-line)] bg-white text-[var(--expo-navy)]"
-            }`}
+            whileTap={{ scale: 0.93 }}
+            className={`${CHIP_BASE} ${activeCategory === "all" ? CHIP_ACTIVE : CHIP_IDLE}`}
           >
             Todos
-          </button>
+          </motion.button>
           {categories.map((category) => (
-            <button
+            <motion.button
               key={category.id}
               type="button"
               onClick={() => setActiveCategory(category.id)}
-              className={`shrink-0 rounded-xl border-2 px-3 py-1.5 text-xs font-black transition-colors ${
-                activeCategory === category.id
-                  ? "border-[var(--expo-navy)] bg-[var(--expo-navy)] text-white"
-                  : "border-[var(--expo-line)] bg-white text-[var(--expo-navy)]"
-              }`}
+              whileTap={{ scale: 0.93 }}
+              className={`${CHIP_BASE} ${activeCategory === category.id ? CHIP_ACTIVE : CHIP_IDLE}`}
             >
               {category.label}
-            </button>
+            </motion.button>
           ))}
-          <button
+          <motion.button
             type="button"
             onClick={() => setFavoritesOnly((value) => !value)}
             aria-pressed={favoritesOnly}
-            className={`flex shrink-0 items-center gap-1.5 rounded-xl border-2 px-3 py-1.5 text-xs font-black transition-colors ${
+            whileTap={{ scale: 0.93 }}
+            className={`${CHIP_BASE} flex items-center gap-1.5 ${
               favoritesOnly
                 ? "border-[var(--expo-pink)] bg-[var(--expo-pink)] text-white"
-                : "border-[var(--expo-line)] bg-white text-[var(--expo-navy)]"
+                : CHIP_IDLE
             }`}
           >
-            <Heart size={12} strokeWidth={2.5} className={favoritesOnly ? "fill-white" : ""} aria-hidden="true" />
+            <motion.span
+              key={String(favoritesOnly)}
+              className="flex"
+              initial={{ scale: favoritesOnly ? 0.4 : 1 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 500, damping: 12 }}
+            >
+              <Heart size={12} strokeWidth={2.5} className={favoritesOnly ? "fill-white" : ""} aria-hidden="true" />
+            </motion.span>
             Favoritos
-          </button>
+          </motion.button>
         </div>
 
         {/* Contador de resultados */}
         <p className="-mt-2 text-xs font-bold text-slate-400" aria-live="polite">
-          {results.length} {results.length === 1 ? "stand encontrado" : "stands encontrados"}
+          <motion.span
+            key={results.length}
+            className="inline-block"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {results.length}
+          </motion.span>{" "}
+          {results.length === 1 ? "stand encontrado" : "stands encontrados"}
         </p>
 
         {/* Grid de stands o estado vacío */}
         {results.length === 0 ? (
           <div className="flex flex-col items-center rounded-2xl border-2 border-dashed border-[var(--expo-line)] bg-white py-10 text-center">
-            <span
+            <motion.span
               className="flex size-14 items-center justify-center rounded-2xl border-2 border-[var(--expo-navy)] bg-[var(--expo-coral)] shadow-[3px_3px_0_var(--expo-navy)]"
+              initial={{ scale: 0.5, rotate: -14 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 14 }}
               aria-hidden="true"
             >
               <SearchX size={28} className="text-white" strokeWidth={2.5} />
-            </span>
+            </motion.span>
             <p className="mt-3 font-black text-[var(--expo-navy)]">Sin resultados</p>
             <p className="mt-2 max-w-xs text-sm text-slate-500">
               Prueba otra palabra clave o quita algún filtro para ver más stands.
@@ -153,14 +198,23 @@ export function ExploreScreen({ onNavigate }: FeatureScreenProps) {
         ) : (
           <div className="grid grid-cols-2 gap-3">
             {results.map((stand) => (
-              <StandCard
+              // Solo se anima al aparecer al filtrar; al abrir la pestaña la transición de pantalla ya cubre la entrada.
+              <motion.div
                 key={stand.id}
-                stand={stand}
-                isFavorite={favoriteStandIds.includes(stand.id)}
-                isVisited={visitedStandIds.includes(stand.id)}
-                onOpen={() => setOpenStandId(stand.id)}
-                onToggleFavorite={() => toggleFavorite(stand.id)}
-              />
+                className="min-w-0"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+              >
+                <StandCard
+                  className="h-full"
+                  stand={stand}
+                  isFavorite={favoriteStandIds.includes(stand.id)}
+                  isVisited={visitedStandIds.includes(stand.id)}
+                  onOpen={() => setOpenStandId(stand.id)}
+                  onToggleFavorite={() => toggleFavorite(stand.id)}
+                />
+              </motion.div>
             ))}
           </div>
         )}

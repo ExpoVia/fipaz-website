@@ -1,14 +1,19 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, UserRound } from "lucide-react";
 import Link from "next/link";
-
-import { BrandMark } from "@/components/shared";
 
 interface TopBarProps {
   title: string;
   description: string;
+  onOpenProfile: () => void;
+  isProfileActive: boolean;
 }
 
-export function TopBar({ title, description }: TopBarProps) {
+export function TopBar({
+  title,
+  description,
+  onOpenProfile,
+  isProfileActive,
+}: TopBarProps) {
   return (
     <header className="app-topbar">
       <Link
@@ -25,7 +30,15 @@ export function TopBar({ title, description }: TopBarProps) {
         <p className="sr-only">{description}</p>
       </div>
 
-      <BrandMark compact inverse />
+      <button
+        type="button"
+        className={`app-topbar-avatar ${isProfileActive ? "is-active" : ""}`}
+        aria-label="Abrir mi perfil"
+        aria-current={isProfileActive ? "page" : undefined}
+        onClick={onOpenProfile}
+      >
+        <UserRound aria-hidden="true" size={20} strokeWidth={2.5} />
+      </button>
     </header>
   );
 }

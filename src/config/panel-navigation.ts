@@ -8,6 +8,7 @@ import {
   LayoutGrid,
   Map,
   ScanLine,
+  SlidersHorizontal,
   Store,
   Trophy,
   UsersRound,
@@ -74,6 +75,14 @@ export const PANEL_NAVIGATION: readonly PanelNavigationItem[] = [
     label: "Métricas de mi stand",
     description: "Horas pico, permanencia e impacto",
     icon: BarChart3,
+  },
+  {
+    id: "expositor-administracion",
+    role: "expositor",
+    href: "/admin",
+    label: "Administración",
+    description: "Dinámicas, premios, inventario y actividades",
+    icon: SlidersHorizontal,
   },
   // ─── Organizador ────────────────────────────────────────────────────────
   {

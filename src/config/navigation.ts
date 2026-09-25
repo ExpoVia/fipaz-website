@@ -20,7 +20,14 @@ export interface DemoNavigationItem {
   title: string;
   description: string;
   icon: LucideIcon;
+  /** Botón central elevado de la barra inferior (NFC). */
   featured?: boolean;
+  /**
+   * Dónde se muestra el acceso. `bar` (por defecto) va en la barra inferior;
+   * `header` va en la barra superior. La barra inferior es simétrica: necesita
+   * una cantidad par de pestañas a los lados del botón central.
+   */
+  placement?: "bar" | "header";
 }
 
 export const DEMO_NAVIGATION: readonly DemoNavigationItem[] = [
@@ -72,6 +79,7 @@ export const DEMO_NAVIGATION: readonly DemoNavigationItem[] = [
     title: "Tu recorrido",
     description: "Puntos, favoritos y visitas recientes",
     icon: UserRound,
+    placement: "header",
   },
 ] as const;
 

@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { MotionConfig } from "motion/react";
 
 import {
   DEFAULT_DEMO_TAB,
@@ -39,6 +40,9 @@ interface DismissableEntry {
 }
 
 const HISTORY_KEY = "__expoviaDemo";
+const TAB_ORDER = DEMO_NAVIGATION.map((item) => item.id);
+// Un poco más que la animación de salida de globals.css (200 ms).
+const SCREEN_EXIT_MS = 240;
 
 function urlForTab(tab: DemoTab) {
   const url = new URL(window.location.href);
@@ -52,17 +56,38 @@ export function AppShell({
   onTabChange,
 }: AppShellProps) {
   const [activeTab, setActiveTab] = useState<DemoTab>(initialTab);
+  // Sentido de la transición entre pantallas (avanzar o retroceder en el orden de las pestañas).
+  const [direction, setDirection] = useState<"forward" | "back">("forward");
+  // Pantalla que acaba de salir: sigue visible mientras dura su animación de salida.
+  const [leavingTab, setLeavingTab] = useState<DemoTab | null>(null);
   const activeTabRef = useRef(activeTab);
   const dismissablesRef = useRef<DismissableEntry[]>([]);
 
   const commitTab = useCallback(
     (tab: DemoTab) => {
+      const previousTab = activeTabRef.current;
+
+      setDirection(
+        TAB_ORDER.indexOf(tab) >= TAB_ORDER.indexOf(previousTab)
+          ? "forward"
+          : "back",
+      );
+      setLeavingTab(previousTab === tab ? null : previousTab);
       activeTabRef.current = tab;
       setActiveTab(tab);
       onTabChange?.(tab);
     },
     [onTabChange],
   );
+
+  useEffect(() => {
+    if (!leavingTab) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => setLeavingTab(null), SCREEN_EXIT_MS);
+    return () => window.clearTimeout(timeout);
+  }, [leavingTab]);
 
   const navigate = useCallback(
     (tab: DemoTab) => {
@@ -158,42 +183,57 @@ export function AppShell({
 
   return (
     <AppShellProvider value={contextValue}>
-      <MobileViewport>
-        <div className="flex min-h-0 flex-1 flex-col bg-[var(--expo-bg)]">
-          <TopBar
-            title={activeNavigationItem.title}
-            description={activeNavigationItem.description}
-          />
+      <MotionConfig reducedMotion="user">
+        <MobileViewport>
+          {/* min-w-0: sin él, el contenido más ancho (p. ej. los filtros de Explorar) ensancha todo el shell. */}
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-[var(--expo-bg)]">
+            <TopBar
+              title={activeNavigationItem.title}
+              description={activeNavigationItem.description}
+              onOpenProfile={() => navigate("profile")}
+              isProfileActive={activeTab === "profile"}
+            />
 
-          <main
-            id="demo-content"
-            className="app-screen-stack"
-            tabIndex={-1}
-          >
-            {DEMO_NAVIGATION.map((item) => (
-              <section
-                key={item.id}
-                id={`demo-panel-${item.id}`}
-                className="min-h-full"
-                role="tabpanel"
-                aria-label={item.label}
-                hidden={activeTab !== item.id}
-              >
-                {screens[item.id] ?? (
-                  <div className="grid min-h-full place-items-center p-6 text-center">
-                    <p className="max-w-xs text-sm font-semibold text-slate-600">
-                      El módulo {item.label} está listo para recibir el componente
-                      de su responsable.
-                    </p>
-                  </div>
-                )}
-              </section>
-            ))}
-          </main>
+            <main
+              id="demo-content"
+              className="app-screen-stack"
+              tabIndex={-1}
+            >
+              {DEMO_NAVIGATION.map((item) => {
+                const isActive = activeTab === item.id;
+                const isLeaving = !isActive && leavingTab === item.id;
 
-          <BottomNavigation activeTab={activeTab} onNavigate={navigate} />
-        </div>
-      </MobileViewport>
+                return (
+                  <section
+                    key={item.id}
+                    id={`demo-panel-${item.id}`}
+                    className="min-h-full"
+                    role="tabpanel"
+                    aria-label={item.label}
+                    aria-hidden={isLeaving || undefined}
+                    data-direction={direction}
+                    data-state={
+                      isActive ? "active" : isLeaving ? "leaving" : "idle"
+                    }
+                    hidden={!isActive && !isLeaving}
+                  >
+                    {screens[item.id] ?? (
+                      <div className="grid min-h-full place-items-center p-6 text-center">
+                        <p className="max-w-xs text-sm font-semibold text-slate-600">
+                          El módulo {item.label} está listo para recibir el componente
+                          de su responsable.
+                        </p>
+                      </div>
+                    )}
+                  </section>
+                );
+              })}
+            </main>
+
+            <BottomNavigation activeTab={activeTab} onNavigate={navigate} />
+          </div>
+        </MobileViewport>
+      </MotionConfig>
     </AppShellProvider>
   );
 }

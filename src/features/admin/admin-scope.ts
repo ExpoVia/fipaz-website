@@ -1,5 +1,8 @@
 import { stands } from "@/data/demo-data";
 import { MOCK_EXHIBITOR_STAND_ID, PANEL_EVENTS } from "@/data/panel-mock";
+import { API_MODE } from "@/lib/api/config";
+import { API_ENDPOINTS } from "@/lib/api/endpoints";
+import { apiGet } from "@/lib/api/http-client";
 
 /** Contexto por defecto del panel de empresa mientras no exista selección de cuenta real. */
 export const ADMIN_DEFAULT_STAND_ID = MOCK_EXHIBITOR_STAND_ID;
@@ -33,15 +36,34 @@ function humanizeId(id: string): string {
     .join(" ");
 }
 
+/** Campos de `GET /stands/:standId` que usa el módulo (el resto de la respuesta se ignora). */
+interface StandApiResponse {
+  id: string;
+  displayName: string;
+  boothCode: string;
+}
+
 /**
- * Datos de contexto (nombre del stand/evento) para títulos y breadcrumbs. Hoy salen del
- * catálogo estático de la demo; con backend serán `GET /stands/:id` y `GET /events/:id`.
+ * Datos de contexto (nombre del stand/evento) para títulos y breadcrumbs. Con
+ * `NEXT_PUBLIC_API_MODE=http` el stand sale de `GET /stands/:standId` (único endpoint de esta
+ * pantalla que ya existe en el backend); el evento sigue saliendo del catálogo estático porque
+ * el backend aún no tiene `GET /events/:id`.
  * Es asíncrono a propósito: las páginas ya hacen `await`, así que el cambio no las toca.
  * Un id desconocido no es un error (las empresas registradas en el panel no están en el
- * catálogo estático): se muestra un nombre derivado del id.
+ * catálogo estático, y el backend exige UUID): se muestra un nombre derivado del id. Lo mismo
+ * si el backend no responde: el título es decorativo y no debe impedir abrir la pantalla.
  */
 export const adminScopeService = {
   async getStand(standId: string): Promise<StandSummary> {
+    if (API_MODE === "http") {
+      try {
+        const stand = await apiGet<StandApiResponse>(API_ENDPOINTS.stands.byId(standId));
+        return { id: stand.id, name: stand.displayName, boothCode: stand.boothCode };
+      } catch {
+        // Se usa el catálogo estático / nombre derivado del id.
+      }
+    }
+
     const stand = stands.find((item) => item.id === standId);
     return stand
       ? { id: stand.id, name: stand.name, boothCode: stand.boothCode }

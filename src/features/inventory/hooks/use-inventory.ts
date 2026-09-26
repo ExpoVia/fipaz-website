@@ -8,7 +8,7 @@ import type { AdjustmentInput } from "../types";
 
 /** Inventario de todos los premios de un evento y el registro de ajustes de stock. */
 export function useInventory(eventId: string) {
-  const { data, status, reload, setData } = useAsyncResource(`inventory:${eventId}`, () =>
+  const { data, status, error, reload, setData } = useAsyncResource(`inventory:${eventId}`, () =>
     inventoryService.getInventoryByEvent(eventId),
   );
 
@@ -21,7 +21,7 @@ export function useInventory(eventId: string) {
     [setData],
   );
 
-  return { inventory: data ?? [], status, reload, adjust };
+  return { inventory: data ?? [], status, error, reload, adjust };
 }
 
 /** Detalle de un inventario junto con su historial de ajustes (más recientes primero). */

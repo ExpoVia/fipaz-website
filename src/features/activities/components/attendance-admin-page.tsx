@@ -247,7 +247,11 @@ export function AttendanceAdminPage({ activityId, initialStatus }: AttendanceAdm
       {status === "error" && (
         <ErrorState
           title={isNotFound ? "No encontramos la actividad." : "No pudimos cargar la asistencia."}
-          description={isNotFound ? "Puede que haya sido eliminada o que el enlace sea incorrecto." : "Intenta nuevamente."}
+          description={
+            isNotFound
+              ? "Puede que haya sido eliminada o que el enlace sea incorrecto."
+              : getErrorMessage(error, "Intenta nuevamente.")
+          }
           onRetry={isNotFound ? undefined : reload}
         />
       )}

@@ -2,15 +2,19 @@
 
 import { RotateCcw } from "lucide-react";
 
+import { API_MODE } from "@/lib/api/config";
 import { setMockFailureEnabled, useMockFailureEnabled } from "@/lib/mock/mock-controls";
 import { resetMockData } from "@/lib/mock/mock-storage";
 
 /**
  * Herramientas solo para la demostración sin backend: permiten forzar el estado de error
- * de todas las pantallas y volver a los datos iniciales. Desaparecen junto con los mocks.
+ * de todas las pantallas y volver a los datos iniciales. No se muestran con el backend real
+ * (`NEXT_PUBLIC_API_MODE=http`), donde no tendrían efecto.
  */
 export function MockControls() {
   const failing = useMockFailureEnabled();
+
+  if (API_MODE === "http") return null;
 
   return (
     <section

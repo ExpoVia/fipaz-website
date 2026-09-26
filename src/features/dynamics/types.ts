@@ -37,8 +37,8 @@ export interface CreateDynamicInput extends DynamicInput {
 }
 
 /**
- * Contrato del servicio. La implementación actual trabaja con datos simulados; la futura
- * implementación HTTP debe respetar exactamente estas firmas para no tocar la interfaz.
+ * Contrato del servicio. Lo implementan `dynamics.mock-service.ts` (datos simulados) y
+ * `dynamics.http-service.ts` (backend); ambas respetan exactamente estas firmas.
  */
 export interface DynamicsService {
   /** GET /stands/:standId/dynamics */

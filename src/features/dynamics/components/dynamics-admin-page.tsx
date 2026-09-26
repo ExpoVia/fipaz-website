@@ -54,7 +54,7 @@ const STATUS_FILTER_OPTIONS = [
 ] as const;
 
 export function DynamicsAdminPage({ standId, standName }: DynamicsAdminPageProps) {
-  const { dynamics, status, reload, create, update, toggleStatus, remove } = useDynamics(standId);
+  const { dynamics, status, error, reload, create, update, toggleStatus, remove } = useDynamics(standId);
   const toast = useToast();
   const busy = useBusyIds();
 
@@ -168,7 +168,11 @@ export function DynamicsAdminPage({ standId, standName }: DynamicsAdminPageProps
       {status === "loading" && <ListSkeleton label="Cargando dinámicas" />}
 
       {status === "error" && (
-        <ErrorState title="No pudimos cargar las dinámicas." description="Intenta nuevamente." onRetry={reload} />
+        <ErrorState
+          title="No pudimos cargar las dinámicas."
+          description={getErrorMessage(error, "Intenta nuevamente.")}
+          onRetry={reload}
+        />
       )}
 
       {status === "success" && dynamics.length === 0 && (

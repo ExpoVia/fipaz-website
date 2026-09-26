@@ -3,6 +3,7 @@
 import { SlidersHorizontal } from "lucide-react";
 
 import { Button, ErrorState, ListSkeleton, Modal, StatusBadge } from "@/components/admin";
+import { getErrorMessage } from "@/lib/api/service-error";
 import { formatDateTime, formatNumber } from "@/lib/format";
 import { getStockLevel } from "../adjustments";
 import {
@@ -48,7 +49,7 @@ function HistoryEntry({ entry }: { entry: InventoryAdjustment }) {
 }
 
 export function InventoryDetailModal({ item, onAdjust, onClose }: InventoryDetailModalProps) {
-  const { data, status, reload } = useInventoryDetail(item.id);
+  const { data, status, error, reload } = useInventoryDetail(item.id);
   const inventory = data?.inventory ?? item;
   const level = getStockLevel(inventory);
 
@@ -85,7 +86,11 @@ export function InventoryDetailModal({ item, onAdjust, onClose }: InventoryDetai
           <h3 className="mb-3 text-sm font-black text-[var(--expo-navy)]">Historial de ajustes</h3>
           {status === "loading" && <ListSkeleton label="Cargando historial" rows={3} />}
           {status === "error" && (
-            <ErrorState title="No pudimos cargar el historial." description="Intenta nuevamente." onRetry={reload} />
+            <ErrorState
+              title="No pudimos cargar el historial."
+              description={getErrorMessage(error, "Intenta nuevamente.")}
+              onRetry={reload}
+            />
           )}
           {status === "success" && data.history.length === 0 && (
             <p className="rounded-xl border-2 border-dashed border-[var(--expo-line)] p-4 text-center text-sm font-medium text-slate-600">

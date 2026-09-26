@@ -4,6 +4,7 @@ import { ArrowRight, Boxes, CalendarDays, Gift, Sparkles } from "lucide-react";
 
 import { AdminPageHeader } from "@/components/admin";
 import { adminRoutes } from "@/config/admin-routes";
+import { API_MODE } from "@/lib/api/config";
 import type { EventSummary, StandSummary } from "../admin-scope";
 
 interface ModuleLink {
@@ -98,10 +99,12 @@ export function AdminHome({ stand, event }: AdminHomeProps) {
         </section>
       </div>
 
-      <p className="mt-10 rounded-xl border-2 border-dashed border-[var(--expo-line)] bg-white p-4 text-sm font-medium text-slate-600">
-        Estás en modo demostración: los datos son simulados y se conservan solo durante esta sesión del navegador.
-        Puedes probar los estados de error y restablecer la información desde el menú lateral.
-      </p>
+      {API_MODE === "mock" && (
+        <p className="mt-10 rounded-xl border-2 border-dashed border-[var(--expo-line)] bg-white p-4 text-sm font-medium text-slate-600">
+          Estás en modo demostración: los datos son simulados y se conservan solo durante esta sesión del navegador.
+          Puedes probar los estados de error y restablecer la información desde el menú lateral.
+        </p>
+      )}
     </>
   );
 }

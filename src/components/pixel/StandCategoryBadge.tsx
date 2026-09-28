@@ -3,6 +3,7 @@ import type { StandCategory } from "@/types/demo";
 
 interface StandCategoryBadgeProps {
   category: StandCategory;
+  customCategory?: string;
   className?: string;
 }
 
@@ -12,9 +13,9 @@ const categoryById = new Map(categories.map((category) => [category.id, category
  * Badge de categoría para el catálogo de stands de la demo (`@/data/demo-data`).
  * No confundir con `CategoryBadge`, que usa el catálogo de misiones.
  */
-export function StandCategoryBadge({ category, className = "" }: StandCategoryBadgeProps) {
+export function StandCategoryBadge({ category, customCategory, className = "" }: StandCategoryBadgeProps) {
   const meta = categoryById.get(category);
-  const label = meta?.label ?? category;
+  const label = category === "other" && customCategory?.trim() ? customCategory : meta?.label ?? category;
   const color = meta?.colorToken ?? "var(--expo-navy)";
 
   return (

@@ -94,7 +94,7 @@ const MISSION_IMAGES: Record<string, string> = {
   "sabores-feria":      "/assets/missions/food.png",
   "agenda-activa":      "/assets/missions/education.png",
   "red-finanzas":       "/assets/missions/money.png",
-  "embajador-expovia":  "/assets/missions/redes-sociales.png",
+  "embajador-expovia":  "/assets/missions/redes sociales.png",
   "selfie-stand":       "/assets/missions/camara.png",
   "maestro-mapa":       "/assets/missions/ubicacion.png",
   "ruta-tecnologica":   "/assets/missions/startup.png",

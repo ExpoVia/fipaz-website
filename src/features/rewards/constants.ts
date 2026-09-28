@@ -46,7 +46,7 @@ export const REWARD_STATUS_OPTIONS = REWARD_STATUSES.map((value) => ({
  * pedir una URL) para no depender de dominios externos; con backend será una subida de archivo.
  */
 export const REWARD_IMAGE_PRESETS = [
-  { value: "/assets/rewards/backpack-removebg-preview.png", label: "Mochila" },
+  { value: "/assets/rewards/backpack.png", label: "Mochila" },
   { value: "/assets/rewards/tomatodo.png", label: "Tomatodo" },
   { value: "/assets/rewards/coffee.png", label: "Café" },
   { value: "/assets/rewards/poster.png", label: "Póster" },

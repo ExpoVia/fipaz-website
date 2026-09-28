@@ -6,6 +6,7 @@ import { Activity, Building2, ScanLine, Store, UsersRound, Zap } from "lucide-re
 import { categories, missions, zones } from "@/data/demo-data";
 import { panelCheckIns, panelLeads, panelPromotions } from "@/data/panel-mock";
 import { usePanelStore } from "@/store/panel-store";
+import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { StandCategoryBadge } from "@/components/pixel/StandCategoryBadge";
 import { MetricCard } from "./metric-card";
 import { PanelPageHeader } from "./panel-page-header";
@@ -42,7 +43,7 @@ function ExpositorOverview() {
         <div className="pixel-card mt-6 flex flex-col gap-2 p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-black text-[var(--expo-navy)]">{stand.name}</h2>
-            <StandCategoryBadge category={stand.category} />
+            <StandCategoryBadge category={stand.category} customCategory={stand.customCategory} />
           </div>
           <p className="text-sm text-slate-600">{stand.description}</p>
           <Link href="/panel/mi-stand" className="mt-2 text-sm font-bold text-[var(--expo-blue)] hover:underline">
@@ -95,6 +96,8 @@ function OrganizadorOverview() {
 export function PanelDashboardClient() {
   const activeRole = usePanelStore((state) => state.activeRole);
   const hasHydrated = usePanelStore((state) => state.hasHydrated);
-  if (!hasHydrated) return null;
-  return activeRole === "expositor" ? <ExpositorOverview /> : <OrganizadorOverview />;
+  const authHydrated = useCompanyAuthStore((state) => state.hasHydrated);
+  const companyAdmin = useCompanyAuthStore((state) => state.session?.role === "company_admin");
+  if (!hasHydrated || !authHydrated) return null;
+  return activeRole === "expositor" || companyAdmin ? <ExpositorOverview /> : <OrganizadorOverview />;
 }

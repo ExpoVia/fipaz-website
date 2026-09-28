@@ -7,11 +7,14 @@ import { DEFAULT_PANEL_ROLE, isPanelRole, type PanelRole } from "@/config/panel-
 import { stands } from "@/data/demo-data";
 import { MOCK_EXHIBITOR_STAND_ID } from "@/data/panel-mock";
 import { assignZoneForCategory, createCompanyId, generateBoothCode } from "@/lib/panel-forms";
-import type { CompanyProfileInput, CompanyRegistrationInput, ExhibitorProfile } from "@/types/panel";
+import type { CompanyProfileInput, CompanyRegistrationInput, ExhibitorProfile, QrToken } from "@/types/panel";
 
 function seedCompanies(): ExhibitorProfile[] {
-  // Copia propia: no debe mutar el catálogo estático que usa la demo del visitante.
   return stands.map((stand) => ({ ...stand }));
+}
+
+function generateQrId(): string {
+  return Math.random().toString(36).slice(2, 10).toUpperCase();
 }
 
 interface PanelStore {
@@ -19,10 +22,15 @@ interface PanelStore {
   activeCompanyId: string;
   companies: ExhibitorProfile[];
   hasHydrated: boolean;
+  /** Tokens QR activos/históricos — no se persisten (efímeros por diseño) */
+  qrTokens: QrToken[];
   setActiveRole: (role: PanelRole) => void;
   setHasHydrated: () => void;
-  registerCompany: (input: CompanyRegistrationInput) => string;
+  registerCompany: (input: CompanyRegistrationInput, serverId?: string) => string;
   updateCompany: (id: string, patch: CompanyProfileInput) => void;
+  generateQr: (standId: string, ttl: number, maxScans: number) => QrToken;
+  revokeQr: (qrId: string) => void;
+  expireQr: (qrId: string) => void;
 }
 
 export const usePanelStore = create<PanelStore>()(
@@ -32,15 +40,19 @@ export const usePanelStore = create<PanelStore>()(
       activeCompanyId: MOCK_EXHIBITOR_STAND_ID,
       companies: seedCompanies(),
       hasHydrated: false,
+      qrTokens: [],
+
       setActiveRole: (role) => set({ activeRole: role }),
       setHasHydrated: () => set({ hasHydrated: true }),
-      registerCompany: (input) => {
+
+      registerCompany: (input, serverId) => {
         const { companies } = get();
         const zone = assignZoneForCategory(input.category);
         const newCompany: ExhibitorProfile = {
-          id: createCompanyId(input.name, companies),
+          id: serverId ?? createCompanyId(input.name, companies),
           name: input.name,
           category: input.category,
+          customCategory: input.customCategory,
           description: input.description,
           zoneId: zone.id,
           boothCode: generateBoothCode(zone, companies),
@@ -57,6 +69,7 @@ export const usePanelStore = create<PanelStore>()(
         });
         return newCompany.id;
       },
+
       updateCompany: (id, patch) => {
         set({
           companies: get().companies.map((company) =>
@@ -65,13 +78,49 @@ export const usePanelStore = create<PanelStore>()(
                   ...company,
                   name: patch.name,
                   category: patch.category,
+                  customCategory: patch.customCategory,
                   description: patch.description,
                   contactEmail: patch.contactEmail,
+                  logoPath: patch.logoPath ?? company.logoPath,
+                  websiteUrl: patch.websiteUrl,
                   tags: patch.tags,
                   activity: patch.activity,
                   promotion: patch.promotion,
                 }
               : company,
+          ),
+        });
+      },
+
+      generateQr: (standId, ttl, maxScans) => {
+        const now = new Date();
+        const expiresAt = new Date(now.getTime() + ttl * 1000);
+        const token: QrToken = {
+          id: generateQrId(),
+          standId,
+          ttl,
+          maxScans,
+          scansUsed: 0,
+          createdAt: now.toISOString(),
+          expiresAt: expiresAt.toISOString(),
+          status: "active",
+        };
+        set({ qrTokens: [token, ...get().qrTokens] });
+        return token;
+      },
+
+      revokeQr: (qrId) => {
+        set({
+          qrTokens: get().qrTokens.map((t) =>
+            t.id === qrId ? { ...t, status: "revoked" } : t,
+          ),
+        });
+      },
+
+      expireQr: (qrId) => {
+        set({
+          qrTokens: get().qrTokens.map((t) =>
+            t.id === qrId ? { ...t, status: "expired" } : t,
           ),
         });
       },
@@ -82,6 +131,7 @@ export const usePanelStore = create<PanelStore>()(
         activeRole: state.activeRole,
         activeCompanyId: state.activeCompanyId,
         companies: state.companies,
+        // qrTokens excluido — son efímeros
       }),
       merge: (persisted, current) => {
         const data = persisted as Partial<PanelStore> | undefined;

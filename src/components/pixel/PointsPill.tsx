@@ -75,7 +75,6 @@ export function PointsPill({ points, className = "", size = "md" }: PointsPillPr
     <div
       className={`inline-flex items-center rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] font-black text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] ${sizeClasses[size]} ${className}`}
     >
-      <span aria-hidden="true">⭐</span>
       <span ref={displayRef} aria-label={`${points} puntos`}>
         {points}
       </span>

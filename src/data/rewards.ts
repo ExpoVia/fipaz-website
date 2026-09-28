@@ -27,7 +27,7 @@ export const REWARDS: Reward[] = [
     description:
       "El paquete del explorador: cuadernillo A5, lapicera y pin metálico de ExpoVia. Para los visitantes más dedicados de la feria.",
     cost: 500,
-    imagePath: "/assets/rewards/backpack-removebg-preview.png",
+    imagePath: "/assets/rewards/backpack.png",
     stockLabel: "Demo · Sin stock real",
     emoji: "🎒",
   },

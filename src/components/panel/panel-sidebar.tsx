@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { getPanelNavigationForRole, PANEL_NAVIGATION } from "@/config/panel-navigation";
 import { usePanelStore } from "@/store/panel-store";
 import { PanelNavList } from "./panel-nav-list";
+import { useCompanyAuthStore } from "@/store/company-auth-store";
 
 /**
  * Si alguien navega manualmente a una URL exclusiva del otro rol (ej. escribe
@@ -14,10 +15,20 @@ import { PanelNavList } from "./panel-nav-list";
  */
 function usePanelRoleSync() {
   const pathname = usePathname();
+  const router = useRouter();
+  const companySession = useCompanyAuthStore((state) => state.session);
   const activeRole = usePanelStore((state) => state.activeRole);
   const setActiveRole = usePanelStore((state) => state.setActiveRole);
 
   useEffect(() => {
+    if (companySession?.role === "company_admin") {
+      setActiveRole("expositor");
+      const owner = PANEL_NAVIGATION.find(
+        (item) => item.role === "organizador" && item.href !== "/panel" && pathname.startsWith(item.href),
+      );
+      if (owner) router.replace("/panel/mi-stand");
+      return;
+    }
     if (pathname === "/panel") return;
     const owner = PANEL_NAVIGATION.find(
       (item) => item.href !== "/panel" && pathname.startsWith(item.href),
@@ -25,13 +36,16 @@ function usePanelRoleSync() {
     if (owner && owner.role !== activeRole) {
       setActiveRole(owner.role);
     }
-  }, [pathname, activeRole, setActiveRole]);
+  }, [pathname, activeRole, setActiveRole, companySession?.role, router]);
 }
 
 export function PanelSidebar() {
   usePanelRoleSync();
   const activeRole = usePanelStore((state) => state.activeRole);
-  const items = getPanelNavigationForRole(activeRole);
+  const authHydrated = useCompanyAuthStore((state) => state.hasHydrated);
+  const sessionRole = useCompanyAuthStore((state) => state.session?.role);
+  const companyAdmin = !authHydrated || sessionRole === "company_admin";
+  const items = getPanelNavigationForRole(companyAdmin ? "expositor" : activeRole);
 
   return (
     <aside

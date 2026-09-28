@@ -53,6 +53,11 @@ export const categories: readonly Category[] = [
     label: "Startups",
     colorToken: "var(--expo-purple)",
   },
+  {
+    id: "other",
+    label: "Otro",
+    colorToken: "var(--expo-navy)",
+  },
 ] as const;
 
 // ─── Zonas ────────────────────────────────────────────────────────────────────

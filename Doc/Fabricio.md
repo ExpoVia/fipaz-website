@@ -62,12 +62,11 @@
 | Archivo | Premio | Licencia | Estado |
 |---|---|---|---|
 | `coffee.png` | Café de cortesía | Ilustración interna FIPAZ | ✅ OK |
-| `backpack-removebg-preview.png` | Kit Explorador | Foto con bg eliminado — **verificar origen** | ⚠️ Confirmar |
+| `backpack.png` | Kit Explorador | Foto con bg eliminado| ✅ OK |
 | `llavero.png` | Llavero coleccionable | Ilustración interna FIPAZ | ✅ OK |
 | `poster.png` | Póster digital FIPAZ | Diseño interno | ✅ OK |
 | `ticket.png` | Sticker ExpoVia | Diseño interno | ✅ OK |
-| `tomatodo.png` | Tomatodo ExpoVia | Foto de producto — **verificar derechos** | ⚠️ Confirmar |
-| `reward-items.jpg` | (Genérico — ya no se usa) | — | 🗑️ Deprecado |
+| `tomatodo.png` | Tomatodo ExpoVia | Foto de producto | ✅ OK |
 
 #### Misiones (`/public/assets/missions/`)
 
@@ -84,17 +83,6 @@
 | `startup.png` | Ruta Tecnológica + Galaxia Startups | Ilustración interna | ✅ Implementada |
 
 > **Nota técnica:** El archivo `redes sociales.png` fue renombrado a `redes-sociales.png` para evitar problemas de codificación URL en producción.
-
-#### Assets faltantes (pendiente de producir)
-
-| Asset | Uso | Prioridad |
-|---|---|---|
-| Logo ExpoVia SVG | Header web, app shell, emails | 🔴 Alta |
-| Iconos de stands reales (por empresa) | StandCard avatars | 🟡 Media |
-| Mapa base de la feria (SVG/PNG) | Módulo de mapa interactivo (Franco) | 🟡 Media |
-| Ilustración estado vacío "sin puntos" | RewardsScreen estado 0 pts | 🟢 Baja |
-
----
 
 ### Animaciones implementadas
 
@@ -140,19 +128,21 @@ const floatTransition: Transition = {
 | **Empresa/Expositor** | Editar perfil, gestionar oferta, ver visitas | Perfil empresa, Métricas stand |
 | **Gestor de stand** | Actualizar actividad del día, confirmar canjes | Panel stand (mobile-first) |
 
-### Mapa de navegación B2B (propuesta)
+### Mapa de navegación B2B
 
 ```
-/panel
-├── /dashboard              ← solo organizador
-├── /empresas
-│   ├── /lista              ← tabla filtrable (organizador/staff)
-│   └── /[id]/editar        ← formulario empresa
-├── /stands
-│   ├── /lista              ← mapa + lista
-│   └── /[id]               ← detalle + actividad
-├── /canjes/validar         ← escáner QR móvil
-└── /metricas               ← analytics básico
+src/app//panel/
+├── /eventos            ← Gestión de eventos
+├── /expositores        ← Lista y registro de empresas / expositores
+├── /gamificacion       ← Misiones y configuración de premios
+├── /mapa-evento        ← Vista y edición del mapa de la feria
+├── /metricas-evento    ← Analíticas globales de la feria
+├── /metricas-stand     ← Analíticas individuales por stand
+├── /mi-stand           ← Perfil B2B, datos de la empresa e info del stand
+├── /promociones        ← Ofertas y promociones del expositor
+├── /prospectos         ← Captura de leads / contactos de la empresa
+├── /visitas            ← Registro y escáner de visitas recibidas
+└── /zonas-categorias   ← Configuración de áreas de la feria
 ```
 
 ### Preguntas pendientes para Jhamil y Erick
@@ -171,7 +161,7 @@ const floatTransition: Transition = {
 | Campo | Tipo | Req. | Validación | Visibilidad |
 |---|---|---|---|---|
 | Nombre legal | text | ✅ | ≤120 chars, único | Público |
-| NIT/RUC | text | ✅ | Formato boliviano | Solo FIPAZ |
+| NIT | text | ✅ | 8 a 12 dígitos numéricos (Formato NIT) | Solo FIPAZ / Interno |
 | Rubro/Categoría | select | ✅ | Lista cerrada | Público |
 | Logo | image | ✅ | PNG/JPG ≤2MB, ≥200×200px | Público |
 | Descripción corta | textarea | ✅ | ≤280 chars | Público |
@@ -203,6 +193,7 @@ borrador → pendiente_verificación → publicado
 - Email visible para visitantes → consentimiento explícito (ley boliviana de protección de datos)
 - Teléfono → consentimiento explícito
 - Leads generados en stand → aviso de privacidad + responsable de datos
+- **Aceptación de Términos y Ley de Protección de Datos:** Checkbox obligatorio en el formulario (`acepta_terminos_datos: boolean`) conforme a la normativa legal boliviana para el tratamiento de datos personales y comerciales.
 
 > **Importante:** FIPAZ debe validar el texto del checkbox con asesoría legal antes de activar la captura de leads en producción.
 

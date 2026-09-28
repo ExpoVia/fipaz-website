@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Building2, Pencil, QrCode } from "lucide-react";
 
 import { zones } from "@/data/demo-data";
 import { usePanelStore } from "@/store/panel-store";
@@ -44,17 +44,27 @@ export function MiStandView() {
 
       <div className="pixel-card flex flex-col gap-4 p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-black text-[var(--expo-navy)]">{stand.name}</h2>
-            <p className="mt-1 font-mono text-xs font-bold text-slate-500">
-              Stand {stand.boothCode} · {zone?.name ?? stand.zoneId}
-            </p>
-            {stand.contactEmail && (
-              <p className="mt-0.5 font-mono text-xs text-slate-400">{stand.contactEmail}</p>
-            )}
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-xl border-2 border-[var(--expo-line)] bg-[var(--expo-bg)]">
+              {stand.logoPath.startsWith("/") || stand.logoPath.startsWith("data:image/") || stand.logoPath.startsWith("http") ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={stand.logoPath} alt={`Logo de ${stand.name}`} className="h-full w-full object-contain p-1" />
+              ) : (
+                <Building2 aria-hidden="true" size={26} className="text-slate-300" />
+              )}
+            </div>
+            <div className="min-w-0">
+              <h2 className="truncate text-xl font-black text-[var(--expo-navy)]">{stand.name}</h2>
+              <p className="mt-1 font-mono text-xs font-bold text-slate-500">
+                Stand {stand.boothCode} · {zone?.name ?? stand.zoneId}
+              </p>
+              {stand.contactEmail && (
+                <p className="mt-0.5 font-mono text-xs text-slate-400">{stand.contactEmail}</p>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2">
-            <StandCategoryBadge category={stand.category} />
+            <StandCategoryBadge category={stand.category} customCategory={stand.customCategory} />
             <PointsPill points={stand.points} size="sm" />
           </div>
         </div>
@@ -88,13 +98,22 @@ export function MiStandView() {
           </div>
         )}
 
-        <Link
-          href="/panel/mi-stand/editar"
-          className="mt-2 inline-flex w-fit items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-blue)] px-4 py-2 text-sm font-black text-white shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5"
-        >
-          <Pencil className="h-4 w-4" />
-          Editar perfil
-        </Link>
+        <div className="mt-2 flex flex-wrap gap-3">
+          <Link
+            href="/panel/mi-stand/editar"
+            className="inline-flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-blue)] px-4 py-2 text-sm font-black text-white shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5"
+          >
+            <Pencil className="h-4 w-4" />
+            Editar perfil
+          </Link>
+          <Link
+            href="/panel/mi-stand/qr"
+            className="inline-flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-white px-4 py-2 text-sm font-black text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5"
+          >
+            <QrCode className="h-4 w-4" />
+            Gestionar QR
+          </Link>
+        </div>
       </div>
     </>
   );

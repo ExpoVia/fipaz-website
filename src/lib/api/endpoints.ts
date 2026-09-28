@@ -49,4 +49,8 @@ export const API_ENDPOINTS = {
     participantAttendance: (activityId: string, participantId: string) =>
       `/activities/${encodeURIComponent(activityId)}/attendance/${encodeURIComponent(participantId)}`,
   },
+  checkIns: {
+    /** POST — propuesta. body: { method: "qr" | "nfc" | "manual", credential } */
+    byStand: (standId: string) => `/stands/${encodeURIComponent(standId)}/check-ins`,
+  },
 } as const;

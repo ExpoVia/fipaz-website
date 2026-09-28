@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, Boxes, CalendarDays, Gift, Sparkles } from "lucide-react";
+import { ArrowRight, Boxes, CalendarDays, Gift, ScanLine, Sparkles } from "lucide-react";
 
 import { AdminPageHeader } from "@/components/admin";
 import { adminRoutes } from "@/config/admin-routes";
@@ -72,6 +72,12 @@ export function AdminHome({ stand, event }: AdminHomeProps) {
               description="Agenda de talleres y charlas, cupos y confirmación de asistentes."
               href={adminRoutes.activities(stand.id)}
               icon={CalendarDays}
+            />
+            <ModuleCard
+              title="Escáner QR"
+              description="Escanea el QR de cada visitante para confirmar su presencia y sumar puntos."
+              href={adminRoutes.scan(stand.id)}
+              icon={ScanLine}
             />
           </div>
         </section>

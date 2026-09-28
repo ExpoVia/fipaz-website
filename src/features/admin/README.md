@@ -1,8 +1,9 @@
 # Módulo de administración (`/admin`)
 
-Panel para que una empresa gestione **dinámicas**, **premios**, **inventario**, **actividades** y
-**asistencia**. Por defecto funciona con **datos simulados**; con `NEXT_PUBLIC_API_MODE=http` llama al
-backend (`fexpo-backend`). Ver [Conexión con el backend](#conexión-con-el-backend).
+Panel para que una empresa gestione **dinámicas**, **premios**, **inventario**, **actividades**,
+**asistencia** y el **escáner de check-in** de su stand. Por defecto funciona con **datos
+simulados**; con `NEXT_PUBLIC_API_MODE=http` llama al backend (`fexpo-backend`). Ver
+[Conexión con el backend](#conexión-con-el-backend).
 
 ## Rutas
 
@@ -11,6 +12,7 @@ backend (`fexpo-backend`). Ver [Conexión con el backend](#conexión-con-el-back
 | `/admin` | Resumen: accesos por stand y por evento |
 | `/admin/stands/:standId/dynamics` | Dinámicas del stand |
 | `/admin/stands/:standId/activities` | Actividades del stand |
+| `/admin/stands/:standId/scan` | Escáner de QR de visitantes (check-in con la cámara del operador) |
 | `/admin/activities/:activityId/attendance` | Asistencia (`?status=registered\|present\|absent\|cancelled`) |
 | `/admin/events/:eventId/rewards` | Catálogo de premios |
 | `/admin/events/:eventId/inventory` | Inventario (`?reward=:rewardId` filtra por premio) |
@@ -36,7 +38,7 @@ datos simulados en memoria           (misma interfaz, mismos tipos)
 Regla: **los componentes nunca importan `*.mock.ts`, `lib/mock` ni `lib/api`**. Solo hablan con el
 servicio a través de un hook.
 
-Cada feature (`dynamics`, `rewards`, `inventory`, `activities`) tiene:
+Cada feature (`dynamics`, `rewards`, `inventory`, `activities`, `check-ins`) tiene:
 
 - `types.ts` — entidades, inputs y la interfaz del servicio (`DynamicsService`, …).
 - `constants.ts` — etiquetas en español, opciones de selects y límites de validación.
@@ -139,6 +141,7 @@ PUT    /activities/:activityId                         editar
 POST   /activities/:activityId/cancel                  cancelar
 GET    /activities/:activityId/attendance              participantes
 PUT    /activities/:activityId/attendance/:participantId   { status: "present" | "absent" | "pending" }
+POST   /stands/:standId/check-ins                      { method: "qr" | "nfc" | "manual", credential }
 ```
 
 ### Contratos que el backend debe respetar
@@ -157,6 +160,13 @@ PUT    /activities/:activityId/attendance/:participantId   { status: "present" |
   al cambiar la asistencia la respuesta devuelve `{ record, activity }` con contadores al día.
   La capacidad no puede quedar por debajo de los registrados (422). Con la actividad cancelada,
   cambiar asistencia responde 409.
+- **Check-ins:** `POST /stands/:standId/check-ins` valida el token del QR del visitante (`credential`) y
+  responde con el check-in y sus puntos. Si el visitante ya registró presencia hoy en ese stand, el
+  backend **no debe responder con error**: debe devolver 200/201 con el check-in existente y
+  `status: "duplicate"`, para que el panel muestre un aviso amigable en vez de un error rojo (ver
+  criterios de aceptación de la tarjeta). Rechazos con `code`: `QR_INVALID` (token inexistente o mal
+  formado), `QR_EXPIRED` (token vencido), `PARTICIPANT_NOT_ACTIVE` (inscripción cancelada o visitante
+  suspendido) y `STAND_NOT_ACTIVE`; `lib/api/http-client.ts` ya los traduce a mensajes en español.
 - Fechas: `date` es `YYYY-MM-DD` y `startTime`/`endTime` son `HH:mm` (sin zona horaria). El resto son ISO 8601.
 
 ## Modo demostración (`NEXT_PUBLIC_API_MODE=mock`, por defecto)
@@ -167,3 +177,17 @@ En modo `http` estas herramientas y el aviso de la pantalla de inicio no se mues
 - En el menú lateral: **Simular error del servidor** (fuerza el estado de error de todas las pantallas)
   y **Restablecer datos**.
 - Cada llamada simulada tarda 250–550 ms para que se vean los estados de carga.
+- **Escáner QR:** no hay un backend real emitiendo tokens, así que `features/check-ins/check-ins.mock.ts`
+  trae un directorio de credenciales de prueba (p. ej. `FIPAZ-VISITANTE-4821`). Genera un QR con ese
+  texto (cualquier generador sirve) para probar la cámara de punta a punta, o pégalo en el campo
+  manual de la pantalla. `QR-EXPIRADO` y `QR-STAND-INACTIVO` fuerzan esos errores a propósito.
+
+## Escáner de check-in (`/admin/stands/:standId/scan`)
+
+Usa `@zxing/browser` (`BrowserQRCodeReader`) para leer el QR con la cámara del dispositivo del
+operador (prioriza la trasera vía `facingMode: "environment"`) en modo continuo: no hay que recargar
+ni reabrir la cámara entre visitantes. `features/check-ins/hooks/use-qr-scanner.ts` solo captura el
+texto del QR; `features/check-ins/hooks/use-check-in-scanner.ts` decide qué hacer con él (deduplica
+lecturas repetidas del mismo QR en menos de un segundo, evita envíos simultáneos y lleva el contador
+de check-ins de la sesión). Requiere permiso de cámara del navegador (HTTPS o `localhost`); sin
+cámara disponible, el campo de código manual cubre el mismo flujo.

@@ -93,7 +93,7 @@ export function ProfileScreen({ onNavigate }: FeatureScreenProps) {
 
         {/* Badge de simulación */}
         <span className="rounded-full border border-[var(--expo-lilac)] bg-[color-mix(in_srgb,var(--expo-lilac)_15%,white)] px-3 py-0.5 text-xs font-bold text-[var(--expo-purple)]">
-          Datos simulados
+          Datos de demostración
         </span>
       </header>
 
@@ -103,6 +103,9 @@ export function ProfileScreen({ onNavigate }: FeatureScreenProps) {
         level={level}
         visitedCount={visitedStandIds.length}
       />
+      <p className="-mt-3 text-center text-xs font-medium text-slate-600">
+        Puntos, nivel y visitas son datos de demostración.
+      </p>
 
       {/* Historial de visitas */}
       <div>
@@ -110,6 +113,7 @@ export function ProfileScreen({ onNavigate }: FeatureScreenProps) {
           <History size={15} className="text-[var(--expo-blue)]" aria-hidden="true" />
           Visitas recientes
         </h2>
+        <p className="mb-2 text-xs text-slate-600">Historial de visitas de demostración.</p>
         <RecentVisits visits={recentVisits} />
       </div>
 

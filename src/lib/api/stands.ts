@@ -13,6 +13,52 @@ export class StandsApiError extends Error {
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || isString(value);
+}
+
+function isStandResponseDto(value: unknown): value is StandResponseDto {
+  if (!isRecord(value) || !isRecord(value.company)) return false;
+
+  const categoriesAreValid = Array.isArray(value.categories)
+    && value.categories.every((category) =>
+      isRecord(category)
+      && isString(category.id)
+      && isString(category.slug)
+      && isString(category.label),
+    );
+  const locationIsValid = value.location === null
+    || (isRecord(value.location)
+      && isString(value.location.floorId)
+      && (value.location.zoneId === null || isString(value.location.zoneId))
+      && typeof value.location.x === "number"
+      && Number.isFinite(value.location.x)
+      && typeof value.location.y === "number"
+      && Number.isFinite(value.location.y));
+
+  return isString(value.id)
+    && isString(value.boothCode)
+    && isString(value.displayName)
+    && isNullableString(value.description)
+    && isString(value.company.id)
+    && isString(value.company.displayName)
+    && categoriesAreValid
+    && Array.isArray(value.tags)
+    && value.tags.every(isString)
+    && typeof value.featured === "boolean"
+    && isNullableString(value.activityHighlight)
+    && isNullableString(value.promotionHighlight)
+    && locationIsValid;
+}
+
 function parseList(payload: unknown, query: ListStandsQueryDto): StandListResponseDto {
   const root = payload as Record<string, unknown> | null;
   const data = root?.data as Record<string, unknown> | StandListItemDto[] | undefined;
@@ -72,8 +118,12 @@ export async function getStandById(standId: string): Promise<StandResponseDto> {
     throw new StandsApiError("No se pudo conectar con el servicio de stands.");
   }
   const payload = await readResponse<unknown>(response);
-  const root = payload as { data?: StandResponseDto | { stand?: StandResponseDto }; stand?: StandResponseDto } | null;
-  const detail = root?.data ?? root?.stand ?? payload;
-  if (detail && typeof detail === "object" && "stand" in detail && detail.stand) return detail.stand;
-  return detail as StandResponseDto;
+  const root = isRecord(payload) ? payload : null;
+  const data = root?.data;
+  const nestedData = isRecord(data) && "stand" in data ? data.stand : data;
+  const detail = root?.stand ?? nestedData ?? payload;
+  if (!isStandResponseDto(detail)) {
+    throw new StandsApiError("El servicio devolvió un detalle de stand incompleto o inválido.");
+  }
+  return detail;
 }

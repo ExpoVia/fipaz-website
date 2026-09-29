@@ -101,7 +101,7 @@ export function StandDetailScreen({ standId, onClose, onNavigate }: StandDetailS
               <h1 className="mt-2 text-2xl font-black leading-tight">{stand.name}</h1>
               <p className="mt-1 flex items-center gap-1 text-sm font-bold opacity-80">
                 <MapPin size={13} aria-hidden="true" />
-                {stand.boothCode} · {zone?.name ?? "Zona sin asignar"}
+                {stand.block ? `Bloque ${stand.block} · ` : ""}{stand.boothCode} · {zone?.name ?? "Zona sin asignar"}
               </p>
             </div>
             <PointsPill points={stand.points} size="sm" />

@@ -260,7 +260,7 @@ export const useDemoStore = create<DemoStore>()(
             return { nfcStage: "duplicate" };
           }
 
-          const points = state.points + stand.points;
+          const points = state.points + VISIT_POINTS;
           const gamification = progressMissionsForVisit(
             state,
             standId,

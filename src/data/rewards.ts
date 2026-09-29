@@ -5,7 +5,7 @@ export const REWARDS: Reward[] = [
     id: "sticker-expovia",
     title: "Sticker ExpoVia",
     description:
-      'Sticker coleccionable edición especial "La Paz Expone". Diseño pixel-art exclusivo de esta edición. Ideal para tu laptop o cuaderno.',
+      'Propuesta: sticker coleccionable de ExpoVia con diseño pixel-art para laptop o cuaderno.',
     cost: 100,
     imagePath: "/assets/rewards/ticket.png",
     stockLabel: "Demo · Sin stock real",
@@ -15,7 +15,7 @@ export const REWARDS: Reward[] = [
     id: "cafe-cortesia",
     title: "Café de cortesía",
     description:
-      "Un café gratis en el patio de la feria. Presenta tu código en el puesto de bebidas y disfruta tu merecido descanso entre stands.",
+      "Propuesta de cortesía de café durante la feria. La disponibilidad y las condiciones se definirían con la organización.",
     cost: 200,
     imagePath: "/assets/rewards/coffee.png",
     stockLabel: "Demo · Sin stock real",
@@ -25,7 +25,7 @@ export const REWARDS: Reward[] = [
     id: "kit-explorador",
     title: "Kit Explorador",
     description:
-      "El paquete del explorador: cuadernillo A5, lapicera y pin metálico de ExpoVia. Para los visitantes más dedicados de la feria.",
+      "Propuesta de kit para visitantes: cuadernillo, lapicera y pin de ExpoVia.",
     cost: 500,
     imagePath: "/assets/rewards/backpack.png",
     stockLabel: "Demo · Sin stock real",
@@ -35,7 +35,7 @@ export const REWARDS: Reward[] = [
     id: "tomatodo-expovia",
     title: "Tomatodo ExpoVia",
     description:
-      "Termo/tomatodo con el logo de La Paz Expone 2026. Acompáñate durante toda la feria con tu bebida favorita.",
+      "Propuesta de tomatodo con identidad ExpoVia.",
     cost: 350,
     imagePath: "/assets/rewards/tomatodo.png",
     stockLabel: "Demo · Sin stock real",
@@ -45,7 +45,7 @@ export const REWARDS: Reward[] = [
     id: "llavero-coleccionable",
     title: "Llavero coleccionable",
     description:
-      "Llavero pixel-art en forma de estrella de La Paz Expone. Cada edición tiene un diseño diferente — ¡este es el de 2026!",
+      "Propuesta de llavero pixel-art en forma de estrella ExpoVia.",
     cost: 150,
     imagePath: "/assets/rewards/llavero.png",
     stockLabel: "Demo · Sin stock real",
@@ -55,7 +55,7 @@ export const REWARDS: Reward[] = [
     id: "poster-digital",
     title: "Póster digital FIPAZ",
     description:
-      "Un póster personalizado generado con los stands que visitaste. Descárgalo, compártelo y muestra tu recorrido en la feria.",
+      "Propuesta de póster digital que podría personalizarse con los stands visitados.",
     cost: 250,
     imagePath: "/assets/rewards/poster.png",
     stockLabel: "Demo · Sin stock real",

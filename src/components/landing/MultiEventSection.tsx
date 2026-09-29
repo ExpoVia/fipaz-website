@@ -4,12 +4,13 @@ import React from "react";
 import { motion } from "motion/react";
 import { PixelStar } from "./PixelIcons";
 import { Globe, MapPin } from "lucide-react";
+import { DEMO_FIXTURE } from "@/data/demo-fixture";
 
 export function MultiEventSection() {
   const events = [
     {
-      name: "FIPAZ 2026",
-      location: "La Paz, Bolivia",
+      name: DEMO_FIXTURE.event.name,
+      location: `${DEMO_FIXTURE.event.city} · ${DEMO_FIXTURE.event.venueStatus.toLowerCase()}`,
       status: "EDICIÓN ACTUAL",
       statusColor: "bg-[var(--expo-yellow)] text-[var(--expo-navy)]",
       desc: "Feria Internacional de La Paz. Plataforma de prueba y desarrollo conceptual.",

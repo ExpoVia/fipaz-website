@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 
 import { MISSIONS, getMissionById, STAND_NAMES } from "@/data/missions";
+import { DEMO_FIXTURE } from "@/data/demo-fixture";
 import { useDemoStore } from "@/store/demo-store";
 import { CategoryBadge } from "@/components/pixel/CategoryBadge";
 import { ProgressBar } from "@/components/pixel/ProgressBar";
@@ -119,12 +120,16 @@ interface NfcSimOverlayProps {
 }
 
 function NfcSimOverlay({ standId, standName, onDone }: NfcSimOverlayProps) {
-  const [stage, setStage] = useState<"scanning" | "detected" | "success">("scanning");
+  const [stage, setStage] = useState<"scanning" | "detected" | "success" | "duplicate">("scanning");
   const { visitStand, points } = useDemoStore();
 
   useEffect(() => {
     const t1 = setTimeout(() => setStage("detected"), 1400);
     const t2 = setTimeout(() => {
+      if (useDemoStore.getState().visitedStandIds.includes(standId)) {
+        setStage("duplicate");
+        return;
+      }
       visitStand(standId, standName);
       setStage("success");
     }, 2100);
@@ -217,14 +222,15 @@ function NfcSimOverlay({ standId, standName, onDone }: NfcSimOverlayProps) {
               <p className="text-2xl font-black text-white">Visita registrada</p>
               <p className="mt-1 text-sm text-white/60">{standName}</p>
             </div>
+            <span className="rounded-full border border-white/70 bg-white px-3 py-1 text-xs font-bold text-[var(--expo-navy)]">Datos de demostración</span>
 
             {/* Points gained */}
             <div className="flex items-center gap-2 rounded-xl border-2 border-[var(--expo-yellow)] bg-[var(--expo-yellow)]/20 px-4 py-2">
               <TrendingUp size={16} className="text-[var(--expo-yellow)]" aria-hidden="true" />
-              <span className="font-black text-[var(--expo-yellow)]">+50 puntos</span>
+              <span className="font-black text-[var(--expo-yellow)]">+{DEMO_FIXTURE.points.perNewVisit} puntos</span>
             </div>
 
-            <PointsPill points={points + 50} size="lg" />
+            <PointsPill points={points} size="lg" />
 
             <button
               onClick={onDone}
@@ -232,6 +238,20 @@ function NfcSimOverlay({ standId, standName, onDone }: NfcSimOverlayProps) {
             >
               Continuar recorrido
             </button>
+          </motion.div>
+        )}
+
+        {stage === "duplicate" && (
+          <motion.div key="duplicate" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-5">
+            <span className="flex size-20 items-center justify-center rounded-2xl border-2 border-[var(--expo-yellow)] bg-[var(--expo-yellow)]/20">
+              <CheckCircle2 size={40} className="text-[var(--expo-yellow)]" aria-hidden="true" />
+            </span>
+            <div>
+              <p className="text-2xl font-black text-white">Visita ya registrada</p>
+              <p className="mt-1 text-sm text-white/70">{standName} · 0 puntos adicionales</p>
+            </div>
+            <span className="rounded-full border border-white/70 bg-white px-3 py-1 text-xs font-bold text-[var(--expo-navy)]">Datos de demostración</span>
+            <button onClick={onDone} className="rounded-2xl border-2 border-[var(--expo-blue)] bg-[var(--expo-blue)] px-8 py-3 font-black text-white">Continuar recorrido</button>
           </motion.div>
         )}
 
@@ -315,12 +335,13 @@ function SelfieOverlay({ onDone }: { onDone: () => void }) {
             </span>
             <div>
               <p className="text-2xl font-black text-white">Foto registrada</p>
-              <p className="mt-1 text-sm text-white/50">Demo conceptual · sin almacenamiento real</p>
+              <p className="mt-1 text-sm text-white/70">Datos de demostración · sin almacenamiento real</p>
             </div>
             <div className="flex items-center gap-2 rounded-xl border-2 border-[var(--expo-yellow)] bg-[var(--expo-yellow)]/20 px-4 py-2">
               <TrendingUp size={16} className="text-[var(--expo-yellow)]" aria-hidden="true" />
               <span className="font-black text-[var(--expo-yellow)]">+75 puntos</span>
             </div>
+            <span className="rounded-full border border-white/70 bg-white px-3 py-1 text-xs font-bold text-[var(--expo-navy)]">Datos de demostración</span>
             <button
               onClick={onDone}
               className="mt-2 rounded-2xl border-2 border-[var(--expo-blue)] bg-[var(--expo-blue)] px-8 py-3 font-black text-white shadow-[4px_4px_0_rgba(0,0,0,0.4)] transition-transform active:scale-95"
@@ -358,7 +379,7 @@ function ShareOverlay({ points, onDone }: { points: number; onDone: () => void }
               Comparte tu pasaporte
             </h2>
             <p className="mt-1 text-center text-xs text-slate-500">
-              Demo conceptual · los botones no abren redes reales
+              Datos de demostración · los botones no abren redes reales
             </p>
 
             {/* Passport preview */}
@@ -369,7 +390,7 @@ function ShareOverlay({ points, onDone }: { points: number; onDone: () => void }
                 </span>
                 <div>
                   <p className="font-black text-[var(--expo-navy)]">Pasaporte ExpoVia</p>
-                  <p className="text-xs text-slate-500">La Paz Expone 2026 · {points} pts</p>
+              <p className="text-xs text-slate-600">FIPAZ 2026 · {points} pts (demo)</p>
                 </div>
               </div>
               <div className="mt-3 flex gap-2">
@@ -409,12 +430,13 @@ function ShareOverlay({ points, onDone }: { points: number; onDone: () => void }
             </span>
             <p className="text-xl font-black text-[var(--expo-navy)]">Compartido</p>
             <p className="text-center text-sm text-slate-500">
-              Demo conceptual · ningún post fue publicado realmente
+              Datos de demostración · ningún post fue publicado realmente
             </p>
             <div className="flex items-center gap-2 rounded-xl border-2 border-[var(--expo-yellow)] bg-[#fff8e1] px-4 py-2">
               <TrendingUp size={16} className="text-[var(--expo-yellow)]" aria-hidden="true" />
               <span className="font-black text-[var(--expo-navy)]">+100 puntos</span>
             </div>
+            <span className="rounded-full border border-[var(--expo-line)] bg-white px-3 py-1 text-xs font-bold text-[var(--expo-navy)]">Datos de demostración</span>
             <button
               onClick={onDone}
               className="mt-2 rounded-2xl border-2 border-[var(--expo-navy)] bg-[var(--expo-navy)] px-8 py-3 font-black text-white shadow-[4px_4px_0_var(--expo-blue)] transition-transform active:scale-95"
@@ -581,7 +603,9 @@ function MissionCard({
           {/* Points + progress count + chevron */}
           <div className="flex shrink-0 flex-col items-end gap-1">
             <span className="rounded border border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-2 py-0.5 text-xs font-black text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)]">
-              +{mission.rewardPoints} pts
+              {mission.standIds?.length
+                ? mission.id === "explorador-expovia" ? `${DEMO_FIXTURE.points.perNewVisit} pts por visita` : "Visitas de ejemplo"
+                : `+${mission.rewardPoints} pts`}
             </span>
             {!isLocked && !mission.specialAction && (
               <span className="text-[0.65rem] font-bold tabular-nums text-slate-400">
@@ -623,20 +647,25 @@ function MissionCard({
 
                 {/* Stand list with per-stand simulate button */}
                 {hasStands && (
-                  <div className="grid gap-2">
-                    {mission.standIds!.map((standId) => {
+                  <div
+                    className="overflow-x-auto pb-2 [scrollbar-color:var(--expo-blue)_var(--expo-bg)] [scrollbar-width:thin]"
+                    role="region"
+                    aria-label="Lista de stands de la misión. Desliza horizontalmente para ver las acciones."
+                  >
+                    <div className="grid min-w-[420px] gap-2 pr-1">
+                      {mission.standIds!.map((standId) => {
                       const visited = visitedStandIds.includes(standId);
                       const label = STAND_NAMES[standId] ?? standId;
                       return (
                         <div
                           key={standId}
-                          className={`flex items-center justify-between rounded-xl border px-3 py-2 text-sm ${
+                          className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-sm ${
                             visited
                               ? "border-[var(--expo-mint)] bg-[var(--expo-mint)]/20"
                               : "border-[var(--expo-line)] bg-[var(--expo-bg)]"
                           }`}
                         >
-                          <div className="flex items-center gap-2 min-w-0">
+                          <div className="flex min-w-0 items-center gap-2">
                             {visited ? (
                               <CheckCircle2 size={14} className="shrink-0 text-[var(--expo-green)]" strokeWidth={2.5} aria-hidden="true" />
                             ) : (
@@ -647,17 +676,17 @@ function MissionCard({
                             </span>
                           </div>
                           {!visited ? (
-                            <div className="flex shrink-0 gap-1.5 ml-2">
+                            <div className="ml-2 flex shrink-0 gap-2">
                               <button
                                 onClick={onNavigateToMap}
-                                className="flex items-center gap-1 rounded-lg border border-[var(--expo-navy)] bg-white px-2 py-1 text-xs font-bold text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)] transition-transform active:scale-95"
+                                className="flex items-center gap-1 whitespace-nowrap rounded-lg border border-[var(--expo-navy)] bg-white px-2 py-1 text-xs font-bold text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)] transition-transform active:scale-95"
                               >
                                 <MapPin size={10} strokeWidth={2.5} aria-hidden="true" />
                                 Ubicar
                               </button>
                               <button
                                 onClick={() => setNfcTarget({ id: standId, name: label })}
-                                className="flex items-center gap-1 rounded-lg border border-[var(--expo-blue)] bg-[var(--expo-blue)] px-2 py-1 text-xs font-bold text-white shadow-[2px_2px_0_var(--expo-navy)] transition-transform active:scale-95"
+                                className="flex items-center gap-1 whitespace-nowrap rounded-lg border border-[var(--expo-blue)] bg-[var(--expo-blue)] px-2 py-1 text-xs font-bold text-white shadow-[2px_2px_0_var(--expo-navy)] transition-transform active:scale-95"
                               >
                                 <ScanLine size={10} strokeWidth={2.5} aria-hidden="true" />
                                 Simular
@@ -670,7 +699,8 @@ function MissionCard({
                           )}
                         </div>
                       );
-                    })}
+                      })}
+                    </div>
                   </div>
                 )}
 
@@ -718,7 +748,9 @@ function MissionCard({
                   >
                     <Gift size={14} className="text-[var(--expo-yellow)]" strokeWidth={2.5} aria-hidden="true" />
                     <span className="text-xs font-black text-[var(--expo-navy)]">
-                      +{mission.rewardPoints} puntos ganados
+                      {mission.standIds?.length
+                        ? "Misión completada · puntos por visita ya contabilizados"
+                        : `+${mission.rewardPoints} puntos ganados`}
                     </span>
                   </motion.div>
                 )}
@@ -775,10 +807,10 @@ export function MissionsScreen({ onNavigateToMap }: MissionsScreenProps) {
 
         <div className="relative flex items-start justify-between gap-4">
           <div>
-            <p className="pixel-label opacity-75">La Paz Expone 2026</p>
+            <p className="pixel-label opacity-75">FIPAZ 2026 · Fechas sujetas a confirmación</p>
             <h1 className="mt-2 text-2xl font-black leading-tight">Misiones</h1>
             <p className="mt-2 max-w-xs text-sm font-medium leading-6 opacity-80">
-              Completa y gana puntos canjeables
+              Completa misiones de ejemplo y observa cómo cambia tu progreso.
             </p>
           </div>
           <PointsPill points={points} />
@@ -807,7 +839,7 @@ export function MissionsScreen({ onNavigateToMap }: MissionsScreenProps) {
           <ScanLine size={14} className="text-white" strokeWidth={2.5} />
         </span>
         <p className="text-xs text-slate-500">
-          <strong className="text-[var(--expo-navy)]">Demo conceptual</strong> · Presiona{" "}
+          <strong className="text-[var(--expo-navy)]">Datos de demostración</strong> · Los puntos y el progreso son ilustrativos. Presiona{" "}
           <strong>Simular</strong> en cada stand para ver cómo sube la barra de progreso.
         </p>
       </div>

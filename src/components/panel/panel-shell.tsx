@@ -8,6 +8,7 @@ import { PanelNavbar } from "./panel-navbar";
 import { PanelSidebar } from "./panel-sidebar";
 import { PANEL_NAVIGATION } from "@/config/panel-navigation";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
+import { Info } from "lucide-react";
 
 interface PanelShellProps {
   children: ReactNode;
@@ -40,7 +41,15 @@ export function PanelShell({ children }: PanelShellProps) {
               <div className="flex min-h-[35vh] items-center justify-center text-sm font-bold text-slate-400">
                 Preparando tu panel…
               </div>
-            ) : children}
+            ) : (
+              <>
+                <p className="mb-5 flex items-start gap-2 rounded-xl border-2 border-[var(--expo-blue)] bg-white px-3 py-2.5 text-xs font-medium leading-5 text-[var(--expo-navy)]">
+                  <Info size={16} className="mt-0.5 shrink-0 text-[var(--expo-blue)]" aria-hidden="true" />
+                  <span><strong>Datos de demostración.</strong> Visitas, prospectos, puntos y métricas son ejemplos; las fechas y el recinto de FIPAZ están sujetos a confirmación.</span>
+                </p>
+                {children}
+              </>
+            )}
           </div>
         </main>
       </div>

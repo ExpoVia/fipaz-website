@@ -8,13 +8,14 @@ import type {
   Stand,
   Zone,
 } from "@/types/demo";
+import { DEMO_FIXTURE } from "@/data/demo-fixture";
 
 // ─── Evento ───────────────────────────────────────────────────────────────────
 
 export const demoEvent: DemoEvent = {
-  id: "event-expovia-2026",
-  name: "ExpoVia 2026",
-  city: "La Paz, Bolivia",
+  id: DEMO_FIXTURE.event.id,
+  name: DEMO_FIXTURE.event.name,
+  city: DEMO_FIXTURE.event.city,
   startsAt: "2026-09-10T09:00:00-04:00",
   endsAt: "2026-09-12T20:00:00-04:00",
   isSimulated: true,
@@ -93,35 +94,8 @@ export const zones: readonly Zone[] = [
 
 export const stands: readonly Stand[] = [
   // zone-blue: technology / startups
-  {
-    id: "stand-altura-labs",
-    name: "Altura Labs",
-    category: "technology",
-    description:
-      "Plataforma de desarrollo de apps móviles con IA para el mercado andino.",
-    zoneId: "zone-blue",
-    boothCode: "A-01",
-    logoPath: "/assets/stands/placeholder.svg",
-    tags: ["IA", "apps", "móvil"],
-    activity: "Demo en vivo de asistente de voz en quechua",
-    promotion: "30 % de descuento en plan Starter",
-    points: 50,
-    featured: true,
-  },
-  {
-    id: "stand-kawsay-salud",
-    name: "Kawsay Salud",
-    category: "health",
-    description:
-      "Telemedicina rural con diagnóstico asistido por imágenes médicas.",
-    zoneId: "zone-green",
-    boothCode: "B-01",
-    logoPath: "/assets/stands/placeholder.svg",
-    tags: ["salud", "telemedicina", "rural"],
-    activity: "Consulta rápida de bienestar",
-    points: 50,
-    featured: true,
-  },
+  DEMO_FIXTURE.stands[0],
+  DEMO_FIXTURE.stands[1],
   {
     id: "stand-semilla-capital",
     name: "Semilla Capital",
@@ -134,19 +108,7 @@ export const stands: readonly Stand[] = [
     promotion: "Simula tu crédito en 2 minutos",
     points: 50,
   },
-  {
-    id: "stand-sabor-andino",
-    name: "Sabor Andino",
-    category: "gastronomy",
-    description:
-      "Cocina fusión de alta gama con ingredientes de origen boliviano.",
-    zoneId: "zone-green",
-    boothCode: "B-02",
-    logoPath: "/assets/stands/placeholder.svg",
-    tags: ["gastronomía", "fusión", "Bolivia"],
-    activity: "Degustación de singani de altura",
-    points: 50,
-  },
+  DEMO_FIXTURE.stands[2],
   {
     id: "stand-aula-nube",
     name: "Aula Nube",
@@ -255,18 +217,11 @@ export const standsById: ReadonlyMap<string, Stand> = new Map(
 
 export const missions: readonly Mission[] = [
   {
-    id: "mission-main-explorer",
-    title: "Explorador ExpoVia",
-    description:
-      "Visita 5 stands destacados y demuestra tu curiosidad por la innovación.",
-    standIds: [
-      "stand-altura-labs",
-      "stand-kawsay-salud",
-      "stand-aula-nube",
-      "stand-wayra-connect",
-      "stand-chaski-robotics",
-    ],
-    requiredVisits: 5,
+    id: DEMO_FIXTURE.mission.id,
+    title: DEMO_FIXTURE.mission.title,
+    description: DEMO_FIXTURE.mission.description,
+    standIds: [...DEMO_FIXTURE.mission.standIds],
+    requiredVisits: DEMO_FIXTURE.mission.requiredVisits,
     rewardId: "reward-explorer-badge",
     featured: true,
   },
@@ -324,37 +279,37 @@ export const rewards: readonly Reward[] = [
   {
     id: "reward-explorer-badge",
     name: "Insignia Explorador",
-    description: "Reconocimiento oficial de explorador completo de ExpoVia 2026.",
+    description: "Propuesta de reconocimiento al completar la Ruta FIPAZ.",
     requiredPoints: 250,
   },
   {
     id: "reward-tech-pin",
     name: "Pin Tecnológico",
-    description: "Pin coleccionable edición ExpoVia Tech 2026.",
+    description: "Propuesta de pin coleccionable ExpoVia Tech.",
     requiredPoints: 200,
   },
   {
     id: "reward-wellness-voucher",
     name: "Voucher Bienestar",
-    description: "Descuento del 20 % en productos Verde Vida.",
+    description: "Propuesta de descuento en productos Verde Vida.",
     requiredPoints: 100,
   },
   {
     id: "reward-finance-guide",
     name: "Guía Fintech Bolivia",
-    description: "Ebook exclusivo del ecosistema financiero boliviano.",
+    description: "Propuesta de guía digital del ecosistema financiero boliviano.",
     requiredPoints: 100,
   },
   {
     id: "reward-gastro-voucher",
     name: "Voucher Gastronómico",
-    description: "Cortesía de un plato en Sabor Andino.",
+    description: "Propuesta de cortesía gastronómica en Sabor Andino.",
     requiredPoints: 50,
   },
   {
     id: "reward-course-access",
     name: "Acceso Curso Digital",
-    description: "Curso gratuito de Quipu Ed durante 30 días.",
+    description: "Propuesta de acceso temporal a un curso de Quipu Ed.",
     requiredPoints: 100,
   },
 ] as const;

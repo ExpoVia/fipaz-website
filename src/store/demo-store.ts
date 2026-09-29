@@ -88,7 +88,6 @@ function progressMissionsForVisit(
     }
   }
 
-  matchingMissionIds.add("explorador-expovia");
   if (state.visitedStandIds.length === 0) {
     matchingMissionIds.add("primer-contacto");
   }

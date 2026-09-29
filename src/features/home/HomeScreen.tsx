@@ -83,7 +83,8 @@ export function HomeScreen({ onNavigate }: FeatureScreenProps) {
             <div>
               <p className="pixel-label opacity-80">Pasaporte digital</p>
               <h1 className="mt-2 text-xl font-black leading-tight">{demoEvent.name}</h1>
-              <p className="mt-1 text-xs font-bold opacity-80">{demoEvent.city} · {DEMO_FIXTURE.event.venueStatus}</p>
+              <p className="mt-1 text-xs font-bold opacity-80">{demoEvent.city} · {DEMO_FIXTURE.event.venue}</p>
+              <p className="mt-1 text-xs font-bold opacity-80">{DEMO_FIXTURE.event.dateLabel} · {DEMO_FIXTURE.event.venueStatus}</p>
               <span className="mt-2 inline-flex rounded-full border border-white/70 bg-white px-2.5 py-1 text-xs font-bold text-[var(--expo-navy)]">
                 Datos de demostración
               </span>

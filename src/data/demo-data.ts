@@ -16,8 +16,8 @@ export const demoEvent: DemoEvent = {
   id: DEMO_FIXTURE.event.id,
   name: DEMO_FIXTURE.event.name,
   city: DEMO_FIXTURE.event.city,
-  startsAt: "2026-09-10T09:00:00-04:00",
-  endsAt: "2026-09-12T20:00:00-04:00",
+  startsAt: DEMO_FIXTURE.event.startsAt,
+  endsAt: DEMO_FIXTURE.event.endsAt,
   isSimulated: true,
 };
 
@@ -65,6 +65,12 @@ export const categories: readonly Category[] = [
 
 export const zones: readonly Zone[] = [
   {
+    id: "zone-red",
+    name: "Bloque Rojo",
+    shortCode: "R",
+    categoryIds: ["health"],
+  },
+  {
     id: "zone-blue",
     name: "Zona Azul — Innovación",
     shortCode: "A",
@@ -72,15 +78,15 @@ export const zones: readonly Zone[] = [
   },
   {
     id: "zone-green",
-    name: "Zona Verde — Bienestar",
-    shortCode: "B",
-    categoryIds: ["health", "gastronomy"],
+    name: "Bloque Verde",
+    shortCode: "G",
+    categoryIds: ["gastronomy"],
   },
   {
     id: "zone-yellow",
-    name: "Zona Amarilla — Economía",
-    shortCode: "C",
-    categoryIds: ["finance"],
+    name: "Bloque Amarillo",
+    shortCode: "A/B",
+    categoryIds: ["technology", "finance"],
   },
   {
     id: "zone-purple",
@@ -93,7 +99,7 @@ export const zones: readonly Zone[] = [
 // ─── Stands ───────────────────────────────────────────────────────────────────
 
 export const stands: readonly Stand[] = [
-  // zone-blue: technology / startups
+  // Stands ficticios del guion FIPAZ y del catálogo general.
   DEMO_FIXTURE.stands[0],
   DEMO_FIXTURE.stands[1],
   {
@@ -320,14 +326,14 @@ export const activities: readonly Activity[] = [
   {
     id: "activity-altura-demo",
     standId: "stand-altura-labs",
-    title: "Demo IA voz quechua",
-    startsAt: "2026-09-10T10:00:00-04:00",
+    title: "Demo en vivo de asistente de voz en quechua",
+    startsAt: "2026-10-28T16:00:00-04:00",
   },
   {
     id: "activity-kawsay-check",
     standId: "stand-kawsay-salud",
     title: "Consulta rápida de bienestar",
-    startsAt: "2026-09-10T11:00:00-04:00",
+    startsAt: "2026-10-28T11:00:00-04:00",
   },
   {
     id: "activity-aula-taller",
@@ -344,8 +350,8 @@ export const activities: readonly Activity[] = [
   {
     id: "activity-sabor-degustacion",
     standId: "stand-sabor-andino",
-    title: "Degustación singani de altura",
-    startsAt: "2026-09-11T13:00:00-04:00",
+    title: "Degustación de singani de altura",
+    startsAt: "2026-10-28T11:00:00-04:00",
   },
   {
     id: "activity-nexo-transferencia",

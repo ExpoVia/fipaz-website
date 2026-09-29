@@ -28,7 +28,7 @@ export const initialPersistedState: PersistedDemoStateV1 = {
   points: INITIAL_POINTS,
   level: 2,
   selectedStandId: null,
-  selectedZoneId: "zone-blue",
+  selectedZoneId: "zone-yellow",
   visitedStandIds: ["stand-altura-labs", "stand-kawsay-salud"],
   favoriteStandIds: [],
   recentVisits: [

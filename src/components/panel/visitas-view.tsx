@@ -20,9 +20,9 @@ export function VisitasView() {
   return (
     <>
       <PanelPageHeader
-        eyebrow="Visitas NFC"
+        eyebrow="Visitas verificadas"
         title="Check-ins registrados"
-        description="Cada visita se valida cuando el visitante acerca su teléfono a la placa NFC de tu stand."
+        description="Cada visita se valida cuando el visitante acerca su teléfono a la placa NFC de tu stand o muestra su QR. Las mostradas aquí son de ejemplo."
       />
 
       {checkIns.length === 0 ? (

@@ -1,13 +1,17 @@
 import type { LucideIcon } from "lucide-react";
 
+import { DemoBadge } from "@/components/shared/demo-badge";
+
 interface MetricCardProps {
   label: string;
   value: string;
   icon: LucideIcon;
   hint?: string;
+  /** Toda cifra del panel es de ejemplo salvo que se indique lo contrario. */
+  demo?: boolean;
 }
 
-export function MetricCard({ label, value, icon: Icon, hint }: MetricCardProps) {
+export function MetricCard({ label, value, icon: Icon, hint, demo = true }: MetricCardProps) {
   return (
     <div className="pixel-card flex flex-col gap-2 p-4">
       <div className="flex items-center justify-between">
@@ -16,6 +20,7 @@ export function MetricCard({ label, value, icon: Icon, hint }: MetricCardProps) 
       </div>
       <p className="text-2xl font-black text-[var(--expo-navy)]">{value}</p>
       {hint && <p className="text-xs font-medium text-slate-500">{hint}</p>}
+      {demo && <DemoBadge className="self-start" />}
     </div>
   );
 }

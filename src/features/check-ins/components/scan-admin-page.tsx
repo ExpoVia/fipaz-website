@@ -6,7 +6,9 @@ import { Camera, Loader2, RefreshCw, ScanLine, Users } from "lucide-react";
 
 import { AdminPageHeader, Button, TextField } from "@/components/admin";
 import { MetricCard } from "@/components/panel/metric-card";
+import { DemoBadge } from "@/components/shared/demo-badge";
 import { adminRoutes } from "@/config/admin-routes";
+import { API_MODE } from "@/lib/api/config";
 import { useCheckInScanner } from "../hooks/use-check-in-scanner";
 import { useQrScanner } from "../hooks/use-qr-scanner";
 import { CheckInFeedbackPanel } from "./check-in-feedback-panel";
@@ -42,6 +44,13 @@ export function ScanAdminPage({ standId, standName }: ScanAdminPageProps) {
         title="Escáner de check-in"
         description={`Escanea el QR que cada visitante muestra en su app para confirmar su presencia en ${standName}.`}
       />
+
+      {API_MODE === "mock" && (
+        <p className="mb-4 flex flex-wrap items-center gap-2 text-xs font-medium text-slate-600">
+          <DemoBadge label="Prototipo" />
+          Validación simulada: prueba con FIPAZ-VISITANTE-4821, QR-EXPIRADO o QR-STAND-INACTIVO.
+        </p>
+      )}
 
       <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
         <div className="relative aspect-[3/4] overflow-hidden rounded-2xl border-2 border-[var(--expo-navy)] bg-slate-950 sm:aspect-video">
@@ -88,6 +97,7 @@ export function ScanAdminPage({ standId, standName }: ScanAdminPageProps) {
             label="Check-ins de la sesión"
             value={String(stats.registered)}
             icon={Users}
+            demo={API_MODE === "mock"}
             hint={stats.duplicates > 0 ? `${stats.duplicates} repetidos` : "Nadie repetido todavía"}
           />
 

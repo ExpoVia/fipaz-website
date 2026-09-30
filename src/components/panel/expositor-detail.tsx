@@ -4,8 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Loader2, MapPin, Star } from "lucide-react";
 
-import { getStandById } from "@/lib/api/stands";
-import type { StandResponseDto } from "@/types/stands-api";
+import { getStandById, type PanelStand } from "@/lib/panel-stands";
 import { PanelPageHeader } from "./panel-page-header";
 
 interface ExpositorDetailProps {
@@ -13,7 +12,7 @@ interface ExpositorDetailProps {
 }
 
 export function ExpositorDetail({ standId }: ExpositorDetailProps) {
-  const [stand, setStand] = useState<StandResponseDto | null>(null);
+  const [stand, setStand] = useState<PanelStand | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -51,7 +50,7 @@ export function ExpositorDetail({ standId }: ExpositorDetailProps) {
 
   const location = stand.location
     ? [stand.boothCode, stand.location.zoneId && `Zona ${stand.location.zoneId}`, `Piso ${stand.location.floorId}`, `(${stand.location.x}, ${stand.location.y})`].filter(Boolean).join(" · ")
-    : stand.boothCode;
+    : [stand.boothCode, stand.demoBlock].filter(Boolean).join(" · ");
 
   return (
     <>

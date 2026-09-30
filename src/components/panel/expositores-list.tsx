@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Loader2, MapPin, Search, Star } from "lucide-react";
 
-import { listStands } from "@/lib/api/stands";
+import { DEMO_PANEL_STANDS, listStands, type PanelStand } from "@/lib/panel-stands";
 import type { StandListResponseDto } from "@/types/stands-api";
 import { PanelPageHeader } from "./panel-page-header";
 
@@ -43,7 +43,7 @@ export function ExpositoresList() {
       <PanelPageHeader
         eyebrow="Organizador"
         title="Directorio de stands"
-        description="Stands registrados en ExpoVia 2026, cargados desde el servicio de stands."
+        description={DEMO_PANEL_STANDS ? "FIPAZ 2026: tres stands ficticios del guion. Datos locales sin sincronización." : "Stands registrados en ExpoVia 2026, cargados desde el servicio de stands."}
       />
 
       <form onSubmit={handleSearch} className="mb-4 flex gap-2">
@@ -86,6 +86,7 @@ export function ExpositoresList() {
                   <p className="truncate text-xs text-slate-500">{stand.company.displayName}</p>
                   <p className="mt-1 flex items-center gap-1 font-mono text-xs text-slate-500">
                     <MapPin size={12} /> {stand.boothCode}
+                    {(stand as PanelStand).demoBlock && <span>· {(stand as PanelStand).demoBlock}</span>}
                     {stand.location?.zoneId && <span>· Zona {stand.location.zoneId}</span>}
                     {stand.location?.floorId && <span>· Piso {stand.location.floorId}</span>}
                     {stand.location && <span>· ({stand.location.x}, {stand.location.y})</span>}

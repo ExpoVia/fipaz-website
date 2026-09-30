@@ -9,8 +9,10 @@ import { clsx } from "clsx";
 import { Loader2, Lock, Menu } from "lucide-react";
 
 import { BrandMark } from "@/components/shared/brand-mark";
+import { DemoBadge } from "@/components/shared/demo-badge";
 import { getAdminNavigation } from "@/config/admin-navigation";
 import type { AdminNavigationItem } from "@/config/admin-navigation";
+import { API_MODE } from "@/lib/api/config";
 import { ADMIN_DEFAULT_EVENT_ID, ADMIN_DEFAULT_STAND_ID } from "@/features/admin/admin-scope";
 import type { AdminScope } from "@/features/admin/admin-scope";
 import { ToastProvider } from "./toast";
@@ -25,6 +27,15 @@ function useAdminScope(): AdminScope {
   };
 }
 
+/**
+ * Con datos simulados (`API_MODE=mock`, el modo de la demo) los módulos de gestión son de
+ * acceso abierto: no hay backend ni datos reales que proteger. Las pantallas de empresa
+ * (`/admin/company/*`) usan la API de cuentas reales y siguen exigiendo sesión.
+ */
+function isDemoModulesRoute(pathname: string): boolean {
+  return API_MODE === "mock" && !pathname.startsWith("/admin/company");
+}
+
 function isItemActive(pathname: string, item: AdminNavigationItem): boolean {
   // Resumen es la raíz del módulo: solo está activo en la ruta exacta.
   if (item.id === "resumen") return pathname === item.href;
@@ -35,9 +46,14 @@ function AdminNavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const session = useCompanyAuthStore((state) => state.session);
   const allItems = getAdminNavigation(useAdminScope());
-  const items = isSessionValid(session)
-    ? allItems.filter((item) => item.id === "company-profile" || item.id === "company-stands")
-    : [];
+  const isCompanyItem = (item: AdminNavigationItem) => item.id === "company-profile" || item.id === "company-stands";
+  const demoModules = isDemoModulesRoute(pathname);
+  // Modo demostración: los módulos simulados se ven sin sesión; el perfil de empresa sigue pidiéndola.
+  const items = demoModules
+    ? allItems.filter((item) => !isCompanyItem(item) || isSessionValid(session))
+    : isSessionValid(session)
+      ? allItems.filter(isCompanyItem)
+      : [];
 
   return (
     <ul className="flex flex-col gap-1">
@@ -68,7 +84,7 @@ function AdminNavList({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-function AdminNavbar({ onMenuClick, onLogout }: { onMenuClick: () => void; onLogout: () => void }) {
+function AdminNavbar({ onMenuClick, onLogout, demoModules }: { onMenuClick: () => void; onLogout: () => void; demoModules: boolean }) {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b-2 border-[var(--expo-line)] bg-white/90 px-4 py-3 backdrop-blur-md sm:px-6">
       <div className="flex items-center gap-3">
@@ -86,9 +102,16 @@ function AdminNavbar({ onMenuClick, onLogout }: { onMenuClick: () => void; onLog
         </span>
       </div>
 
-      <button type="button" onClick={onLogout} className="text-xs font-bold text-[var(--expo-blue)] hover:underline">
-        Cerrar sesión
-      </button>
+      <div className="flex items-center gap-4">
+        <Link href="/panel" className="text-xs font-bold text-[var(--expo-blue)] hover:underline">
+          Volver al panel
+        </Link>
+        {!demoModules && (
+          <button type="button" onClick={onLogout} className="text-xs font-bold text-[var(--expo-blue)] hover:underline">
+            Cerrar sesión
+          </button>
+        )}
+      </div>
     </header>
   );
 }
@@ -134,8 +157,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const [sessionVerified, setSessionVerified] = useState(false);
   const companyAdmin = isSessionValid(session) && sessionVerified;
 
+  const demoModules = isDemoModulesRoute(pathname);
+
   useEffect(() => {
-    if (!authHydrated) return;
+    if (demoModules || !authHydrated) return;
     if (!session) {
       setSessionVerified(false);
       router.replace("/registro-empresa");
@@ -152,17 +177,17 @@ export function AdminShell({ children }: { children: ReactNode }) {
       }
     });
     return () => { cancelled = true; };
-  }, [authHydrated, session?.accessToken, verifySession, logout, router]);
+  }, [demoModules, authHydrated, session?.accessToken, verifySession, logout, router]);
 
   useEffect(() => {
-    if (companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands") {
+    if (!demoModules && companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands") {
       router.replace("/admin/company/profile");
     }
-  }, [companyAdmin, pathname, router]);
+  }, [demoModules, companyAdmin, pathname, router]);
 
-  const restrictedCompanyRoute = !authHydrated || (companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands");
+  const restrictedCompanyRoute = !demoModules && (!authHydrated || (companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands"));
 
-  if (!authHydrated || !companyAdmin) {
+  if (!demoModules && (!authHydrated || !companyAdmin)) {
     return (
       <div className="flex min-h-dvh items-center justify-center gap-3 bg-[var(--expo-bg)] text-sm font-bold text-slate-400">
         {authHydrated && !session ? <Lock aria-hidden="true" size={18} /> : <Loader2 aria-hidden="true" className="animate-spin" size={18} />}
@@ -180,12 +205,20 @@ export function AdminShell({ children }: { children: ReactNode }) {
         >
           Saltar al contenido
         </a>
-        <AdminNavbar onMenuClick={() => setDrawerOpen(true)} onLogout={logout} />
+        <AdminNavbar onMenuClick={() => setDrawerOpen(true)} onLogout={logout} demoModules={demoModules} />
         <div className="flex min-h-0 flex-1">
           <AdminSidebar />
           <AdminMobileDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
           <main id="admin-content" className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mx-auto w-full max-w-[1400px]">{restrictedCompanyRoute ? null : children}</div>
+            <div className="mx-auto w-full max-w-[1400px]">
+              {demoModules && (
+                <p className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border-2 border-[var(--expo-blue)] bg-white px-3 py-2.5 text-xs font-medium leading-5 text-[var(--expo-navy)]">
+                  <DemoBadge label="Prototipo · datos de demostración" />
+                  Gestión del stand con datos simulados: no se guarda nada fuera de este navegador.
+                </p>
+              )}
+              {restrictedCompanyRoute ? null : children}
+            </div>
           </main>
         </div>
       </div>

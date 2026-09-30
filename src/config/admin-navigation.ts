@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Boxes, Building2, CalendarDays, Gift, LayoutDashboard, LayoutList, Sparkles } from "lucide-react";
+import { Boxes, Building2, CalendarDays, Gift, LayoutDashboard, LayoutList, ScanLine, Sparkles } from "lucide-react";
 
 import { adminRoutes } from "@/config/admin-routes";
 import type { AdminScope } from "@/features/admin/admin-scope";
@@ -40,6 +40,14 @@ export function getAdminNavigation({ standId, eventId }: AdminScope): AdminNavig
       description: "Agenda y asistencia del stand",
       icon: CalendarDays,
       activePrefixes: ["/admin/activities/"],
+    },
+    {
+      id: "escaner",
+      href: adminRoutes.scan(standId),
+      label: "Escáner QR",
+      description: "Registra el check-in de visitantes en tu stand",
+      icon: ScanLine,
+      activePrefixes: [],
     },
     {
       id: "premios",

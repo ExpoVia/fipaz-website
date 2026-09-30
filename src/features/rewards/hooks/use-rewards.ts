@@ -11,7 +11,7 @@ import type { RewardInput, RewardWithStock, UpdateRewardInput } from "../types";
  * local con la entidad que devolvió el servicio; si falla, lanza para que la UI muestre el error.
  */
 export function useRewards(eventId: string) {
-  const { data, status, reload, setData } = useAsyncResource(`rewards:${eventId}`, () =>
+  const { data, status, error, reload, setData } = useAsyncResource(`rewards:${eventId}`, () =>
     rewardsService.getRewardsByEvent(eventId),
   );
 
@@ -56,5 +56,5 @@ export function useRewards(eventId: string) {
     [setData],
   );
 
-  return { rewards: data ?? [], status, reload, create, update, toggleStatus, remove };
+  return { rewards: data ?? [], status, error, reload, create, update, toggleStatus, remove };
 }

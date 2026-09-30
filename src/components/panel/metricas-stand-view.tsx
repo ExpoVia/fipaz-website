@@ -4,6 +4,7 @@ import { Clock, TrendingUp, Users } from "lucide-react";
 
 import { panelCheckIns } from "@/data/panel-mock";
 import { usePanelStore } from "@/store/panel-store";
+import { DemoBadge } from "@/components/shared/demo-badge";
 import { MetricCard } from "./metric-card";
 import { PanelPageHeader } from "./panel-page-header";
 import { ProgressBar } from "@/components/pixel/ProgressBar";
@@ -22,7 +23,7 @@ export function MetricasStandView() {
       <PanelPageHeader
         eyebrow="Métricas"
         title="Desempeño de mi stand"
-        description="Indicadores de tráfico e impacto para tu participación en el evento."
+        description="Indicadores de ejemplo de tráfico e impacto; no provienen de un evento real."
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -32,7 +33,10 @@ export function MetricasStandView() {
       </div>
 
       <div className="pixel-card mt-6 p-5">
-        <p className="pixel-label text-slate-500">Objetivo de visitas del día</p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="pixel-label text-slate-500">Objetivo de visitas verificadas del día</p>
+          <DemoBadge />
+        </div>
         <ProgressBar
           value={checkInCount}
           max={DAILY_VISIT_GOAL}

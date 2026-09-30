@@ -69,7 +69,7 @@ function StockCell({ reward }: { reward: RewardWithStock }) {
 }
 
 export function RewardsAdminPage({ eventId, eventName }: RewardsAdminPageProps) {
-  const { rewards, status, reload, create, update, toggleStatus, remove } = useRewards(eventId);
+  const { rewards, status, error, reload, create, update, toggleStatus, remove } = useRewards(eventId);
   const toast = useToast();
   const busy = useBusyIds();
 
@@ -181,7 +181,11 @@ export function RewardsAdminPage({ eventId, eventName }: RewardsAdminPageProps) 
       {status === "loading" && <ListSkeleton label="Cargando premios" />}
 
       {status === "error" && (
-        <ErrorState title="No pudimos cargar los premios." description="Intenta nuevamente." onRetry={reload} />
+        <ErrorState
+          title="No pudimos cargar los premios."
+          description={getErrorMessage(error, "Intenta nuevamente.")}
+          onRetry={reload}
+        />
       )}
 
       {status === "success" && rewards.length === 0 && (

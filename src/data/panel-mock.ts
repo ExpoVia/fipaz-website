@@ -12,6 +12,12 @@ export const panelCheckIns: readonly StandCheckIn[] = [
   { id: "checkin-5", standId: MOCK_EXHIBITOR_STAND_ID, visitorLabel: "Visitante #5122", checkedInAt: "2026-09-10T15:41:00-04:00" },
 ] as const;
 
+/**
+ * Veces que se abrió el perfil del stand en la app. Es un contador aparte de los check-ins:
+ * ver el perfil no equivale a haber visitado el stand.
+ */
+export const MOCK_PROFILE_VIEWS = 48;
+
 export const panelPromotions: readonly FlashPromotion[] = [
   {
     id: "promo-1",

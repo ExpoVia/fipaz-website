@@ -85,6 +85,7 @@ function CompanyProfileFormFields({ stand }: { stand: ExhibitorProfile }) {
       <PanelPageHeader
         eyebrow="Mi stand"
         title="Editar perfil"
+        demo={false}
         description="Completa la información que verán los visitantes y el equipo organizador."
       />
 

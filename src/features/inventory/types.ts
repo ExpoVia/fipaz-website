@@ -69,8 +69,8 @@ export interface AdjustmentResult {
 export type StockLevel = "ok" | "low" | "out";
 
 /**
- * Contrato del servicio. La implementación actual es simulada; la HTTP futura debe
- * respetar estas firmas.
+ * Contrato del servicio. Lo implementan `inventory.mock-service.ts` (datos simulados) y
+ * `inventory.http-service.ts` (backend); ambas respetan estas firmas.
  */
 export interface InventoryService {
   /** GET /events/:eventId/inventory */

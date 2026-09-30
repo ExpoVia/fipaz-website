@@ -68,9 +68,10 @@ export interface AttendanceUpdate {
 }
 
 /**
- * Contrato del servicio. La implementación actual es simulada; la HTTP futura debe
- * respetar estas firmas. `revertAttendance` no figuraba en el listado original pero la
- * pantalla de asistencia lo necesita (acción "Revertir asistencia").
+ * Contrato del servicio. Lo implementan `activities.mock-service.ts` (datos simulados) y
+ * `activities.http-service.ts` (backend); ambas respetan estas firmas. `revertAttendance` no
+ * figuraba en el listado original pero la pantalla de asistencia lo necesita (acción
+ * "Revertir asistencia").
  */
 export interface ActivitiesService {
   /** GET /stands/:standId/activities (propuesta) */

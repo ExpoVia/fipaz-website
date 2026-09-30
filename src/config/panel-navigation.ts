@@ -8,6 +8,7 @@ import {
   LayoutGrid,
   Map,
   QrCode,
+  Settings2,
   ScanLine,
   Store,
   Trophy,
@@ -48,8 +49,8 @@ export const PANEL_NAVIGATION: readonly PanelNavigationItem[] = [
     id: "expositor-visitas",
     role: "expositor",
     href: "/panel/visitas",
-    label: "Visitas NFC",
-    description: "Check-ins registrados en tu stand",
+    label: "Visitas verificadas",
+    description: "Check-ins confirmados en tu stand",
     icon: ScanLine,
   },
   {
@@ -83,6 +84,14 @@ export const PANEL_NAVIGATION: readonly PanelNavigationItem[] = [
     label: "Métricas de mi stand",
     description: "Horas pico, permanencia e impacto",
     icon: BarChart3,
+  },
+  {
+    id: "expositor-gestion",
+    role: "expositor",
+    href: "/admin",
+    label: "Gestión del stand (prototipo)",
+    description: "Dinámicas, premios, inventario, actividades y escáner QR",
+    icon: Settings2,
   },
   {
     id: "expositor-company-profile",
@@ -138,7 +147,7 @@ export const PANEL_NAVIGATION: readonly PanelNavigationItem[] = [
     role: "organizador",
     href: "/panel/metricas-evento",
     label: "Métricas del evento",
-    description: "Afluencia y flujo de personas en vivo",
+    description: "Afluencia de ejemplo, agregada y sin datos personales",
     icon: Activity,
   },
   {

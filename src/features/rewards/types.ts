@@ -49,8 +49,8 @@ export interface CreateRewardInput extends RewardInput {
 export type UpdateRewardInput = Omit<RewardInput, "initialStock">;
 
 /**
- * Contrato del servicio. La implementación actual es simulada; la HTTP futura debe
- * respetar estas firmas.
+ * Contrato del servicio. Lo implementan `rewards.mock-service.ts` (datos simulados) y
+ * `rewards.http-service.ts` (backend); ambas respetan estas firmas.
  */
 export interface RewardsService {
   /** GET /events/:eventId/rewards */

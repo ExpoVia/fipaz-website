@@ -11,7 +11,7 @@ import type { Activity, ActivityInput } from "../types";
  * con la entidad que devolvió el servicio; si falla, lanza para que la UI muestre el error.
  */
 export function useActivities(standId: string) {
-  const { data, status, reload, setData } = useAsyncResource(`activities:${standId}`, () =>
+  const { data, status, error, reload, setData } = useAsyncResource(`activities:${standId}`, () =>
     activitiesService.getActivitiesByStand(standId),
   );
 
@@ -48,5 +48,5 @@ export function useActivities(standId: string) {
     [replace],
   );
 
-  return { activities: data ?? [], status, reload, create, update, cancel };
+  return { activities: data ?? [], status, error, reload, create, update, cancel };
 }

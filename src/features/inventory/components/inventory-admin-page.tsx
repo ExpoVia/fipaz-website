@@ -23,6 +23,7 @@ import type { DataColumn } from "@/components/admin";
 import { MetricCard } from "@/components/panel/metric-card";
 import { adminRoutes } from "@/config/admin-routes";
 import { RewardThumbnail } from "@/features/rewards/components/reward-thumbnail";
+import { getErrorMessage } from "@/lib/api/service-error";
 import { formatDateTime, formatNumber } from "@/lib/format";
 import { matchesQuery } from "@/lib/text";
 import { getStockLevel } from "../adjustments";
@@ -49,7 +50,7 @@ const LEVEL_FILTER_OPTIONS = [
 ] as const;
 
 export function InventoryAdminPage({ eventId, eventName, initialRewardId }: InventoryAdminPageProps) {
-  const { inventory, status, reload, adjust } = useInventory(eventId);
+  const { inventory, status, error, reload, adjust } = useInventory(eventId);
   const toast = useToast();
 
   const [dialog, setDialog] = useState<Dialog | null>(null);
@@ -174,7 +175,11 @@ export function InventoryAdminPage({ eventId, eventName, initialRewardId }: Inve
       )}
 
       {status === "error" && (
-        <ErrorState title="No pudimos cargar el inventario." description="Intenta nuevamente." onRetry={reload} />
+        <ErrorState
+          title="No pudimos cargar el inventario."
+          description={getErrorMessage(error, "Intenta nuevamente.")}
+          onRetry={reload}
+        />
       )}
 
       {status === "success" && inventory.length === 0 && (

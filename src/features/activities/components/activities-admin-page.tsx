@@ -20,6 +20,7 @@ import {
 } from "@/components/admin";
 import type { DataColumn } from "@/components/admin";
 import { adminRoutes } from "@/config/admin-routes";
+import { getErrorMessage } from "@/lib/api/service-error";
 import { formatDateOnly, formatNumber, formatPoints } from "@/lib/format";
 import { matchesQuery } from "@/lib/text";
 import { ACTIVITY_STATUS_LABELS, ACTIVITY_STATUS_TONES, ACTIVITY_STATUSES } from "../constants";
@@ -50,7 +51,7 @@ function canCancel(activity: Activity): boolean {
 }
 
 export function ActivitiesAdminPage({ standId, standName }: ActivitiesAdminPageProps) {
-  const { activities, status, reload, create, update, cancel } = useActivities(standId);
+  const { activities, status, error, reload, create, update, cancel } = useActivities(standId);
   const toast = useToast();
 
   const [dialog, setDialog] = useState<Dialog | null>(null);
@@ -160,7 +161,11 @@ export function ActivitiesAdminPage({ standId, standName }: ActivitiesAdminPageP
       {status === "loading" && <ListSkeleton label="Cargando actividades" />}
 
       {status === "error" && (
-        <ErrorState title="No pudimos cargar las actividades." description="Intenta nuevamente." onRetry={reload} />
+        <ErrorState
+          title="No pudimos cargar las actividades."
+          description={getErrorMessage(error, "Intenta nuevamente.")}
+          onRetry={reload}
+        />
       )}
 
       {status === "success" && activities.length === 0 && (

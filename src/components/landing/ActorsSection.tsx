@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { User, Store, Building2, CheckCircle2, ArrowUpRight } from "lucide-react";
 import { PixelStar } from "./PixelIcons";
@@ -9,6 +10,8 @@ export function ActorsSection() {
   const actors = [
     {
       id: "visitantes",
+      href: "/demo",
+      cta: "Probar como visitante",
       title: "Para Visitantes",
       subtitle: "Orientación, diversión y beneficios reales en cada paso.",
       icon: <User aria-hidden="true" className="h-7 w-7 text-white" />,
@@ -25,6 +28,8 @@ export function ActorsSection() {
     },
     {
       id: "expositores",
+      href: "/panel/mi-stand",
+      cta: "Abrir panel de expositor",
       title: "Para Expositores",
       subtitle: "Captura de leads, visibilidad y tráfico calificado.",
       icon: <Store aria-hidden="true" className="h-7 w-7 text-[var(--expo-navy)]" />,
@@ -41,6 +46,8 @@ export function ActorsSection() {
     },
     {
       id: "organizadores",
+      href: "/panel/metricas-evento",
+      cta: "Abrir panel de organizador",
       title: "Para Organizadores",
       subtitle: "Control, analítica en vivo y una capa digital de primer nivel.",
       icon: <Building2 aria-hidden="true" className="h-7 w-7 text-white" />,
@@ -69,7 +76,7 @@ export function ActorsSection() {
           </span>
 
           <h2 className="text-3xl font-black tracking-tight text-[var(--expo-navy)] sm:text-5xl">
-            Soluciones integradas para cada actor de la feria.
+            Visitante · Expositor · Organizador: una plataforma para varias ferias.
           </h2>
 
           <p className="mt-4 text-base sm:text-lg text-slate-700 font-medium">
@@ -124,12 +131,15 @@ export function ActorsSection() {
               </div>
 
               {/* Bottom Footer indicator */}
-              <div className="border-t border-slate-100 bg-slate-50 px-6 py-3.5 flex items-center justify-between text-xs font-mono font-bold text-slate-500">
+              <Link
+                href={actor.href}
+                className="border-t border-slate-100 bg-slate-50 px-6 py-3.5 flex items-center justify-between text-xs font-mono font-bold text-slate-500 transition-colors hover:bg-[var(--expo-bg)]"
+              >
                 <span>Plataforma ExpoVia</span>
                 <span className="flex items-center gap-1 text-[var(--expo-blue)]">
-                  Beneficios <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
+                  {actor.cta} <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
                 </span>
-              </div>
+              </Link>
             </motion.li>
           ))}
         </ul>

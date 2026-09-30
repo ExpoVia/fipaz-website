@@ -3,6 +3,7 @@ export const adminRoutes = {
   home: () => "/admin",
   dynamics: (standId: string) => `/admin/stands/${standId}/dynamics`,
   activities: (standId: string) => `/admin/stands/${standId}/activities`,
+  scan: (standId: string) => `/admin/stands/${standId}/scan`,
   rewards: (eventId: string) => `/admin/events/${eventId}/rewards`,
   /** Con `rewardId` abre el inventario filtrado por ese premio. */
   inventory: (eventId: string, rewardId?: string) =>

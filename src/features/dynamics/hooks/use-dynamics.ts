@@ -11,7 +11,7 @@ import type { Dynamic, DynamicInput } from "../types";
  * local con la entidad que devolvió el servicio; si falla, lanza para que la UI muestre el error.
  */
 export function useDynamics(standId: string) {
-  const { data, status, reload, setData } = useAsyncResource(`dynamics:${standId}`, () =>
+  const { data, status, error, reload, setData } = useAsyncResource(`dynamics:${standId}`, () =>
     dynamicsService.getDynamicsByStand(standId),
   );
 
@@ -56,5 +56,5 @@ export function useDynamics(standId: string) {
     [setData],
   );
 
-  return { dynamics: data ?? [], status, reload, create, update, toggleStatus, remove };
+  return { dynamics: data ?? [], status, error, reload, create, update, toggleStatus, remove };
 }

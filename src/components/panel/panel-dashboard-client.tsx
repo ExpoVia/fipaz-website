@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, Building2, ScanLine, Store, UsersRound, Zap } from "lucide-react";
+import { Activity, Building2, Eye, ScanLine, Store, UsersRound, Zap } from "lucide-react";
 
 import { categories, missions, zones } from "@/data/demo-data";
 import { DEMO_FIXTURE } from "@/data/demo-fixture";
-import { panelCheckIns, panelLeads, panelPromotions } from "@/data/panel-mock";
+import { MOCK_PROFILE_VIEWS, panelCheckIns, panelLeads, panelPromotions } from "@/data/panel-mock";
 import { usePanelStore } from "@/store/panel-store";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { StandCategoryBadge } from "@/components/pixel/StandCategoryBadge";
@@ -29,9 +29,25 @@ function ExpositorOverview() {
         title={`Hola, ${stand?.name ?? "expositor"}`}
         description="Así va tu participación en el evento hasta el momento."
       />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard label="Visitas NFC" value={String(checkIns.length)} icon={ScanLine} />
-        <MetricCard label="Prospectos" value={String(leads.length)} icon={UsersRound} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <MetricCard
+          label="Visitas verificadas"
+          value={String(checkIns.length)}
+          icon={ScanLine}
+          hint="Check-ins confirmados con NFC o QR en el stand"
+        />
+        <MetricCard
+          label="Vistas del perfil"
+          value={String(MOCK_PROFILE_VIEWS)}
+          icon={Eye}
+          hint="Aperturas del perfil en la app; no son visitas al stand"
+        />
+        <MetricCard
+          label="Prospectos"
+          value={String(leads.length)}
+          icon={UsersRound}
+          hint="Contactos que dejaron sus datos"
+        />
         <MetricCard
           label="Promoción activa"
           value={activePromotion ? activePromotion.discountLabel : "Ninguna"}

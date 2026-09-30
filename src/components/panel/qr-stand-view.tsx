@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { createPortal } from "react-dom";
 import QRCode from "react-qr-code";
 import {
@@ -11,12 +12,15 @@ import {
   Maximize2,
   QrCode,
   RefreshCw,
+  ScanLine,
   ShieldOff,
   X,
   Zap,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
+import { DemoBadge } from "@/components/shared/demo-badge";
+import { adminRoutes } from "@/config/admin-routes";
 import { usePanelStore } from "@/store/panel-store";
 import type { QrToken } from "@/types/panel";
 import { PanelPageHeader } from "./panel-page-header";
@@ -463,6 +467,28 @@ export function QrStandView() {
       />
 
       <div className="flex flex-col gap-6">
+
+        {/* Escaneo del QR del visitante (S2): prototipo, la validación real depende del backend */}
+        <div className="pixel-card flex flex-wrap items-center justify-between gap-3 p-5">
+          <div className="flex items-start gap-3">
+            <ScanLine aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-[var(--expo-blue)]" />
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="font-black text-[var(--expo-navy)]">Escanear el QR de un visitante</h2>
+                <DemoBadge label="Prototipo" />
+              </div>
+              <p className="mt-1 max-w-xl text-sm text-slate-600">
+                Abre la cámara para registrar el check-in de un visitante. En esta demostración la validación es simulada; la real depende del backend.
+              </p>
+            </div>
+          </div>
+          <Link
+            href={adminRoutes.scan(activeCompanyId)}
+            className="inline-flex items-center gap-2 rounded-lg border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-4 py-2 text-sm font-black text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5"
+          >
+            Abrir escáner
+          </Link>
+        </div>
 
         {/* Panel de generación */}
         <div className="pixel-card flex flex-col gap-5 p-5">

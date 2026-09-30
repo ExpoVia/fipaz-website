@@ -4,6 +4,7 @@ import { Footprints, ScanLine, Star, Users } from "lucide-react";
 
 import { zones } from "@/data/demo-data";
 import { usePanelStore } from "@/store/panel-store";
+import { DemoBadge } from "@/components/shared/demo-badge";
 import { MetricCard } from "./metric-card";
 import { PanelPageHeader } from "./panel-page-header";
 import { ProgressBar } from "@/components/pixel/ProgressBar";
@@ -25,19 +26,22 @@ export function MetricasEventoView() {
     <>
       <PanelPageHeader
         eyebrow="Métricas"
-        title="Afluencia del evento"
-        description="Flujo de personas y actividad consolidada en tiempo real (datos simulados)."
+        title="Afluencia de ejemplo del evento"
+        description="Cifras precargadas para la demostración: agregadas, sin datos personales y sin representar afluencia real."
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard label="Visitantes activos" value="1,284" icon={Users} />
-        <MetricCard label="Check-ins totales" value="3,910" icon={ScanLine} />
+        <MetricCard label="Visitantes (ejemplo)" value="1,284" icon={Users} />
+        <MetricCard label="Check-ins verificados (ejemplo)" value="3,910" icon={ScanLine} />
         <MetricCard label="Puntos otorgados" value="48,200" icon={Star} />
         <MetricCard label="Zona más visitada" value="Zona Azul" icon={Footprints} />
       </div>
 
       <div className="pixel-card mt-6 flex flex-col gap-4 p-5">
-        <p className="pixel-label text-slate-500">Ocupación por zona</p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="pixel-label text-slate-500">Ocupación por zona (ejemplo)</p>
+          <DemoBadge />
+        </div>
         {zones.map((zone) => (
           <div key={zone.id}>
             <div className="mb-1 flex items-center justify-between text-sm font-bold text-[var(--expo-navy)]">

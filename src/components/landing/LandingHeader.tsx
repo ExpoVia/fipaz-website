@@ -43,6 +43,12 @@ export function LandingHeader() {
         {/* Action Button */}
         <div className="hidden items-center gap-3 lg:flex">
           <Link
+            href="/panel"
+            className="inline-flex items-center gap-2 border-2 border-[var(--expo-navy)] bg-white px-5 py-2.5 text-sm font-extrabold text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5 hover:bg-[var(--expo-bg)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+          >
+            Panel
+          </Link>
+          <Link
             href="/demo"
             className="inline-flex items-center gap-2 border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-5 py-2.5 text-sm font-extrabold text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5 hover:bg-[#FFE066] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
           >
@@ -53,6 +59,12 @@ export function LandingHeader() {
 
         {/* Mobile menu button */}
         <div className="flex items-center gap-2 lg:hidden">
+          <Link
+            href="/panel"
+            className="inline-flex items-center gap-1 border-2 border-[var(--expo-navy)] bg-white px-3 py-1.5 text-xs font-black text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)]"
+          >
+            Panel
+          </Link>
           <Link
             href="/demo"
             className="inline-flex items-center gap-1 border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-3 py-1.5 text-xs font-black text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)]"
@@ -85,7 +97,14 @@ export function LandingHeader() {
                 {link.name}
               </a>
             ))}
-            <div className="pt-3">
+            <div className="flex flex-col gap-3 pt-3">
+              <Link
+                href="/panel"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex w-full items-center justify-center gap-2 border-2 border-[var(--expo-navy)] bg-white py-3 text-center text-base font-black text-[var(--expo-navy)] shadow-[4px_4px_0_var(--expo-navy)]"
+              >
+                Panel expositor / organizador
+              </Link>
               <Link
                 href="/demo"
                 onClick={() => setMobileMenuOpen(false)}

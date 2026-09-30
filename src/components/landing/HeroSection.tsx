@@ -63,6 +63,9 @@ export function HeroSection() {
               Probar demo
               <ArrowRight className="h-5 w-5 stroke-[3] transition-transform group-hover:translate-x-1" />
             </Link>
+            <Link href="/panel" className="inline-flex w-full items-center justify-center gap-2 border-3 border-[var(--expo-navy)] bg-[var(--expo-sky)] px-6 py-3.5 text-base font-extrabold text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
+              Ver el panel
+            </Link>
             <a href="#problema" className="inline-flex w-full items-center justify-center gap-2 border-3 border-[var(--expo-navy)] bg-white/95 px-6 py-3.5 text-base font-extrabold text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 hover:bg-white active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
               Conoce más
               <ChevronDown className="h-5 w-5 stroke-[2.5]" />

@@ -26,6 +26,9 @@ export function LandingFooter() {
             <Link href="/demo" className="transition-colors hover:text-[var(--expo-blue)]">
               Demo
             </Link>
+            <Link href="/panel" className="transition-colors hover:text-[var(--expo-blue)]">
+              Panel
+            </Link>
             <Link href="/feedback" className="transition-colors hover:text-[var(--expo-blue)]">
               Feedback
             </Link>

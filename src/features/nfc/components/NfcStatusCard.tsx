@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { NfcStage, Stand } from "@/types/demo";
 import type { MissionProgress } from "@/lib/demo-domain";
+import { DEMO_FIXTURE } from "@/data/demo-fixture";
 
 interface NfcStatusCardProps {
   stage: NfcStage;
@@ -51,10 +52,11 @@ export function NfcStatusCard({
     case "idle":
       return (
         <div className="flex flex-col items-center gap-4 text-center">
+          <span className="rounded-full border border-[var(--expo-blue)] bg-sky-50 px-3 py-1 text-xs font-bold text-[var(--expo-navy)]">Datos de demostración</span>
           <p className="text-slate-600 leading-6 max-w-xs">
             Acerca el teléfono a la etiqueta NFC del stand para registrar tu
             visita y ganar{" "}
-            <span className="font-bold text-[var(--expo-blue)]">50 puntos</span>.
+            <span className="font-bold text-[var(--expo-blue)]">{DEMO_FIXTURE.points.perNewVisit} puntos</span>.
           </p>
           <button
             onClick={onStart}
@@ -111,7 +113,7 @@ export function NfcStatusCard({
                 {targetStand.name}
               </p>
               <p className="text-xs text-slate-400 font-mono mt-0.5">
-                {targetStand.boothCode}
+                {targetStand.block ? `Bloque ${targetStand.block} · ` : ""}{targetStand.boothCode}
               </p>
               <p className="text-sm text-slate-600 mt-2 leading-5">
                 {targetStand.description}
@@ -159,6 +161,7 @@ export function NfcStatusCard({
     case "success":
       return (
         <div className="flex flex-col items-center gap-4 text-center">
+          <span className="rounded-full border border-[var(--expo-blue)] bg-sky-50 px-3 py-1 text-xs font-bold text-[var(--expo-navy)]">Datos de demostración</span>
           <Image
             src="/assets/nfc/visit-success.svg"
             alt=""
@@ -167,7 +170,7 @@ export function NfcStatusCard({
           />
           <div>
             <p className="text-3xl font-black text-[var(--expo-navy)]">
-              +50 puntos
+              +{DEMO_FIXTURE.points.perNewVisit} puntos
             </p>
             <p className="text-sm text-slate-500 mt-1">
               Total: <span className="font-bold">{totalPoints}</span> puntos
@@ -230,6 +233,7 @@ export function NfcStatusCard({
     case "duplicate":
       return (
         <div className="flex flex-col items-center gap-4 text-center">
+          <span className="rounded-full border border-[var(--expo-blue)] bg-sky-50 px-3 py-1 text-xs font-bold text-[var(--expo-navy)]">Datos de demostración</span>
           <Copy size={40} className="text-[var(--expo-yellow)]" strokeWidth={1.5} />
           <div>
             <p className="font-bold text-[var(--expo-navy)] text-lg">

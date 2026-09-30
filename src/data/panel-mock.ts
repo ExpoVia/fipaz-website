@@ -1,4 +1,5 @@
 import type { FlashPromotion, PanelEventSummary, PanelLead, StandCheckIn } from "@/types/panel";
+import { DEMO_FIXTURE } from "@/data/demo-fixture";
 
 /** Empresa de ejemplo para la vista de Expositor: no hay sesión real, es un mock fijo. */
 export const MOCK_EXHIBITOR_STAND_ID = "stand-altura-labs";
@@ -15,29 +16,11 @@ export const panelPromotions: readonly FlashPromotion[] = [
   {
     id: "promo-1",
     standId: MOCK_EXHIBITOR_STAND_ID,
-    title: "20% en consultoría de automatización",
-    discountLabel: "-20%",
+    title: DEMO_FIXTURE.stands[0].promotion ?? "Sin promoción de ejemplo",
+    discountLabel: "-30%",
     activeFrom: "2026-09-10T09:00:00-04:00",
     activeTo: "2026-09-10T12:00:00-04:00",
-    status: "finalizada",
-  },
-  {
-    id: "promo-2",
-    standId: MOCK_EXHIBITOR_STAND_ID,
-    title: "Diagnóstico gratuito de procesos",
-    discountLabel: "Gratis",
-    activeFrom: "2026-09-10T14:00:00-04:00",
-    activeTo: "2026-09-10T17:00:00-04:00",
     status: "activa",
-  },
-  {
-    id: "promo-3",
-    standId: MOCK_EXHIBITOR_STAND_ID,
-    title: "Descuento por referido",
-    discountLabel: "-15%",
-    activeFrom: "2026-09-11T09:00:00-04:00",
-    activeTo: "2026-09-11T18:00:00-04:00",
-    status: "programada",
   },
 ] as const;
 
@@ -49,11 +32,11 @@ export const panelLeads: readonly PanelLead[] = [
 
 export const PANEL_EVENTS: readonly PanelEventSummary[] = [
   {
-    id: "event-fipaz-2026",
-    name: "FIPAZ 2026",
-    city: "La Paz, Bolivia",
+    id: DEMO_FIXTURE.event.id,
+    name: DEMO_FIXTURE.event.name,
+    city: DEMO_FIXTURE.event.city,
     status: "actual",
-    description: "Feria Internacional de La Paz. Plataforma de prueba y desarrollo conceptual.",
+    description: "Feria Internacional de La Paz. Datos de demostración; fechas y recinto sujetos a confirmación.",
   },
   {
     id: "event-expocruz",

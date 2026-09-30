@@ -58,7 +58,7 @@ export function StandCard({
           <p className="truncate font-black leading-tight text-[var(--expo-navy)]">{stand.name}</p>
           <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-400">
             <MapPin size={11} aria-hidden="true" />
-            {stand.boothCode}
+            {stand.block ? `Bloque ${stand.block} · ` : ""}{stand.boothCode}
           </p>
         </div>
 

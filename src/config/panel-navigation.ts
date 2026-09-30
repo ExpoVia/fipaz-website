@@ -7,8 +7,8 @@ import {
   LayoutDashboard,
   LayoutGrid,
   Map,
+  QrCode,
   ScanLine,
-  SlidersHorizontal,
   Store,
   Trophy,
   UsersRound,
@@ -53,6 +53,14 @@ export const PANEL_NAVIGATION: readonly PanelNavigationItem[] = [
     icon: ScanLine,
   },
   {
+    id: "expositor-qr",
+    role: "expositor",
+    href: "/panel/mi-stand/qr",
+    label: "QR de validación",
+    description: "Genera y gestiona códigos QR para check-in",
+    icon: QrCode,
+  },
+  {
     id: "expositor-promociones",
     role: "expositor",
     href: "/panel/promociones",
@@ -77,12 +85,12 @@ export const PANEL_NAVIGATION: readonly PanelNavigationItem[] = [
     icon: BarChart3,
   },
   {
-    id: "expositor-administracion",
+    id: "expositor-company-profile",
     role: "expositor",
-    href: "/admin",
-    label: "Administración",
-    description: "Dinámicas, premios, inventario y actividades",
-    icon: SlidersHorizontal,
+    href: "/admin/company/profile",
+    label: "Perfil de empresa",
+    description: "Datos públicos y configuración de tu empresa",
+    icon: Building2,
   },
   // ─── Organizador ────────────────────────────────────────────────────────
   {

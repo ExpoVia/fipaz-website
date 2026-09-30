@@ -28,7 +28,8 @@ export type StandCategory =
   | "finance"
   | "gastronomy"
   | "education"
-  | "startups";
+  | "startups"
+  | "other";
 
 // ─── Entidades del dominio ────────────────────────────────────────────────────
 
@@ -60,6 +61,10 @@ export interface Stand {
   id: string;
   name: string;
   category: StandCategory;
+  /** Bloque ilustrativo del fixture compartido de demostración. */
+  block?: string;
+  /** Nombre personalizado cuando category es `other`. */
+  customCategory?: string;
   description: string;
   zoneId: string;
   boothCode: string;

@@ -2,14 +2,15 @@
 import { z } from "zod";
 import { stands, zones } from "@/data/demo-data";
 import { MISSIONS } from "@/data/missions";
+import { DEMO_FIXTURE } from "@/data/demo-fixture";
 import { getLevelForPoints } from "@/lib/demo-domain";
 import type { PersistedDemoStateV1 } from "@/types/demo";
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
 export const STORAGE_KEY = "expovia-demo:v1";
-export const INITIAL_POINTS = 150;
-export const VISIT_POINTS = 50;
+export const VISIT_POINTS = DEMO_FIXTURE.points.perNewVisit;
+export const INITIAL_POINTS = VISIT_POINTS * 2;
 
 // ─── Estado inicial canónico ──────────────────────────────────────────────────
 
@@ -27,7 +28,7 @@ export const initialPersistedState: PersistedDemoStateV1 = {
   points: INITIAL_POINTS,
   level: 2,
   selectedStandId: null,
-  selectedZoneId: "zone-blue",
+  selectedZoneId: "zone-yellow",
   visitedStandIds: ["stand-altura-labs", "stand-kawsay-salud"],
   favoriteStandIds: [],
   recentVisits: [
@@ -53,7 +54,7 @@ export const initialPersistedState: PersistedDemoStateV1 = {
   // Progreso coherente con las dos visitas simuladas del estado inicial.
   missionProgress: {
     "primer-contacto": 1,
-    "ruta-tecnologica": 2,
+    "ruta-tecnologica": 1,
     "explorador-expovia": 2,
   },
   specialActionsDone: [],

@@ -14,7 +14,7 @@ function createRewardsSeed(): Reward[] {
       description: "Mochila urbana con compartimento para laptop y bolsillo antirrobo.",
       type: "merch",
       costPoints: 500,
-      imageUrl: "/assets/rewards/backpack-removebg-preview.png",
+      imageUrl: "/assets/rewards/backpack.png",
       status: "active",
       createdAt: "2026-09-07T12:00:00-04:00",
       updatedAt: "2026-09-07T12:00:00-04:00",

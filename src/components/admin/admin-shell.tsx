@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { Drawer } from "vaul";
 import { clsx } from "clsx";
-import { Menu } from "lucide-react";
+import { Loader2, Lock, Menu } from "lucide-react";
 
 import { BrandMark } from "@/components/shared/brand-mark";
 import { getAdminNavigation } from "@/config/admin-navigation";
 import type { AdminNavigationItem } from "@/config/admin-navigation";
 import { ADMIN_DEFAULT_EVENT_ID, ADMIN_DEFAULT_STAND_ID } from "@/features/admin/admin-scope";
 import type { AdminScope } from "@/features/admin/admin-scope";
-import { MockControls } from "./mock-controls";
 import { ToastProvider } from "./toast";
+import { isSessionValid, useCompanyAuthStore } from "@/store/company-auth-store";
 
 /** Stand y evento de la URL actual; fuera de una ruta con contexto, los de la cuenta por defecto. */
 function useAdminScope(): AdminScope {
@@ -33,7 +33,11 @@ function isItemActive(pathname: string, item: AdminNavigationItem): boolean {
 
 function AdminNavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const items = getAdminNavigation(useAdminScope());
+  const session = useCompanyAuthStore((state) => state.session);
+  const allItems = getAdminNavigation(useAdminScope());
+  const items = isSessionValid(session)
+    ? allItems.filter((item) => item.id === "company-profile" || item.id === "company-stands")
+    : [];
 
   return (
     <ul className="flex flex-col gap-1">
@@ -64,7 +68,7 @@ function AdminNavList({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-function AdminNavbar({ onMenuClick }: { onMenuClick: () => void }) {
+function AdminNavbar({ onMenuClick, onLogout }: { onMenuClick: () => void; onLogout: () => void }) {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b-2 border-[var(--expo-line)] bg-white/90 px-4 py-3 backdrop-blur-md sm:px-6">
       <div className="flex items-center gap-3">
@@ -82,9 +86,9 @@ function AdminNavbar({ onMenuClick }: { onMenuClick: () => void }) {
         </span>
       </div>
 
-      <Link href="/panel" className="text-xs font-bold text-[var(--expo-blue)] hover:underline">
-        Volver al panel
-      </Link>
+      <button type="button" onClick={onLogout} className="text-xs font-bold text-[var(--expo-blue)] hover:underline">
+        Cerrar sesión
+      </button>
     </header>
   );
 }
@@ -98,9 +102,6 @@ function AdminSidebar() {
       <nav aria-label="Módulos de administración">
         <AdminNavList />
       </nav>
-      <div className="mt-auto">
-        <MockControls />
-      </div>
     </aside>
   );
 }
@@ -116,9 +117,6 @@ function AdminMobileDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
           <nav aria-label="Módulos de administración">
             <AdminNavList onNavigate={() => onOpenChange(false)} />
           </nav>
-          <div className="mt-auto">
-            <MockControls />
-          </div>
         </Drawer.Content>
       </Drawer.Portal>
     </Drawer.Root>
@@ -127,6 +125,51 @@ function AdminMobileDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const authHydrated = useCompanyAuthStore((state) => state.hasHydrated);
+  const session = useCompanyAuthStore((state) => state.session);
+  const verifySession = useCompanyAuthStore((state) => state.verifySession);
+  const logout = useCompanyAuthStore((state) => state.logout);
+  const [sessionVerified, setSessionVerified] = useState(false);
+  const companyAdmin = isSessionValid(session) && sessionVerified;
+
+  useEffect(() => {
+    if (!authHydrated) return;
+    if (!session) {
+      setSessionVerified(false);
+      router.replace("/registro-empresa");
+      return;
+    }
+    let cancelled = false;
+    setSessionVerified(false);
+    void verifySession().then((valid) => {
+      if (cancelled) return;
+      if (valid) setSessionVerified(true);
+      else {
+        logout();
+        router.replace("/registro-empresa");
+      }
+    });
+    return () => { cancelled = true; };
+  }, [authHydrated, session?.accessToken, verifySession, logout, router]);
+
+  useEffect(() => {
+    if (companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands") {
+      router.replace("/admin/company/profile");
+    }
+  }, [companyAdmin, pathname, router]);
+
+  const restrictedCompanyRoute = !authHydrated || (companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands");
+
+  if (!authHydrated || !companyAdmin) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center gap-3 bg-[var(--expo-bg)] text-sm font-bold text-slate-400">
+        {authHydrated && !session ? <Lock aria-hidden="true" size={18} /> : <Loader2 aria-hidden="true" className="animate-spin" size={18} />}
+        <span>{authHydrated && !session ? "Necesitas una sesión de empresa para entrar." : "Verificando sesión de empresa…"}</span>
+      </div>
+    );
+  }
 
   return (
     <ToastProvider>
@@ -137,12 +180,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
         >
           Saltar al contenido
         </a>
-        <AdminNavbar onMenuClick={() => setDrawerOpen(true)} />
+        <AdminNavbar onMenuClick={() => setDrawerOpen(true)} onLogout={logout} />
         <div className="flex min-h-0 flex-1">
           <AdminSidebar />
           <AdminMobileDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
           <main id="admin-content" className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mx-auto w-full max-w-[1400px]">{children}</div>
+            <div className="mx-auto w-full max-w-[1400px]">{restrictedCompanyRoute ? null : children}</div>
           </main>
         </div>
       </div>

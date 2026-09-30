@@ -1,4 +1,5 @@
 import type { Mission } from "@/lib/types";
+import { DEMO_FIXTURE } from "@/data/demo-fixture";
 
 export const MISSIONS: Mission[] = [
   // ── VISIBLES (8) ─────────────────────────────────────────────────────────
@@ -32,15 +33,15 @@ export const MISSIONS: Mission[] = [
     accentColor: "text-[var(--expo-blue)]",
   },
   {
-    id: "explorador-expovia",
-    title: "Explorador ExpoVia",
-    shortDescription: "Visita 3 stands diferentes",
+    id: DEMO_FIXTURE.mission.id,
+    title: DEMO_FIXTURE.mission.title,
+    shortDescription: "Visita los tres stands de ejemplo",
     fullDescription:
-      "El verdadero explorador no se detiene. Visita 3 stands de cualquier categoría y demuestra que conoces la feria de punta a punta.",
+      DEMO_FIXTURE.mission.description,
     category: "general",
-    target: 3,
-    rewardPoints: 250,
-    standIds: ["stand-b1", "stand-b2", "stand-c1"],
+    target: DEMO_FIXTURE.mission.requiredVisits,
+    rewardPoints: 0,
+    standIds: [...DEMO_FIXTURE.mission.standIds],
     emoji: "map",
     color: "bg-green-100",
     accentColor: "text-[var(--expo-green)]",
@@ -92,7 +93,7 @@ export const MISSIONS: Mission[] = [
     title: "Embajador ExpoVia",
     shortDescription: "Comparte tu pasaporte en redes",
     fullDescription:
-      "Muéstrale al mundo que estás en La Paz Expone. Comparte tu pasaporte digital ExpoVia en redes sociales y conviértete en embajador de la feria.",
+      "Comparte el pasaporte digital de ejemplo de ExpoVia y muestra tu recorrido simulado por FIPAZ 2026.",
     category: "general",
     target: 1,
     specialAction: "share",
@@ -158,6 +159,9 @@ export function getMissionById(id: string): Mission | undefined {
 
 /** Friendly label for each stand demo ID */
 export const STAND_NAMES: Record<string, string> = {
+  "stand-altura-labs": `${DEMO_FIXTURE.stands[0].name} · Stand ${DEMO_FIXTURE.stands[0].boothCode}`,
+  "stand-kawsay-salud": `${DEMO_FIXTURE.stands[1].name} · Stand ${DEMO_FIXTURE.stands[1].boothCode}`,
+  "stand-sabor-andino": `${DEMO_FIXTURE.stands[2].name} · Stand ${DEMO_FIXTURE.stands[2].boothCode}`,
   "stand-a1": "TechBolivia · Stand A-01",
   "stand-a2": "InnovaLab · Stand A-02",
   "stand-a3": "SoftPaz · Stand A-03",

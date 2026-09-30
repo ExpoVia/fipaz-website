@@ -11,12 +11,14 @@ export type { PanelRole };
  */
 export interface ExhibitorProfile extends Stand {
   contactEmail?: string;
+  websiteUrl?: string;
 }
 
 /** Datos capturados en el formulario público de registro de una nueva empresa. */
 export interface CompanyRegistrationInput {
   name: string;
   category: StandCategory;
+  customCategory?: string;
   description: string;
   contactEmail: string;
 }
@@ -25,8 +27,11 @@ export interface CompanyRegistrationInput {
 export interface CompanyProfileInput {
   name: string;
   category: StandCategory;
+  customCategory?: string;
   description: string;
   contactEmail: string;
+  logoPath?: string;
+  websiteUrl?: string;
   tags: string[];
   activity?: string;
   promotion?: string;
@@ -68,4 +73,21 @@ export interface PanelEventSummary {
   city: string;
   status: "actual" | "proximamente" | "plantilla";
   description: string;
+}
+
+/** Un QR de check-in generado por la empresa para su stand. */
+export interface QrToken {
+  /** UUID corto único */
+  id: string;
+  standId: string;
+  /** Tiempo de vida en segundos (30 | 60 | 120 | 300) */
+  ttl: number;
+  /** Máximo de escaneos — 0 = ilimitado */
+  maxScans: number;
+  scansUsed: number;
+  /** ISO 8601 */
+  createdAt: string;
+  /** ISO 8601 */
+  expiresAt: string;
+  status: "active" | "expired" | "revoked";
 }

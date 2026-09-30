@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Boxes, CalendarDays, Gift, LayoutDashboard, ScanLine, Sparkles } from "lucide-react";
+import { Boxes, Building2, CalendarDays, Gift, LayoutDashboard, LayoutList, ScanLine, Sparkles } from "lucide-react";
 
 import { adminRoutes } from "@/config/admin-routes";
 import type { AdminScope } from "@/features/admin/admin-scope";
@@ -64,6 +64,22 @@ export function getAdminNavigation({ standId, eventId }: AdminScope): AdminNavig
       description: "Stock, reservas y ajustes",
       icon: Boxes,
       activePrefixes: [],
+    },
+    {
+      id: "company-profile",
+      href: "/admin/company/profile",
+      label: "Perfil de empresa",
+      description: "Editar datos públicos y logo",
+      icon: Building2,
+      activePrefixes: ["/admin/company/profile"],
+    },
+    {
+      id: "company-stands",
+      href: "/admin/company/stands",
+      label: "Mis stands",
+      description: "Descripción, etiquetas y promociones",
+      icon: LayoutList,
+      activePrefixes: ["/admin/company/stands"],
     },
   ];
 }

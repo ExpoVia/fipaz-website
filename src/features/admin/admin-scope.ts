@@ -1,4 +1,5 @@
 import { stands } from "@/data/demo-data";
+import { DEMO_FIXTURE } from "@/data/demo-fixture";
 import { MOCK_EXHIBITOR_STAND_ID, PANEL_EVENTS } from "@/data/panel-mock";
 import { API_MODE } from "@/lib/api/config";
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
@@ -6,7 +7,7 @@ import { apiGet } from "@/lib/api/http-client";
 
 /** Contexto por defecto del panel de empresa mientras no exista selección de cuenta real. */
 export const ADMIN_DEFAULT_STAND_ID = MOCK_EXHIBITOR_STAND_ID;
-export const ADMIN_DEFAULT_EVENT_ID = "event-fipaz-2026";
+export const ADMIN_DEFAULT_EVENT_ID = DEMO_FIXTURE.event.id;
 
 /** Stand y evento sobre los que trabaja el administrador. */
 export interface AdminScope {

@@ -88,7 +88,6 @@ function progressMissionsForVisit(
     }
   }
 
-  matchingMissionIds.add("explorador-expovia");
   if (state.visitedStandIds.length === 0) {
     matchingMissionIds.add("primer-contacto");
   }
@@ -260,7 +259,7 @@ export const useDemoStore = create<DemoStore>()(
             return { nfcStage: "duplicate" };
           }
 
-          const points = state.points + stand.points;
+          const points = state.points + VISIT_POINTS;
           const gamification = progressMissionsForVisit(
             state,
             standId,

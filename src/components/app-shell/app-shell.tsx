@@ -194,6 +194,10 @@ export function AppShell({
               isProfileActive={activeTab === "profile"}
             />
 
+            <div className="border-y border-[var(--expo-line)] bg-white px-4 py-1.5 text-center text-xs font-bold text-[var(--expo-navy)]">
+              Datos de demostración · puntos y visitas de ejemplo
+            </div>
+
             <main
               id="demo-content"
               className="app-screen-stack"

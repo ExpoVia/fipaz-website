@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Menu } from "lucide-react";
 
 import { BrandMark } from "@/components/shared/brand-mark";
+import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { RoleSwitcher } from "./role-switcher";
 
 interface PanelNavbarProps {
@@ -11,6 +12,8 @@ interface PanelNavbarProps {
 }
 
 export function PanelNavbar({ onMenuClick }: PanelNavbarProps) {
+  const companySession = useCompanyAuthStore((state) => state.session);
+  const authHydrated = useCompanyAuthStore((state) => state.hasHydrated);
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b-2 border-[var(--expo-line)] bg-white/90 px-4 py-3 backdrop-blur-md sm:px-6">
       <div className="flex items-center gap-3">
@@ -26,9 +29,7 @@ export function PanelNavbar({ onMenuClick }: PanelNavbarProps) {
         <BrandMark className="hidden lg:inline-flex" />
       </div>
 
-      <div className="hidden lg:block">
-        <RoleSwitcher />
-      </div>
+      {authHydrated && !companySession && <div className="hidden lg:block"><RoleSwitcher /></div>}
 
       <Link
         href="/"

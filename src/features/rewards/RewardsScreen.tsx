@@ -61,6 +61,7 @@ function RedeemModal({ reward, onConfirm, onCancel }: RedeemModalProps) {
             <h2 className="text-xl font-black text-[var(--expo-navy)]">{reward.title}</h2>
             <p className="mt-1 text-sm text-slate-500">{reward.description}</p>
           </div>
+          <span className="rounded-full border border-[var(--expo-blue)] bg-sky-50 px-3 py-1 text-xs font-bold text-[var(--expo-navy)]">Datos de demostración</span>
 
           <div className="flex items-center gap-2 rounded-xl border-2 border-[var(--expo-yellow)] bg-[#fff8e1] px-4 py-2">
             <Sparkles size={16} className="text-[var(--expo-yellow)]" aria-hidden="true" />
@@ -110,8 +111,8 @@ function RedeemSuccessModal({ reward, code, onClose }: { reward: Reward; code: s
         <div className="flex size-20 items-center justify-center rounded-2xl border-2 border-[var(--expo-green)] bg-[var(--expo-green)]/20 shadow-[4px_4px_0_var(--expo-green)] mx-auto">
           <CheckCircle2 size={40} className="text-[var(--expo-green)]" strokeWidth={2.5} />
         </div>
-        <h2 className="mt-4 text-2xl font-black text-[var(--expo-navy)]">¡Canjeado!</h2>
-        <p className="mt-1 text-sm text-slate-500">{reward.title}</p>
+        <h2 className="mt-4 text-2xl font-black text-[var(--expo-navy)]">Canje de ejemplo</h2>
+        <p className="mt-1 text-sm text-slate-500">Propuesta: {reward.title}</p>
 
         {/* Code display */}
         <div className="mt-4 rounded-2xl border-2 border-dashed border-[var(--expo-navy)] bg-[var(--expo-bg)] py-4">
@@ -119,11 +120,11 @@ function RedeemSuccessModal({ reward, code, onClose }: { reward: Reward; code: s
           <p className="mt-1 font-mono text-3xl font-black tracking-widest text-[var(--expo-navy)]">
             {code}
           </p>
-          <p className="mt-1 text-xs text-[var(--expo-coral)]">Demo conceptual · solo para entrevista</p>
+          <p className="mt-1 text-xs text-[var(--expo-coral)]">Datos de demostración · código sin validez</p>
         </div>
 
         <p className="mt-3 text-xs leading-relaxed text-slate-500">
-          En el producto real presentarías este código en el stand o puesto de canje. Sin stock real en esta demostración.
+          Esta simulación no entrega productos ni reserva stock. La organización debe confirmar cualquier premio y sus condiciones.
         </p>
 
         <button
@@ -164,7 +165,7 @@ function RewardCard({ reward, points, isRedeemed, onRedeem }: RewardCardProps) {
       {/* Redeemed ribbon */}
       {isRedeemed && (
         <div className="absolute right-0 top-0 z-10 rounded-bl-xl bg-[var(--expo-green)] px-3 py-1">
-          <span className="text-xs font-black text-white">CANJEADO</span>
+          <span className="text-xs font-black text-white">SIMULADO</span>
         </div>
       )}
 
@@ -215,7 +216,7 @@ function RewardCard({ reward, points, isRedeemed, onRedeem }: RewardCardProps) {
           {isRedeemed ? (
             <div className="flex items-center justify-center gap-2 rounded-xl bg-[var(--expo-green)]/10 px-3 py-2">
               <CheckCircle2 size={16} className="text-[var(--expo-green)]" aria-hidden="true" />
-              <span className="text-sm font-bold text-[var(--expo-green)]">¡Ya lo tienes!</span>
+              <span className="text-sm font-bold text-[var(--expo-green)]">Ejemplo guardado</span>
             </div>
           ) : isLocked ? (
             <div className="flex items-center justify-center gap-2 rounded-xl bg-slate-100 px-3 py-2">
@@ -229,7 +230,7 @@ function RewardCard({ reward, points, isRedeemed, onRedeem }: RewardCardProps) {
               onClick={onRedeem}
               className="w-full rounded-xl bg-[var(--expo-navy)] py-2.5 font-black text-sm text-white shadow-[3px_3px_0_var(--expo-blue)] transition-transform active:scale-95"
             >
-              Canjear ahora
+              Probar canje de ejemplo
             </button>
           )}
         </div>
@@ -299,7 +300,7 @@ export function RewardsScreen() {
               <p className="pixel-label opacity-75">Catálogo de premios</p>
               <h1 className="mt-2 text-2xl font-black leading-tight">Recompensas</h1>
               <p className="mt-2 max-w-xs text-sm font-medium leading-6 opacity-80">
-                Canjea tus puntos por premios reales
+                Ideas de premios para una futura edición
               </p>
             </div>
             <PointsPill points={points} />
@@ -310,7 +311,7 @@ export function RewardsScreen() {
         <div className="mt-4 flex items-center gap-2 rounded-xl border-2 border-dashed border-[var(--expo-line)] bg-white px-4 py-2">
           <Info size={14} className="shrink-0 text-[var(--expo-blue)]" aria-hidden="true" />
           <p className="text-xs text-slate-500">
-            <strong>Demo conceptual</strong> · Los premios son ilustrativos. En FIPAZ los organizadores definirán el catálogo real.
+            <strong>Datos de demostración</strong> · Premios propuestos; su disponibilidad y cualquier canje están sujetos a definición de la organización.
           </p>
         </div>
 
@@ -322,7 +323,7 @@ export function RewardsScreen() {
             </span>
             <p className="mt-3 font-black text-[var(--expo-navy)]">Aún no tienes puntos</p>
             <p className="mt-2 max-w-xs text-sm text-slate-500">
-              Visita stands con NFC y completa misiones para ganar puntos y canjearlos aquí.
+              Visita stands y completa misiones de ejemplo para ver cómo cambiarían tus puntos.
             </p>
           </div>
         )}
@@ -351,7 +352,7 @@ export function RewardsScreen() {
           <ul className="mt-3 grid gap-2">
             {[
               { Icon: ScanLine, color: "bg-[var(--expo-sky)]",  text: "Escanea NFC de un stand → +50 pts" },
-              { Icon: Trophy,   color: "bg-[#e3d2ef]",          text: "Completa una misión → +25 a 250 pts" },
+              { Icon: Trophy,   color: "bg-[#e3d2ef]",          text: "Acción de agenda de ejemplo → +25 pts" },
               { Icon: Camera,   color: "bg-[#fbdbe7]",          text: "Selfie con el stand → +75 pts" },
               { Icon: Share2,   color: "bg-[var(--expo-mint)]", text: "Comparte tu pasaporte → +100 pts" },
             ].map(({ Icon, color, text }) => (
@@ -371,7 +372,7 @@ export function RewardsScreen() {
         {/* ── Footer ── */}
         <div className="mt-4 flex items-center justify-center gap-2 text-[var(--expo-lilac)]">
           <Sparkles size={14} aria-hidden="true" />
-          <p className="text-xs font-bold">Más premios en FIPAZ 2026</p>
+          <p className="text-xs font-bold">Más propuestas de premios</p>
           <Sparkles size={14} aria-hidden="true" />
         </div>
       </div>

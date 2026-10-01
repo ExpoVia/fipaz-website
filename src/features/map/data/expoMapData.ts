@@ -8,9 +8,11 @@ export const categoryMeta: CategoryMeta[] = [
   { id: "technology", label: "Tecnologia (demo)", pattern: "TEC" },
   { id: "health", label: "Salud (demo)", pattern: "SAL" },
   { id: "food", label: "Gastronomia (demo)", pattern: "GAS" },
+  { id: "gastronomy", label: "Gastronomia artesanal (demo)", pattern: "ART" },
   { id: "finance", label: "Finanzas (demo)", pattern: "FIN" },
   { id: "unassigned", label: "Sin rubro confirmado", pattern: "S/R" },
 ];
+
 
 export const zones: Zone[] = [
   { id: "red", name: "Bloque Rojo", shortName: "Internacional I / II", category: "unassigned", color: "#f9ddda", borderColor: "#bd3636", labelX: 167, labelY: 173, path: "M45 135H290V460H45Z", description: "Internacional I en planta baja e Internacional II en planta alta." },

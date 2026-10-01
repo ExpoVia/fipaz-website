@@ -1,6 +1,6 @@
 import type { ElementType } from "react";
 
-export type StandCategory = "technology" | "health" | "food" | "finance" | "unassigned";
+export type StandCategory = "technology" | "health" | "food" | "gastronomy" | "finance" | "unassigned";
 
 export type PoiType =
   | "entrance"

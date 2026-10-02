@@ -152,19 +152,22 @@ column(fc,["G-26","G-27","G-28"],578,423,31,[48,43,44]); box(fc,"G-29",481,515,3
 box(fc,"G-20",34,507,34,50,15); box(fc,"G-19",107,527,61,32,18); box(fc,"G-18",163,574,36,52,15);
 row(fc,["G-17","G-16"],156,657,54,32,15); box(fc,"G-15",370,657,56,32,15);
 
-const demoExhibitors: Record<string, [string, Stand["category"]]> = {
+const demoExhibitors: Record<string, [string, Stand["category"], string?]> = {
   "red-lower:12": ["Altiplano Tech", "technology"], "red-lower:14": ["Nexo QR", "technology"],
   "red-lower:34": ["Kipu Editorial", "finance"], "red-upper:61": ["Ruta IoT", "technology"],
   "red-upper:77": ["Made With Love", "food"], "yellow-lower:4": ["Billetera 360", "finance"],
   "yellow-lower:28": ["EduFin Bolivia", "finance"], "yellow-upper:101": ["Vita Check", "health"],
   "yellow-upper:114": ["Bio Feria", "health"], "green-upper:5": ["Patino Lab", "technology"],
   "food-court:G-1": ["Sabor Costanera", "food"], "food-court:G-22": ["Cafe Illimani", "food"],
+  "yellow-upper:117": ["Altura Labs", "technology", "stand-altura-labs"],
+  "red-lower:24": ["Kawsay Salud", "health", "stand-kawsay-salud"],
+  "green-upper:8": ["Sabor Andino", "gastronomy", "stand-sabor-andino"],
 };
 
 export const planStands: Stand[] = mapPlans.flatMap((plan) => lots[plan.id].map(([code, x, y, width, height, area]) => {
   const demo = demoExhibitors[`${plan.id}:${code}`];
   return {
-    id: `${plan.id}-${code}`, code: String(code), name: demo?.[0] ?? `Espacio ${code}`,
+    id: demo?.[2] ?? `${plan.id}-${code}`, code: String(code), name: demo?.[0] ?? `Espacio ${code}`,
     shortName: demo?.[0] ?? String(code), category: demo?.[1] ?? "unassigned", zoneId: plan.zoneId, planId: plan.id,
     x, y, width, height, area, logoText: demo ? demo[0].split(" ").map((word) => word[0]).join("") : "",
     summary: demo ? "Expositor ficticio para la demo. No representa una asignacion de FIPAZ 2026." : "Espacio numerado en la referencia proporcionada. Expositor y rubro sin confirmar.",

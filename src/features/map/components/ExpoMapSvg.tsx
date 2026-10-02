@@ -29,7 +29,7 @@ function activate(event: KeyboardEvent<SVGGElement>, action: () => void) {
 function Overview({ onPlanPress }: Pick<ExpoMapSvgProps, "onPlanPress">) {
   return <>
     <path d="M30 480H1190V536H30Z" fill="#e7ebea" />
-    <text x="608" y="515" textAnchor="middle" fontSize="19" fill="#596460">Campo Ferial Chuquiago Marka</text>
+    <text x="608" y="515" textAnchor="middle" fontSize="19" fill="#596460">Recinto sujeto a confirmación</text>
     {zones.map((zone) => <g key={zone.id}>
       <path d={zone.path} fill={zone.color} stroke={zone.borderColor} strokeWidth="3" />
       <text x={zone.labelX} y={zone.labelY + (zone.id === "green" ? 35 : 0)} textAnchor="middle" fontWeight="700" fontSize="23">{zone.name}</text>

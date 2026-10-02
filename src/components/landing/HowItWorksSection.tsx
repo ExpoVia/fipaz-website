@@ -10,7 +10,7 @@ export function HowItWorksSection() {
     {
       num: "01",
       title: "Elige tu evento",
-      desc: "Accede a ExpoVia y selecciona la feria o exposición física a la que estás asistiendo (ej. FIPAZ 2026).",
+      desc: "Explora el evento de ejemplo FIPAZ 2026; sus fechas y recinto están sujetos a confirmación.",
       icon: <Calendar className="h-6 w-6 text-[var(--expo-blue)]" />,
       tag: "INICIO",
     },
@@ -24,14 +24,14 @@ export function HowItWorksSection() {
     {
       num: "03",
       title: "Sigue la ruta hasta el stand",
-      desc: "Abre el plano interactivo para orientarte en los pasillos y ver la distancia exacta hasta tu objetivo.",
+      desc: "Consulta un plano referencial con rutas ilustrativas; no indica distancias reales.",
       icon: <MapPin className="h-6 w-6 text-[var(--expo-coral)]" />,
       tag: "RECORRIDO",
     },
     {
       num: "04",
       title: "Acerca tu teléfono al NFC",
-      desc: "Al llegar al stand, acerca tu dispositivo a la placa inteligente ExpoVia para registrar tu visita, sumar puntos y desbloquear misiones.",
+      desc: "La demo simula el check-in, los puntos y el avance de una misión. No registra una visita real.",
       icon: <Smartphone className="h-6 w-6 text-[var(--expo-green)]" />,
       tag: "CHECK-IN",
     },
@@ -45,7 +45,7 @@ export function HowItWorksSection() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--expo-yellow)] px-3 py-1 font-mono text-xs font-black uppercase text-[var(--expo-navy)] border-2 border-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)] mb-4">
             <PixelStar className="w-3.5 h-3.5" />
-            PASO A PASO
+            DATOS DE DEMOSTRACIÓN · PASO A PASO
           </div>
 
           <h2 className="text-3xl font-black tracking-tight text-[var(--expo-navy)] sm:text-5xl">

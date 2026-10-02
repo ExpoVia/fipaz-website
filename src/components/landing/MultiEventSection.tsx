@@ -19,7 +19,7 @@ export function MultiEventSection() {
     {
       name: "Expocruz",
       location: "Santa Cruz, Bolivia",
-      status: "PRÓXIMAMENTE",
+      status: "PROYECCIÓN",
       statusColor: "bg-sky-100 text-[var(--expo-blue)]",
       desc: "Expansión proyectada para ferias multisectoriales de gran escala.",
       active: false,
@@ -27,7 +27,7 @@ export function MultiEventSection() {
     {
       name: "La Paz Expone",
       location: "La Paz, Bolivia",
-      status: "PLANTILLA LISTA",
+      status: "EJEMPLO",
       statusColor: "bg-purple-100 text-[var(--expo-purple)]",
       desc: "Integración modular para eventos empresariales e industriales.",
       active: false,
@@ -37,7 +37,7 @@ export function MultiEventSection() {
       location: "Nivel Nacional e Internacional",
       status: "ECOSISTEMA",
       statusColor: "bg-emerald-100 text-emerald-800",
-      desc: "Un solo perfil para conservar tu historial, contactos y recompensas.",
+      desc: "Un perfil común es parte de la propuesta; esta demo no sincroniza datos entre eventos.",
       active: false,
     },
   ];
@@ -50,7 +50,7 @@ export function MultiEventSection() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--expo-sky)]/30 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-[var(--expo-blue)] border border-sky-300 mb-3">
             <Globe aria-hidden="true" className="h-3.5 w-3.5" />
-            VISIÓN MULTI-EVENTO
+            DATOS DE DEMOSTRACIÓN · VISIÓN MULTI-EVENTO
           </div>
 
           <h2 className="text-3xl font-black tracking-tight text-[var(--expo-navy)] sm:text-5xl">
@@ -58,7 +58,7 @@ export function MultiEventSection() {
           </h2>
 
           <p className="mt-4 text-base sm:text-lg text-slate-600 font-medium">
-            ExpoVia nace como una experiencia para ferias, pero está diseñada para acompañar al visitante y al expositor en múltiples recintos.
+            La experiencia multi-evento es una propuesta en evaluación. Esta demo no comparte ni sincroniza datos entre ferias.
           </p>
 
           <p className="mt-3 text-sm text-slate-500 font-bold">

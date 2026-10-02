@@ -12,7 +12,7 @@ import { DEMO_FIXTURE } from "@/data/demo-fixture";
 
 export function NfcSection() {
   const nfcSequence = [
-    { step: "01", text: "Acerca tu teléfono", desc: "Sin descargar apps pesadas ni escanear QR complejos.", color: "bg-sky-50 border-sky-200" },
+    { step: "01", text: "Acerca tu teléfono", desc: "Paso ilustrativo; no activa el NFC del dispositivo.", color: "bg-sky-50 border-sky-200" },
     { step: "02", text: "NFC detectado (simulado)", desc: "La demo ilustra cómo podría validarse la presencia en un stand.", color: "bg-indigo-50 border-indigo-200" },
     { step: "03", text: "Visita de ejemplo", desc: "El check-in se muestra en el historial de demostración.", color: "bg-emerald-50 border-emerald-200" },
     { step: "04", text: `+${DEMO_FIXTURE.points.perNewVisit} puntos de ejemplo`, desc: `Regla ilustrativa: una visita nueva suma ${DEMO_FIXTURE.points.perNewVisit}; repetirla suma ${DEMO_FIXTURE.points.duplicateVisit}.`, color: "bg-amber-50 border-amber-200" },
@@ -26,7 +26,7 @@ export function NfcSection() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--expo-mint)]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-emerald-900 border border-emerald-300 mb-3">
             <Zap className="h-3.5 w-3.5 text-emerald-700" />
-            INTERACCIÓN PRESENCIAL SMART
+            INTERACCIÓN SIMULADA
           </div>
 
           <h2 className="text-3xl font-black tracking-tight text-[var(--expo-navy)] sm:text-5xl">
@@ -59,12 +59,12 @@ export function NfcSection() {
                       Secuencia de Check-in NFC
                     </h3>
                     <p className="text-xs text-slate-500 font-mono">
-                      PLACA INTELIGENTE EXPOVIA
+                      PLACA ILUSTRATIVA · SIN NFC ACTIVO
                     </p>
                   </div>
                 </div>
                 <span className="rounded bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-800 border border-emerald-300">
-                  ACTIVO
+                  SIMULACIÓN
                 </span>
               </div>
 

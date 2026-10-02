@@ -13,17 +13,17 @@ export function ActorsSection() {
       href: "/demo",
       cta: "Probar como visitante",
       title: "Para Visitantes",
-      subtitle: "Orientación, diversión y beneficios reales en cada paso.",
+      subtitle: "Una propuesta de orientación y dinámicas para visitantes.",
       icon: <User aria-hidden="true" className="h-7 w-7 text-white" />,
       headerBg: "bg-[var(--expo-blue)]",
       badgeColor: "bg-[var(--expo-sky)] text-[var(--expo-navy)]",
       features: [
-        "Descubrimiento inteligente de stands por rubro y afinidad.",
-        "Mapa digital interactivo con rutas optimizadas paso a paso.",
-        "Acumulación de puntos por registrar check-ins con NFC.",
-        "Misiones temáticas y desbloqueo de recompensas exclusivas.",
-        "Acceso instantáneo a catálogos, ofertas y promociones del stand.",
-        "Historial personal de visitas guardado en un solo perfil.",
+        "Exploración de stands ficticios por rubro.",
+        "Mapa de referencia con rutas ilustrativas.",
+        "Puntos de ejemplo por check-ins simulados.",
+        "Misiones de muestra y propuestas de recompensa.",
+        "Contenido de muestra para stands y promociones.",
+        "Historial local de visitas de demostración.",
       ],
     },
     {
@@ -31,17 +31,17 @@ export function ActorsSection() {
       href: "/panel/mi-stand",
       cta: "Abrir panel de expositor",
       title: "Para Expositores",
-      subtitle: "Captura de leads, visibilidad y tráfico calificado.",
+      subtitle: "Funciones propuestas para marcas participantes.",
       icon: <Store aria-hidden="true" className="h-7 w-7 text-[var(--expo-navy)]" />,
       headerBg: "bg-[var(--expo-yellow)]",
       badgeColor: "bg-[var(--expo-pink)] text-[var(--expo-navy)]",
       features: [
-        "Perfil digital de marca accesible antes, durante y después.",
-        "Aumento comprobable de tráfico físico guiado mediante rutas.",
-        "Registro inmediato de visitas mediante placas NFC con validación.",
-        "Publicación de ofertas relámpago dirigidas a visitantes cercanos.",
-        "Captura de prospectos y contactos calificados con seguimiento.",
-        "Métricas claras sobre horas pico, permanencia e impacto.",
+        "Vista de ejemplo del perfil digital de una marca.",
+        "Rutas ilustrativas para descubrir stands.",
+        "Simulación de check-in; la validación NFC no está conectada.",
+        "Ejemplos visuales de promociones, sin publicación en vivo.",
+        "Datos de prospectos y visitas usados solo como muestra.",
+        "Métricas de ejemplo, sin medición de asistencia real.",
       ],
     },
     {
@@ -49,17 +49,17 @@ export function ActorsSection() {
       href: "/panel/metricas-evento",
       cta: "Abrir panel de organizador",
       title: "Para Organizadores",
-      subtitle: "Control, analítica en vivo y una capa digital de primer nivel.",
+      subtitle: "Herramientas conceptuales para organizar una feria.",
       icon: <Building2 aria-hidden="true" className="h-7 w-7 text-white" />,
       headerBg: "bg-[var(--expo-purple)]",
       badgeColor: "bg-[var(--expo-mint)] text-[var(--expo-navy)]",
       features: [
-        "Gestión centralizada y actualización dinámica del mapa del evento.",
-        "Administración simplificada de pabellones, zonas y categorías.",
-        "Campañas de gamificación globales para dinamizar zonas frías.",
-        "Métricas consolidadas de afluencia y flujo de personas en tiempo real.",
-        "Experiencia uniforme que eleva el valor percibido del evento.",
-        "Infraestructura escalable lista para múltiples ferias y recintos.",
+        "Propuesta de gestión de pabellones, zonas y categorías.",
+        "Vista de ejemplo para administrar pabellones, zonas y categorías.",
+        "Propuesta de campañas de ejemplo para visitantes.",
+        "Vista ilustrativa de actividad, sin métricas de afluencia en vivo.",
+        "Propuesta de experiencia para un evento.",
+        "Concepto preparado para validarse en otros eventos.",
       ],
     },
   ];
@@ -72,7 +72,7 @@ export function ActorsSection() {
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-1.5 font-mono text-xs font-black uppercase tracking-wider text-[var(--expo-navy)] bg-white px-3 py-1 rounded-md border-2 border-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)] mb-3">
             <PixelStar className="w-3.5 h-3.5" />
-            VALOR MULTILATERAL
+            DATOS DE DEMOSTRACIÓN · FUNCIONES PROPUESTAS
           </span>
 
           <h2 className="text-3xl font-black tracking-tight text-[var(--expo-navy)] sm:text-5xl">
@@ -80,7 +80,7 @@ export function ActorsSection() {
           </h2>
 
           <p className="mt-4 text-base sm:text-lg text-slate-700 font-medium">
-            ExpoVia crea un círculo virtuoso que beneficia simultáneamente al público asistente, a las marcas participantes y a la empresa organizadora.
+            La demo presenta una propuesta para visitantes, marcas y organizadores. Sus interacciones y métricas son ilustrativas.
           </p>
         </div>
 

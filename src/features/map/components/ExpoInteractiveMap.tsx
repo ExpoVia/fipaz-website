@@ -109,6 +109,7 @@ export function ExpoInteractiveMap({ stands, selectedStandId, visitedStandIds, o
           <IconButton label="Filtros" pressed={panel === "filters"} onClick={() => setPanel(panel === "filters" ? null : "filters")}><SlidersHorizontal size={18} /></IconButton>
         </div>
       </div>
+      <p className={styles.demoNotice}>Datos de demostración · expositores, ubicaciones y visitas simulados</p>
       <div className={styles.row}>
         {plan && <IconButton label="Volver al recinto" onClick={() => changePlan(null)}><ArrowLeft size={18} /></IconButton>}
         <select aria-label="Bloque o plaza" className={styles.select} value={plan?.zoneId ?? ""} onChange={(event) => changePlan(resolvePlan(event.target.value))}>
@@ -145,14 +146,14 @@ export function ExpoInteractiveMap({ stands, selectedStandId, visitedStandIds, o
         <IconButton label="Acercar" onClick={() => { void transform.current?.zoomIn(.5, duration); }}><Plus size={18} /></IconButton>
         <IconButton label="Alejar" onClick={() => { void transform.current?.zoomOut(.5, duration); }}><Minus size={18} /></IconButton>
         <IconButton label="Centrar" onClick={() => { void transform.current?.resetTransform(duration); }}><RotateCcw size={17} /></IconButton>
-        <IconButton label="¿Dónde estoy?" onClick={() => {
+        <IconButton label="Ver acceso simulado" onClick={() => {
           setSheetId(null); setRouteId(null);
           if (!plan) { changePlan("entrance"); pendingFocus.current = "you-are-here"; }
           else zoomTo("you-are-here", 2.4);
         }}><LocateFixed size={18} /></IconButton>
       </div>
     </div>
-    <footer className={styles.footer}><span>{plan ? `${results.length} espacios` : "3 bloques · 7 planos"}</span><span><span className={styles.dot} />{plan ? "Ubicacion simulada en el acceso" : "Chuquiago Marka"}</span></footer>
+    <footer className={styles.footer}><span>{plan ? `${results.length} espacios de ejemplo` : "3 bloques · 7 planos de referencia"}</span><span><span className={styles.dot} />{plan ? "Acceso simulado · recinto sujeto a confirmación" : "Recinto sujeto a confirmación"}</span></footer>
 
     {panel && <aside className={styles.panel} aria-label={panel === "filters" ? "Filtros del mapa" : "Directorio de espacios"}>
       <div className={styles.panelTitle}>{panel === "filters" ? "Filtros" : "Espacios"}<IconButton label="Cerrar panel" onClick={() => setPanel(null)}><X size={16} /></IconButton></div>
@@ -198,7 +199,7 @@ export function ExpoMapDemoScreen() {
     if (openStandId) dialog.current?.showModal();
   }, [openStandId]);
   return <>
-    <ExpoInteractiveMap stands={expoStands} selectedStandId={selectedStandId} visitedStandIds={["red-lower-14", "yellow-lower-4", "green-upper-5"]} onSelectStand={setSelectedStandId} onOpenStand={setOpenStandId} />
+    <ExpoInteractiveMap stands={expoStands} selectedStandId={selectedStandId} visitedStandIds={[]} onSelectStand={setSelectedStandId} onOpenStand={setOpenStandId} />
     <dialog ref={dialog} className={styles.exhibitorDialog} aria-label="Expositor demostrativo" onClose={() => setOpenStandId(null)}>
       {openStand && <>
         <div className={styles.heading}><div><p className={styles.muted}>Expositor demostrativo</p><h2>{openStand.name}</h2></div><IconButton label="Cerrar expositor" onClick={() => dialog.current?.close()}><X size={18} /></IconButton></div>

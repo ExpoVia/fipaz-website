@@ -15,31 +15,31 @@ export function SolutionSection() {
     },
     {
       name: "Ver mapa",
-      desc: "Ubica el stand exacto en el plano interactivo.",
+      desc: "Consulta la ubicación de referencia en un plano de ejemplo.",
       icon: <Map className="h-5 w-5 text-white" />,
       color: "bg-[var(--expo-purple)]",
     },
     {
       name: "Llegar",
-      desc: "Sigue la ruta optimizada por los pasillos.",
+      desc: "Prueba un recorrido ilustrativo por los pasillos.",
       icon: <Navigation className="h-5 w-5 text-white" />,
       color: "bg-[var(--expo-lilac)]",
     },
     {
       name: "Tocar NFC",
-      desc: "Acerca tu celular para validar la visita.",
+      desc: "La demo simula un check-in; no valida una visita real.",
       icon: <Smartphone className="h-5 w-5 text-[var(--expo-navy)]" />,
       color: "bg-[var(--expo-mint)]",
     },
     {
       name: "Ganar",
-      desc: "Suma puntos y completa misiones en vivo.",
+      desc: "Explora una misión y puntos de ejemplo, sin sincronización en vivo.",
       icon: <Gift className="h-5 w-5 text-[var(--expo-navy)]" />,
       color: "bg-[var(--expo-yellow)]",
     },
     {
       name: "Conectar",
-      desc: "Guarda información y mantén el contacto.",
+      desc: "Revisa información ficticia de las empresas del guion.",
       icon: <Users className="h-5 w-5 text-white" />,
       color: "bg-[var(--expo-coral)]",
     },
@@ -53,7 +53,7 @@ export function SolutionSection() {
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-1.5 font-mono text-xs font-black uppercase tracking-wider text-[var(--expo-purple)] bg-purple-50 px-3 py-1 rounded-full border border-purple-200 mb-3">
             <PixelStar className="w-3.5 h-3.5" />
-            LA EXPERIENCIA EXPOVIA
+            DATOS DE DEMOSTRACIÓN · EXPOVIA
           </span>
 
           <h2 className="text-3xl font-black tracking-tight text-[var(--expo-navy)] sm:text-5xl">

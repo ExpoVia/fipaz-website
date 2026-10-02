@@ -6,10 +6,10 @@ import { ArrowRight, ChevronDown, Compass, Gift, Smartphone, Award } from "lucid
 import { pixelifyFont, pressStartFont } from "./fonts";
 
 const benefits = [
-  { icon: <Compass className="h-4 w-4 text-[var(--expo-blue)]" />, text: "Explora el evento" },
-  { icon: <Smartphone className="h-4 w-4 text-[var(--expo-green)]" />, text: "Stands con NFC" },
-  { icon: <Award className="h-4 w-4 text-[var(--expo-purple)]" />, text: "Completa misiones" },
-  { icon: <Gift className="h-4 w-4 text-[var(--expo-coral)]" />, text: "Desbloquea recompensas" },
+  { icon: <Compass className="h-4 w-4 text-[var(--expo-blue)]" />, text: "Explora el mapa demo" },
+  { icon: <Smartphone className="h-4 w-4 text-[var(--expo-green)]" />, text: "Simula visitas NFC" },
+  { icon: <Award className="h-4 w-4 text-[var(--expo-purple)]" />, text: "Prueba misiones" },
+  { icon: <Gift className="h-4 w-4 text-[var(--expo-coral)]" />, text: "Mira premios propuestos" },
 ];
 
 export function HeroSection() {
@@ -30,7 +30,7 @@ export function HeroSection() {
             <div className="inline-flex max-w-full items-center gap-2 rounded-full border-2 border-[var(--expo-navy)] bg-white/95 px-3 py-2 shadow-[3px_3px_0_var(--expo-navy)] sm:px-4">
               <span className="text-xs font-black text-[var(--expo-blue)]">✦</span>
               <span className={`${pressStartFont.className} text-[8px] leading-relaxed uppercase tracking-wide text-[var(--expo-navy)] sm:text-[10px] sm:tracking-wider`}>
-                Ferias más vivas, visitas con sentido
+                Datos de demostración · NFC y puntos simulados
               </span>
             </div>
           </motion.div>
@@ -55,7 +55,7 @@ export function HeroSection() {
             transition={{ duration: 0.45, delay: 0.1 }}
             className="mt-6 max-w-xl text-[15px] leading-relaxed font-medium text-slate-700 sm:mt-7 sm:text-xl"
           >
-            ExpoVia convierte las ferias físicas en experiencias digitales navegables, interactivas y medibles. Descubre stands, encuentra tu ruta, registra visitas con NFC, completa misiones y conecta con lo que buscas.
+            ExpoVia es una propuesta digital para ferias. Esta demo usa stands, rutas y visitas ficticios; el check-in NFC y los puntos son simulaciones.
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.15 }} className="mt-7 flex flex-col items-stretch gap-4 sm:mt-8 sm:flex-row sm:items-center">
@@ -74,9 +74,9 @@ export function HeroSection() {
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.2 }} className="mt-8 grid max-w-2xl grid-cols-2 gap-2.5 sm:mt-10 sm:grid-cols-4 sm:gap-3">
             {benefits.map((item) => (
-              <div key={item.text} className="flex min-h-14 items-center gap-2 rounded-lg border-2 border-[var(--expo-line)] bg-white/92 p-2.5 shadow-sm backdrop-blur-sm">
+              <div key={item.text} className="flex min-h-14 min-w-0 items-center gap-2 rounded-lg border-2 border-[var(--expo-line)] bg-white/92 p-2.5 shadow-sm backdrop-blur-sm">
                 {item.icon}
-                <span className="text-[11px] leading-tight font-bold text-[var(--expo-navy)] sm:text-xs">{item.text}</span>
+                <span className="min-w-0 text-[11px] leading-tight font-bold text-[var(--expo-navy)] [overflow-wrap:anywhere] sm:text-xs">{item.text}</span>
               </div>
             ))}
           </motion.div>

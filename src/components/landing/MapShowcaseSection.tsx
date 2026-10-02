@@ -18,15 +18,15 @@ export function MapShowcaseSection() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-emerald-800 border border-emerald-300 mb-3">
             <Compass className="h-3.5 w-3.5 text-emerald-600" />
-            MAPA DIGITAL INTEGRADO
+            MAPA DE DEMOSTRACIÓN
           </div>
 
           <h2 className="text-3xl font-black tracking-tight text-[var(--expo-navy)] sm:text-5xl">
-            Encuentra lo que buscas antes de perderte entre los pasillos.
+            Explora un plano de referencia para FIPAZ 2026.
           </h2>
 
           <p className="mt-4 text-base sm:text-lg text-slate-600 font-medium">
-            Mapa interactivo en tiempo real con zoom, filtros por categoría, búsqueda de stands y cálculo de rutas.
+            El mapa permite probar zoom, filtros, búsqueda y rutas ilustrativas. Las ubicaciones no son asignaciones confirmadas de FIPAZ.
           </p>
         </div>
 
@@ -42,7 +42,7 @@ export function MapShowcaseSection() {
             }`}
           >
             <Sparkles className="h-4 w-4" />
-            Mapa Interactivo Vivo
+            Mapa Interactivo de Ejemplo
           </button>
 
           <button
@@ -73,15 +73,15 @@ export function MapShowcaseSection() {
           {/* Top Bar inside Map Frame */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 text-white">
             <div className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full bg-emerald-400 animate-ping" />
+                <span className="h-3 w-3 rounded-full bg-emerald-400" />
               <span className="font-mono text-xs font-black text-emerald-400 uppercase tracking-widest">
-                {viewMode === "interactive" ? "FIPAZ 2026 — INTERACTIVE ENGINE" : "FIPAZ 2026 — VISTA PANORÁMICA"}
+                {viewMode === "interactive" ? "FIPAZ 2026 — MAPA DE EJEMPLO" : "FIPAZ 2026 — PLANO REFERENCIAL"}
               </span>
             </div>
 
             {/* Mandatory Tag Label */}
             <span className="font-mono text-[10px] font-black uppercase text-amber-300 bg-amber-950/60 px-3 py-1 rounded-md border border-amber-500/40">
-              Mapa conceptual · Datos ilustrativos
+              Datos de demostración · Ubicaciones ficticias
             </span>
           </div>
 
@@ -172,7 +172,7 @@ export function MapShowcaseSection() {
                 <div className="absolute bottom-16 left-20 animate-bounce">
                   <div className="flex flex-col items-center">
                     <span className="bg-[var(--expo-yellow)] text-[var(--expo-navy)] font-mono text-[9px] font-black px-2 py-0.5 rounded border border-[var(--expo-navy)] shadow-xs">
-                      Tu Ubicación
+                      Punto simulado
                     </span>
                     <PixelMapPin className="w-7 h-7" color="#FFC21A" />
                   </div>
@@ -185,7 +185,7 @@ export function MapShowcaseSection() {
           {/* Bottom CTA Bar */}
           <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800 text-white">
             <p className="text-xs sm:text-sm font-medium text-slate-300 text-center sm:text-left">
-              Experimenta el motor de mapa interactivo completo con zoom, rutas de stands y navegación presencial en la demo móvil.
+              Prueba el zoom, los filtros y las rutas ilustrativas del mapa de demostración.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 shrink-0">

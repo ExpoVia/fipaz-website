@@ -45,7 +45,7 @@ export function PanelShell({ children }: PanelShellProps) {
               <>
                 <p className="mb-5 flex items-start gap-2 rounded-xl border-2 border-[var(--expo-blue)] bg-white px-3 py-2.5 text-xs font-medium leading-5 text-[var(--expo-navy)]">
                   <Info size={16} className="mt-0.5 shrink-0 text-[var(--expo-blue)]" aria-hidden="true" />
-                  <span><strong>Datos de demostración.</strong> Visitas, prospectos, puntos y métricas son ejemplos; las fechas y el recinto de FIPAZ están sujetos a confirmación.</span>
+                  <span><strong>Datos de demostración.</strong> Perfiles, stands, promociones, premios, visitas, prospectos, puntos y métricas son ejemplos; las fechas y el recinto de FIPAZ están sujetos a confirmación.</span>
                 </p>
                 {children}
               </>

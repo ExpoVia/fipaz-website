@@ -3,10 +3,9 @@
 import { Drawer } from "vaul";
 
 import { getPanelNavigationForRole } from "@/config/panel-navigation";
-import { usePanelStore } from "@/store/panel-store";
+import { getActivePanel } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { PanelNavList } from "./panel-nav-list";
-import { RoleSwitcher } from "./role-switcher";
 
 interface PanelMobileDrawerProps {
   open: boolean;
@@ -14,10 +13,8 @@ interface PanelMobileDrawerProps {
 }
 
 export function PanelMobileDrawer({ open, onOpenChange }: PanelMobileDrawerProps) {
-  const activeRole = usePanelStore((state) => state.activeRole);
-  const companySession = useCompanyAuthStore((state) => state.session);
-  const authHydrated = useCompanyAuthStore((state) => state.hasHydrated);
-  const items = getPanelNavigationForRole(companySession?.role === "company_admin" ? "expositor" : activeRole);
+  const activePanel = useCompanyAuthStore((state) => getActivePanel(state.session));
+  const items = activePanel ? getPanelNavigationForRole(activePanel) : [];
 
   return (
     <Drawer.Root direction="left" open={open} onOpenChange={onOpenChange}>
@@ -27,7 +24,6 @@ export function PanelMobileDrawer({ open, onOpenChange }: PanelMobileDrawerProps
           className="fixed inset-y-0 left-0 z-50 flex w-[85vw] max-w-xs flex-col gap-4 border-r-2 border-[var(--expo-navy)] bg-[var(--expo-card)] p-4 outline-none lg:hidden"
         >
           <Drawer.Title className="sr-only">Navegación del panel</Drawer.Title>
-          {authHydrated && !companySession && <RoleSwitcher className="self-start" />}
           <PanelNavList items={items} onNavigate={() => onOpenChange(false)} />
         </Drawer.Content>
       </Drawer.Portal>

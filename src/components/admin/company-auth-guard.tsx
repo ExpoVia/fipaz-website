@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { Loader2, Lock } from "lucide-react";
 
+import { accessRoute, hasPanelAccess } from "@/lib/panel-access";
 import { isSessionValid, useCompanyAuthStore } from "@/store/company-auth-store";
 import { usePanelStore } from "@/store/panel-store";
 
@@ -14,14 +15,13 @@ interface CompanyAuthGuardProps {
 }
 
 /** Guard visual del área de empresa; AdminShell aplica el guard a todo /admin/*. */
-export function CompanyAuthGuard({ children, redirectTo = "/registro-empresa" }: CompanyAuthGuardProps) {
+export function CompanyAuthGuard({ children, redirectTo = accessRoute("expositor") }: CompanyAuthGuardProps) {
   const router = useRouter();
   const hasHydrated = useCompanyAuthStore((state) => state.hasHydrated);
   const panelHydrated = usePanelStore((state) => state.hasHydrated);
   const session = useCompanyAuthStore((state) => state.session);
   const verifySession = useCompanyAuthStore((state) => state.verifySession);
-  const logout = useCompanyAuthStore((state) => state.logout);
-  const valid = isSessionValid(session);
+  const valid = isSessionValid(session) && hasPanelAccess(session, "expositor");
   const [verified, setVerified] = useState(false);
 
   useEffect(() => {
@@ -33,14 +33,11 @@ export function CompanyAuthGuard({ children, redirectTo = "/registro-empresa" }:
     let cancelled = false;
     void verifySession().then((isValid) => {
       if (cancelled) return;
-      if (isValid) setVerified(true);
-      else {
-        logout();
-        router.replace(redirectTo);
-      }
+      if (isValid && hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) setVerified(true);
+      else router.replace(redirectTo);
     });
     return () => { cancelled = true; };
-  }, [hasHydrated, session?.accessToken, verifySession, logout, router, redirectTo]);
+  }, [hasHydrated, session?.accessToken, verifySession, router, redirectTo]);
 
   if (!hasHydrated || !panelHydrated || !verified || (session && !valid)) {
     return (

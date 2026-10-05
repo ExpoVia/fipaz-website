@@ -4,22 +4,28 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import {
-  authenticateCompanyWithGoogle,
-  companyUserHasAdminRole,
-  fetchCompanyUser,
-  normalizeCompanyUser,
+  authenticateWithGoogle,
+  fetchAuthMe,
   refreshCompanyTokens,
+  revokeAllServerSessions,
+  revokeServerSession,
+  type AuthMe,
   type CompanyAuthTokens,
+  type RoleAssignment,
 } from "@/lib/api/company-auth";
 
-export type CompanyAuthRole = "company_admin" | "guest";
-
+/**
+ * Sesión del panel. Una sola sesión (cuenta de Google) puede tener varios roles reales
+ * (`GET /auth/me`): expositor de una o más empresas y/o organizador de eventos.
+ * El rol activo decide en qué panel está trabajando; los permisos siempre los valida el backend.
+ */
 export interface CompanySession {
-  companyId: string;
-  companyName: string;
+  userId: string;
   email: string;
-  googleSub: string;
-  role: CompanyAuthRole;
+  displayName: string;
+  roles: RoleAssignment[];
+  /** Id de la asignación de `user_roles` con la que se opera ahora. */
+  activeRoleId: string | null;
   accessToken: string;
   refreshToken: string;
   expiresAt: string;
@@ -30,12 +36,24 @@ interface CompanyAuthStore {
   session: CompanySession | null;
   hasHydrated: boolean;
   setHasHydrated: () => void;
-  loginWithGoogle: (idToken: string) => Promise<void>;
-  setCompanyIdentity: (companyId: string, companyName: string) => void;
+  /** Inicia sesión y devuelve la identidad con sus roles, para que quien llama decida a dónde ir. */
+  loginWithGoogle: (idToken: string) => Promise<AuthMe>;
+  /** Cambia el rol con el que se opera (p. ej. de una empresa a otra, o de expositor a organizador). */
+  setActiveRole: (roleId: string) => void;
   refreshAccessToken: () => Promise<boolean>;
+  /**
+   * Renueva el token si hace falta y vuelve a leer `/auth/me`, de modo que los roles reflejen
+   * al instante cualquier alta o revocación. Devuelve `false` si la sesión ya no es válida.
+   */
   verifySession: () => Promise<boolean>;
-  logout: () => void;
+  /** Cierra la sesión local de inmediato e invalida la del servidor (`POST /auth/logout`). */
+  logout: () => Promise<void>;
+  /** Como `logout`, pero invalida todos los dispositivos (`POST /auth/logout-all`). */
+  logoutAll: () => Promise<void>;
 }
+
+const ACCESS_TOKEN_FALLBACK_SECONDS = 15 * 60;
+const REFRESH_TOKEN_SECONDS = 30 * 24 * 60 * 60;
 
 let refreshInFlight: Promise<boolean> | null = null;
 
@@ -53,115 +71,147 @@ function expiration(seconds: number | undefined, fallbackSeconds: number): strin
   return new Date(Date.now() + (seconds ?? fallbackSeconds) * 1000).toISOString();
 }
 
-function sessionFrom(user: ReturnType<typeof normalizeCompanyUser>, tokens: CompanyAuthTokens, role: CompanyAuthRole): CompanySession {
+function isPast(isoDate: string): boolean {
+  const time = Date.parse(isoDate);
+  return !Number.isFinite(time) || time <= Date.now();
+}
+
+function sessionFrom(me: AuthMe, tokens: CompanyAuthTokens): CompanySession {
   return {
-    ...user,
-    role,
+    userId: me.id,
+    email: me.email,
+    displayName: me.displayName,
+    roles: me.roles,
+    activeRoleId: me.roles[0]?.id ?? null,
     accessToken: tokens.accessToken,
     refreshToken: tokens.refreshToken,
-    expiresAt: expiration(tokens.expiresIn, 15 * 60),
-    refreshExpiresAt: expiration(tokens.refreshExpiresIn, 30 * 24 * 60 * 60),
+    expiresAt: expiration(tokens.expiresIn, ACCESS_TOKEN_FALLBACK_SECONDS),
+    refreshExpiresAt: expiration(undefined, REFRESH_TOKEN_SECONDS),
   };
+}
+
+function hasStatus(error: unknown, status: number): boolean {
+  return error instanceof Error && "status" in error && error.status === status;
 }
 
 export const useCompanyAuthStore = create<CompanyAuthStore>()(
   persist(
-    (set, get) => ({
-      session: null,
-      hasHydrated: false,
-
-      setHasHydrated: () => set({ hasHydrated: true }),
-
-      loginWithGoogle: async (idToken) => {
-        const { tokens, user } = await authenticateCompanyWithGoogle(idToken, getDeviceId());
-        set({ session: sessionFrom(normalizeCompanyUser(user), tokens, companyUserHasAdminRole(user) ? "company_admin" : "guest") });
-      },
-
-      setCompanyIdentity: (companyId, companyName) => {
-        const session = get().session;
-        if (session) set({ session: { ...session, companyId, companyName } });
-      },
-
-      refreshAccessToken: async () => {
-        if (refreshInFlight) return refreshInFlight;
-        refreshInFlight = (async () => {
-          const current = get().session;
-          const refreshExpiry = current ? Date.parse(current.refreshExpiresAt) : Number.NaN;
-          if (!current?.refreshToken || !Number.isFinite(refreshExpiry) || refreshExpiry <= Date.now()) {
-            set({ session: null });
-            return false;
-          }
-          try {
-            const tokens = await refreshCompanyTokens(current.refreshToken, getDeviceId());
-            set({ session: { ...current, ...tokens, expiresAt: expiration(tokens.expiresIn, 15 * 60), refreshExpiresAt: expiration(tokens.refreshExpiresIn, 30 * 24 * 60 * 60) } });
-            return true;
-          } catch {
-            set({ session: null });
-            return false;
-          } finally {
-            refreshInFlight = null;
-          }
-        })();
-        return refreshInFlight;
-      },
-
-      verifySession: async () => {
-        let current = get().session;
-        if (!current) return false;
-        if (Date.parse(current.expiresAt) <= Date.now()) {
-          if (!await get().refreshAccessToken()) return false;
-          current = get().session;
-        }
-        if (!current?.accessToken) return false;
-        try {
-          const user = await fetchCompanyUser(current.accessToken);
-          if (!companyUserHasAdminRole(user)) {
-            set({ session: null });
-            return false;
-          }
-          const identity = normalizeCompanyUser(user);
-          set({ session: {
+    (set, get) => {
+      /** Aplica la identidad recién leída conservando el rol activo si todavía existe. */
+      function applyIdentity(me: AuthMe): void {
+        const current = get().session;
+        if (!current) return;
+        const stillActive = me.roles.some((role) => role.id === current.activeRoleId);
+        set({
+          session: {
             ...current,
-            ...identity,
-            companyId: identity.companyId || current.companyId,
-            companyName: identity.companyName || current.companyName,
-            email: identity.email || current.email,
-            googleSub: identity.googleSub || current.googleSub,
-            role: "company_admin",
-          } });
-          return true;
-        } catch (error) {
-          if (error instanceof Error && "status" in error && error.status === 401) {
-            if (await get().refreshAccessToken()) {
-              const refreshed = get().session;
-              if (!refreshed) return false;
-              try {
-                const user = await fetchCompanyUser(refreshed.accessToken);
-                if (companyUserHasAdminRole(user)) {
-                  const identity = normalizeCompanyUser(user);
-                  set({ session: {
-                    ...refreshed,
-                    ...identity,
-                    companyId: identity.companyId || refreshed.companyId,
-                    companyName: identity.companyName || refreshed.companyName,
-                    email: identity.email || refreshed.email,
-                    googleSub: identity.googleSub || refreshed.googleSub,
-                    role: "company_admin",
-                  } });
-                  return true;
-                }
-              } catch { /* La sesión se cierra abajo si la API la rechaza. */ }
-            }
-          }
-          set({ session: null });
-          return false;
-        }
-      },
+            userId: me.id,
+            email: me.email,
+            displayName: me.displayName,
+            roles: me.roles,
+            activeRoleId: stillActive ? current.activeRoleId : (me.roles[0]?.id ?? null),
+          },
+        });
+      }
 
-      logout: () => set({ session: null }),
-    }),
+      async function endSession(
+        revoke: (tokens: CompanyAuthTokens, accessTokenExpired: boolean) => Promise<void>,
+      ): Promise<void> {
+        const current = get().session;
+        // Primero lo local: el cierre no puede depender de que el backend responda.
+        set({ session: null });
+        if (!current || isPast(current.refreshExpiresAt)) return;
+        await revoke(
+          { accessToken: current.accessToken, refreshToken: current.refreshToken },
+          isPast(current.expiresAt),
+        );
+      }
+
+      return {
+        session: null,
+        hasHydrated: false,
+
+        setHasHydrated: () => set({ hasHydrated: true }),
+
+        loginWithGoogle: async (idToken) => {
+          const { tokens, me } = await authenticateWithGoogle(idToken, getDeviceId());
+          set({ session: sessionFrom(me, tokens) });
+          return me;
+        },
+
+        setActiveRole: (roleId) => {
+          const current = get().session;
+          if (current?.roles.some((role) => role.id === roleId)) {
+            set({ session: { ...current, activeRoleId: roleId } });
+          }
+        },
+
+        refreshAccessToken: async () => {
+          if (refreshInFlight) return refreshInFlight;
+          refreshInFlight = (async () => {
+            const current = get().session;
+            if (!current?.refreshToken || isPast(current.refreshExpiresAt)) {
+              set({ session: null });
+              return false;
+            }
+            try {
+              const tokens = await refreshCompanyTokens(current.refreshToken);
+              const latest = get().session ?? current;
+              set({
+                session: {
+                  ...latest,
+                  accessToken: tokens.accessToken,
+                  refreshToken: tokens.refreshToken,
+                  expiresAt: expiration(tokens.expiresIn, ACCESS_TOKEN_FALLBACK_SECONDS),
+                  refreshExpiresAt: expiration(undefined, REFRESH_TOKEN_SECONDS),
+                },
+              });
+              return true;
+            } catch {
+              set({ session: null });
+              return false;
+            } finally {
+              refreshInFlight = null;
+            }
+          })();
+          return refreshInFlight;
+        },
+
+        verifySession: async () => {
+          const initial = get().session;
+          if (!initial) return false;
+          if (isPast(initial.expiresAt) && !(await get().refreshAccessToken())) return false;
+
+          const current = get().session;
+          if (!current) return false;
+
+          try {
+            applyIdentity(await fetchAuthMe(current.accessToken));
+            return true;
+          } catch (error) {
+            // Un 401 puede ser solo un access token vencido: se renueva y se reintenta una vez.
+            if (hasStatus(error, 401) && (await get().refreshAccessToken())) {
+              const refreshed = get().session;
+              if (refreshed) {
+                try {
+                  applyIdentity(await fetchAuthMe(refreshed.accessToken));
+                  return true;
+                } catch {
+                  // La sesión se cierra abajo si la API la rechaza otra vez.
+                }
+              }
+            }
+            set({ session: null });
+            return false;
+          }
+        },
+
+        logout: () => endSession(revokeServerSession),
+        logoutAll: () => endSession(revokeAllServerSessions),
+      };
+    },
     {
-      name: "expovia-company-auth:v3",
+      name: "expovia-company-auth:v4",
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({ session: state.session }),
       onRehydrateStorage: () => (state) => state?.setHasHydrated(),
@@ -169,9 +219,7 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
   ),
 );
 
-/** La identidad y el rol provienen de la validación del backend. */
-export function isSessionValid(session: CompanySession | null): boolean {
-  if (!session || session.role !== "company_admin" || !session.accessToken || !session.refreshToken) return false;
-  const expiry = Date.parse(session.expiresAt);
-  return Number.isFinite(expiry) && expiry > Date.now();
+/** La sesión tiene tokens y el access token no ha vencido (el rol y los permisos los valida el backend). */
+export function isSessionValid(session: CompanySession | null): session is CompanySession {
+  return !!session && !!session.accessToken && !!session.refreshToken && !isPast(session.expiresAt);
 }

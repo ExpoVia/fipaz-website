@@ -1,40 +1,59 @@
+import { z } from "zod";
+
+import { readApiErrorMessage, unwrapEnvelope } from "@/lib/api/api-envelope";
 import { companyFetch } from "@/lib/api/company-fetch";
 import type { CompanyRegistrationInput } from "@/types/panel";
 
 export class CompanyRegistrationError extends Error {}
 
-interface CompanyIdentityResponse {
-  id?: string;
-  companyId?: string;
-  name?: string;
+const companySchema = z.object({ id: z.string().min(1), displayName: z.string() });
+
+async function readJson(response: Response): Promise<unknown> {
+  return response.json().catch(() => null) as Promise<unknown>;
 }
 
-interface CreateCompanyResponse extends CompanyIdentityResponse {
-  company?: CompanyIdentityResponse;
-  data?: CompanyIdentityResponse & { company?: CompanyIdentityResponse };
-}
-
-export async function createCompany(input: CompanyRegistrationInput & { participationType: "expositor" | "patrocinador" }) {
+/**
+ * Registra la empresa (`POST /companies`). El backend la crea y deja a la cuenta como
+ * `company_admin` en una sola operación.
+ *
+ * El alta solo acepta nombre y descripción; el correo de contacto se guarda justo después
+ * con `PATCH /companies/:id`. Categoría y tipo de participación aún no tienen dónde guardarse
+ * en el backend y se conservan solo en el panel local.
+ */
+export async function createCompany(input: CompanyRegistrationInput) {
   const response = await companyFetch("/companies", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name: input.name,
-      category: input.category,
-      customCategory: input.customCategory,
-      description: input.description,
-      contactEmail: input.contactEmail,
-      participationType: input.participationType,
-    }),
+    body: JSON.stringify({ displayName: input.name, description: input.description }),
   });
-  const payload = await response.json().catch(() => null) as unknown;
+  const payload = await readJson(response);
   if (!response.ok) {
-    const detail = payload as { message?: string; code?: string } | null;
-    throw new CompanyRegistrationError(detail?.message ?? detail?.code ?? `No se pudo registrar la empresa (${response.status}).`);
+    throw new CompanyRegistrationError(
+      readApiErrorMessage(payload, `No se pudo registrar la empresa (${response.status}).`),
+    );
   }
-  const result = payload as CreateCompanyResponse | null;
-  const company = result?.data?.company ?? result?.company ?? result?.data ?? result;
-  const id = company?.id?.trim() || company?.companyId?.trim();
-  if (!id) throw new CompanyRegistrationError("El backend no devolvió el identificador de la empresa.");
-  return { id, name: company?.name?.trim() || input.name };
+  const parsed = companySchema.safeParse(unwrapEnvelope(payload));
+  if (!parsed.success) {
+    throw new CompanyRegistrationError("El backend no devolvió el identificador de la empresa.");
+  }
+  const company = { id: parsed.data.id, name: parsed.data.displayName };
+
+  await saveContactEmail(company.id, input.contactEmail);
+  return company;
+}
+
+/**
+ * La empresa ya existe: si falla el correo de contacto no se revierte el alta. La persona puede
+ * completarlo después desde el perfil de empresa.
+ */
+async function saveContactEmail(companyId: string, contactEmail: string): Promise<void> {
+  try {
+    await companyFetch(`/companies/${encodeURIComponent(companyId)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contactEmail }),
+    });
+  } catch {
+    // Ver el comentario de la función.
+  }
 }

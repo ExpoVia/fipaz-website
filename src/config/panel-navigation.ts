@@ -160,8 +160,6 @@ export const PANEL_NAVIGATION: readonly PanelNavigationItem[] = [
   },
 ] as const;
 
-export const DEFAULT_PANEL_ROLE: PanelRole = "expositor";
-
 export function isPanelRole(value: string | null | undefined): value is PanelRole {
   return value === "expositor" || value === "organizador";
 }

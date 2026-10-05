@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { DEFAULT_PANEL_ROLE, isPanelRole, type PanelRole } from "@/config/panel-navigation";
 import { stands } from "@/data/demo-data";
 import { MOCK_EXHIBITOR_STAND_ID } from "@/data/panel-mock";
 import { assignZoneForCategory, createCompanyId, generateBoothCode } from "@/lib/panel-forms";
@@ -18,13 +17,11 @@ function generateQrId(): string {
 }
 
 interface PanelStore {
-  activeRole: PanelRole;
   activeCompanyId: string;
   companies: ExhibitorProfile[];
   hasHydrated: boolean;
   /** Tokens QR activos/históricos — no se persisten (efímeros por diseño) */
   qrTokens: QrToken[];
-  setActiveRole: (role: PanelRole) => void;
   setHasHydrated: () => void;
   registerCompany: (input: CompanyRegistrationInput, serverId?: string) => string;
   updateCompany: (id: string, patch: CompanyProfileInput) => void;
@@ -36,13 +33,11 @@ interface PanelStore {
 export const usePanelStore = create<PanelStore>()(
   persist(
     (set, get) => ({
-      activeRole: DEFAULT_PANEL_ROLE,
       activeCompanyId: MOCK_EXHIBITOR_STAND_ID,
       companies: seedCompanies(),
       hasHydrated: false,
       qrTokens: [],
 
-      setActiveRole: (role) => set({ activeRole: role }),
       setHasHydrated: () => set({ hasHydrated: true }),
 
       registerCompany: (input, serverId) => {
@@ -64,7 +59,6 @@ export const usePanelStore = create<PanelStore>()(
         };
         set({
           companies: [...companies, newCompany],
-          activeRole: "expositor",
           activeCompanyId: newCompany.id,
         });
         return newCompany.id;
@@ -128,7 +122,6 @@ export const usePanelStore = create<PanelStore>()(
     {
       name: "expovia-panel:v1",
       partialize: (state) => ({
-        activeRole: state.activeRole,
         activeCompanyId: state.activeCompanyId,
         companies: state.companies,
         // qrTokens excluido — son efímeros
@@ -137,7 +130,6 @@ export const usePanelStore = create<PanelStore>()(
         const data = persisted as Partial<PanelStore> | undefined;
         return {
           ...current,
-          activeRole: isPanelRole(data?.activeRole) ? data!.activeRole : current.activeRole,
           activeCompanyId:
             typeof data?.activeCompanyId === "string" ? data.activeCompanyId : current.activeCompanyId,
           companies: Array.isArray(data?.companies) ? data.companies : current.companies,

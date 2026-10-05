@@ -7,6 +7,7 @@ import { categories, missions, zones } from "@/data/demo-data";
 import { DEMO_FIXTURE } from "@/data/demo-fixture";
 import { MOCK_PROFILE_VIEWS, panelCheckIns, panelLeads, panelPromotions } from "@/data/panel-mock";
 import { usePanelStore } from "@/store/panel-store";
+import { getActivePanel } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { StandCategoryBadge } from "@/components/pixel/StandCategoryBadge";
 import { MetricCard } from "./metric-card";
@@ -137,10 +138,9 @@ function OrganizadorOverview() {
 }
 
 export function PanelDashboardClient() {
-  const activeRole = usePanelStore((state) => state.activeRole);
   const hasHydrated = usePanelStore((state) => state.hasHydrated);
   const authHydrated = useCompanyAuthStore((state) => state.hasHydrated);
-  const companyAdmin = useCompanyAuthStore((state) => state.session?.role === "company_admin");
-  if (!hasHydrated || !authHydrated) return null;
-  return activeRole === "expositor" || companyAdmin ? <ExpositorOverview /> : <OrganizadorOverview />;
+  const activePanel = useCompanyAuthStore((state) => getActivePanel(state.session));
+  if (!hasHydrated || !authHydrated || !activePanel) return null;
+  return activePanel === "expositor" ? <ExpositorOverview /> : <OrganizadorOverview />;
 }

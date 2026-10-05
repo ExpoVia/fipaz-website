@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 
 import { categories } from "@/data/demo-data";
 import { usePanelStore } from "@/store/panel-store";
+import { getActiveCompany } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { StandCategoryBadge } from "@/components/pixel/StandCategoryBadge";
 import { AdminPageHeader } from "@/components/admin/page-header";
@@ -204,7 +205,7 @@ function ProfileForm() {
   const companies = usePanelStore((s) => s.companies);
   const updateCompany = usePanelStore((s) => s.updateCompany);
 
-  const company = companies.find((c) => c.id === session?.companyId);
+  const company = companies.find((c) => c.id === getActiveCompany(session)?.id);
 
   const [displayName, setDisplayName] = useState(company?.name ?? "");
   const [description, setDescription] = useState(company?.description ?? "");

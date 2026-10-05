@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Script from "next/script";
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,21 +14,13 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
+import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { categories } from "@/data/demo-data";
 import { usePanelStore } from "@/store/panel-store";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { createCompany } from "@/lib/api/companies";
+import { hasPanelAccess } from "@/lib/panel-access";
 import type { StandCategory } from "@/types/demo";
-
-interface GoogleCredentialResponse { credential?: string }
-interface GoogleIdentityApi {
-  accounts: { id: {
-    initialize: (options: { client_id: string; callback: (response: GoogleCredentialResponse) => void }) => void;
-    renderButton: (element: HTMLElement, options: { theme: string; size: string; shape: string; text: string; locale: string; width: number }) => void;
-  } };
-}
-
-declare global { interface Window { google?: GoogleIdentityApi } }
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
@@ -234,43 +226,12 @@ interface Step2Props {
   participation: ParticipationType;
   setParticipation: (v: ParticipationType) => void;
   loading: boolean;
-  googleClientId: string;
   onCredential: (credential: string) => void;
   error: string;
   onBack: () => void;
 }
 
-function GoogleSignInButton({ clientId, onCredential }: { clientId: string; onCredential: (credential: string) => void }) {
-  const [scriptReady, setScriptReady] = useState(false);
-  const [buttonHost, setButtonHost] = useState<HTMLDivElement | null>(null);
-  const onCredentialRef = useRef(onCredential);
-
-  useEffect(() => { onCredentialRef.current = onCredential; }, [onCredential]);
-
-  useEffect(() => {
-    if (!scriptReady || !buttonHost || !clientId || !window.google) return;
-    window.google.accounts.id.initialize({
-      client_id: clientId,
-      callback: ({ credential }) => { if (credential) onCredentialRef.current(credential); },
-    });
-    window.google.accounts.id.renderButton(buttonHost, {
-      theme: "outline", size: "large", shape: "rectangular", text: "continue_with", locale: "es", width: 320,
-    });
-  }, [scriptReady, buttonHost, clientId]);
-
-  return (
-    <>
-      <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onReady={() => setScriptReady(true)} />
-      {clientId ? <div ref={setButtonHost} className="flex min-h-11 items-center justify-center" /> : (
-        <p className="rounded-xl bg-amber-50 p-3 text-xs font-bold text-amber-800">
-          Falta configurar NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID en .env.local.
-        </p>
-      )}
-    </>
-  );
-}
-
-function Step2({ participation, setParticipation, loading, error, onBack, onCredential, googleClientId }: Step2Props) {
+function Step2({ participation, setParticipation, loading, error, onBack, onCredential }: Step2Props) {
   return (
     <motion.div
       key="step2"
@@ -354,7 +315,7 @@ function Step2({ participation, setParticipation, loading, error, onBack, onCred
               <Loader2 size={17} className="animate-spin" /> Validando Google y registrando empresa…
             </div>
           ) : (
-            <GoogleSignInButton clientId={googleClientId} onCredential={onCredential} />
+            <GoogleSignInButton onCredential={onCredential} />
           )}
         </div>
       </div>
@@ -400,7 +361,6 @@ export function RegistrationForm() {
   const router = useRouter();
   const registerCompany = usePanelStore((s) => s.registerCompany);
   const loginWithGoogle = useCompanyAuthStore((s) => s.loginWithGoogle);
-  const setCompanyIdentity = useCompanyAuthStore((s) => s.setCompanyIdentity);
   const verifySession = useCompanyAuthStore((s) => s.verifySession);
 
   // Step state
@@ -437,26 +397,33 @@ export function RegistrationForm() {
     setError("");
     setLoading(true);
     try {
-      await loginWithGoogle(idToken);
+      const me = await loginWithGoogle(idToken);
+      // La cuenta ya administra una empresa: se entra a su panel en lugar de crear otra por accidente.
+      if (me.roles.some((role) => role.role === "company_admin" || role.role === "company_staff")) {
+        router.push("/panel");
+        return;
+      }
+
       const newCompany = await createCompany({
         name: name.trim(),
         category: category!,
         customCategory: category === "other" ? customCategory.trim() : undefined,
         contactEmail: email.trim(),
         description: description.trim(),
-        participationType: participation,
       });
       registerCompany({
         name: name.trim(), category: category!,
         customCategory: category === "other" ? customCategory.trim() : undefined,
         contactEmail: email.trim(), description: description.trim(),
       }, newCompany.id);
-      setCompanyIdentity(newCompany.id, newCompany.name);
-      if (!await verifySession()) {
-        throw new Error("La empresa se registró, pero el backend no confirmó el rol company_admin para esta cuenta.");
+
+      // El rol nuevo (company_admin) solo aparece al volver a leer /auth/me.
+      const confirmed = await verifySession();
+      if (!confirmed || !hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) {
+        throw new Error("La empresa se registró, pero el backend no confirmó el rol de administrador para esta cuenta. Inicia sesión de nuevo.");
       }
       setStep(2);
-      window.setTimeout(() => router.push("/admin/company/stands"), 900);
+      window.setTimeout(() => router.push("/panel"), 900);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "No se pudo completar el registro. Inténtalo nuevamente.");
     } finally {
@@ -488,13 +455,21 @@ export function RegistrationForm() {
             setParticipation={setParticipation}
             loading={loading}
             error={error}
-            googleClientId={process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID ?? ""}
             onBack={() => { setError(""); setStep(0); }}
             onCredential={handleGoogleCredential}
           />
         )}
         {step === 2 && <StepSuccess key="success" companyName={name} />}
       </AnimatePresence>
+
+      {step < 2 && (
+        <p className="mt-8 text-center text-sm text-slate-500">
+          ¿Tu empresa ya está registrada?{" "}
+          <Link href="/acceso?panel=expositor" className="font-black text-[var(--expo-blue)] hover:underline">
+            Inicia sesión
+          </Link>
+        </p>
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 
 import { categories } from "@/data/demo-data";
 import { usePanelStore } from "@/store/panel-store";
+import { getActiveCompany } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { StandCategoryBadge } from "@/components/pixel/StandCategoryBadge";
 import { AdminPageHeader } from "@/components/admin/page-header";
@@ -320,7 +321,7 @@ function StandsListContent() {
 
   // En producción: GET /events/:eventId/stands?companyId=...
   // Aquí filtramos del store los stands de la empresa logueada
-  const companyStands = companies.filter((c) => c.id === session?.companyId);
+  const companyStands = companies.filter((c) => c.id === getActiveCompany(session)?.id);
 
   const [editingId, setEditingId] = useState<string | null>(null);
 

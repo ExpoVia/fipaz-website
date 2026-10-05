@@ -15,17 +15,13 @@ export async function companyFetch(path: string, init: RequestInit = {}): Promis
   const firstResponse = await send(auth.session?.accessToken);
   if (firstResponse.status !== 401) return firstResponse;
 
-  if (!await auth.refreshAccessToken()) {
-    auth.logout();
-    return firstResponse;
-  }
+  // `refreshAccessToken` ya descarta la sesión cuando el refresh falla.
+  if (!await auth.refreshAccessToken()) return firstResponse;
 
   const refreshedSession = useCompanyAuthStore.getState().session;
-  if (!refreshedSession?.accessToken) {
-    auth.logout();
-    return firstResponse;
-  }
+  if (!refreshedSession?.accessToken) return firstResponse;
+
   const retryResponse = await send(refreshedSession.accessToken);
-  if (retryResponse.status === 401) useCompanyAuthStore.getState().logout();
+  if (retryResponse.status === 401) void useCompanyAuthStore.getState().logout();
   return retryResponse;
 }

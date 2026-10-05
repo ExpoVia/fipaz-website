@@ -16,6 +16,7 @@ import { API_MODE } from "@/lib/api/config";
 import { ADMIN_DEFAULT_EVENT_ID, ADMIN_DEFAULT_STAND_ID } from "@/features/admin/admin-scope";
 import type { AdminScope } from "@/features/admin/admin-scope";
 import { ToastProvider } from "./toast";
+import { accessRoute, hasPanelAccess } from "@/lib/panel-access";
 import { isSessionValid, useCompanyAuthStore } from "@/store/company-auth-store";
 
 /** Stand y evento de la URL actual; fuera de una ruta con contexto, los de la cuenta por defecto. */
@@ -49,9 +50,10 @@ function AdminNavList({ onNavigate }: { onNavigate?: () => void }) {
   const isCompanyItem = (item: AdminNavigationItem) => item.id === "company-profile" || item.id === "company-stands";
   const demoModules = isDemoModulesRoute(pathname);
   // Modo demostración: los módulos simulados se ven sin sesión; el perfil de empresa sigue pidiéndola.
+  const isExhibitor = isSessionValid(session) && hasPanelAccess(session, "expositor");
   const items = demoModules
-    ? allItems.filter((item) => !isCompanyItem(item) || isSessionValid(session))
-    : isSessionValid(session)
+    ? allItems.filter((item) => !isCompanyItem(item) || isExhibitor)
+    : isExhibitor
       ? allItems.filter(isCompanyItem)
       : [];
 
@@ -155,7 +157,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const verifySession = useCompanyAuthStore((state) => state.verifySession);
   const logout = useCompanyAuthStore((state) => state.logout);
   const [sessionVerified, setSessionVerified] = useState(false);
-  const companyAdmin = isSessionValid(session) && sessionVerified;
+  const companyAdmin = isSessionValid(session) && hasPanelAccess(session, "expositor") && sessionVerified;
 
   const demoModules = isDemoModulesRoute(pathname);
 
@@ -163,21 +165,19 @@ export function AdminShell({ children }: { children: ReactNode }) {
     if (demoModules || !authHydrated) return;
     if (!session) {
       setSessionVerified(false);
-      router.replace("/registro-empresa");
+      router.replace(accessRoute("expositor"));
       return;
     }
     let cancelled = false;
     setSessionVerified(false);
     void verifySession().then((valid) => {
       if (cancelled) return;
-      if (valid) setSessionVerified(true);
-      else {
-        logout();
-        router.replace("/registro-empresa");
-      }
+      // Sin un rol de expositor la sesión puede ser válida (p. ej. organizador): se explica en /acceso.
+      if (valid && hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) setSessionVerified(true);
+      else router.replace(accessRoute("expositor"));
     });
     return () => { cancelled = true; };
-  }, [demoModules, authHydrated, session?.accessToken, verifySession, logout, router]);
+  }, [demoModules, authHydrated, session?.accessToken, verifySession, router]);
 
   useEffect(() => {
     if (!demoModules && companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands") {
@@ -205,7 +205,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         >
           Saltar al contenido
         </a>
-        <AdminNavbar onMenuClick={() => setDrawerOpen(true)} onLogout={logout} demoModules={demoModules} />
+        <AdminNavbar onMenuClick={() => setDrawerOpen(true)} onLogout={() => void logout()} demoModules={demoModules} />
         <div className="flex min-h-0 flex-1">
           <AdminSidebar />
           <AdminMobileDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />

@@ -21,6 +21,20 @@ export interface PaginationMeta {
   totalPages: number;
 }
 
+export interface BackendHealthResponseDto {
+  status: "ok";
+  database: "up";
+}
+
+export interface BackendErrorResponseDto {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    details: unknown;
+  };
+}
+
 type QueryValue = string | number | boolean | undefined;
 
 export interface RequestOptions {
@@ -70,12 +84,17 @@ const KNOWN_ERRORS: Readonly<Record<string, readonly [ServiceErrorCode, string]>
   STAND_NOT_ACTIVE: ["VALIDATION", "El stand no está activo."],
   QR_INVALID: ["VALIDATION", "El código QR no es válido. Pide al visitante que lo actualice desde su app."],
   QR_EXPIRED: ["VALIDATION", "El código QR expiró. Pide al visitante que abra su app para generar uno nuevo."],
+  QR_REVOKED: ["VALIDATION", "Este QR fue revocado. Pide al visitante que genere uno nuevo."],
+  QR_SCAN_LIMIT: ["VALIDATION", "Este QR alcanzó su límite de escaneos. Pide al visitante que genere uno nuevo."],
+  NFC_INVALID: ["VALIDATION", "La etiqueta NFC no es válida o ya no está activa."],
   PARTICIPANT_NOT_ACTIVE: ["VALIDATION", "Este visitante no tiene una inscripción activa en el evento."],
+  USER_QR_INVALID: ["VALIDATION", "El QR del visitante no es válido. Pídele que abra su QR personal e intenta nuevamente."],
   VALIDATION_ERROR: ["VALIDATION", VALIDATION_MESSAGE],
   CONFLICT: ["CONFLICT", CONFLICT_MESSAGE],
   IDEMPOTENCY_CONFLICT: ["CONFLICT", CONFLICT_MESSAGE],
   TOO_MANY_REQUESTS: ["UNKNOWN", "Hiciste demasiadas solicitudes seguidas. Espera unos segundos e intenta nuevamente."],
   INTERNAL_ERROR: ["NETWORK", SERVER_MESSAGE],
+  DATABASE_UNAVAILABLE: ["NETWORK", "El servicio de datos está temporalmente no disponible. Intenta nuevamente en unos minutos."],
 };
 
 /** Códigos cuyo mensaje sale de un `RAISE EXCEPTION` del SQL, redactado en español. */
@@ -116,6 +135,7 @@ function translateError(status: number, body: ErrorBody | null, notFoundMessage:
 }
 
 let accessTokenProvider: () => string | null = () => null;
+let unauthorizedHandler: (() => Promise<boolean>) | null = null;
 
 /**
  * Registra de dónde sale el token de acceso (JWT). El módulo de inicio de sesión debe llamarlo
@@ -123,6 +143,11 @@ let accessTokenProvider: () => string | null = () => null;
  */
 export function setAccessTokenProvider(provider: () => string | null): void {
   accessTokenProvider = provider;
+}
+
+/** Registra la renovación de sesión que debe ejecutarse una sola vez tras recibir un 401. */
+export function setUnauthorizedHandler(handler: () => Promise<boolean>): void {
+  unauthorizedHandler = handler;
 }
 
 function buildUrl(path: string, query: RequestOptions["query"]): string {
@@ -154,17 +179,32 @@ export async function apiRequest<T>(
   const headers: Record<string, string> = { Accept: "application/json" };
   if (body !== undefined) headers["Content-Type"] = "application/json";
   const token = accessTokenProvider();
-  if (token) headers.Authorization = `Bearer ${token}`;
 
-  let response: Response;
-  try {
-    response = await fetch(buildUrl(path, query), {
+  const send = (accessToken: string | null) => {
+    const requestHeaders = { ...headers };
+    if (accessToken) requestHeaders.Authorization = `Bearer ${accessToken}`;
+    return fetch(buildUrl(path, query), {
       method,
-      headers,
+      headers: requestHeaders,
       body: body === undefined ? undefined : JSON.stringify(body),
       cache: "no-store",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
+  };
+
+  let response: Response;
+  try {
+    response = await send(token);
+    if (response.status === 401 && unauthorizedHandler) {
+      try {
+        if (await unauthorizedHandler()) {
+          const refreshedToken = accessTokenProvider();
+          if (refreshedToken) response = await send(refreshedToken);
+        }
+      } catch {
+        // Se conserva la respuesta 401 original si el refresh falla por una incidencia temporal.
+      }
+    }
   } catch {
     // Sin red, servidor caído, proxy sin destino o tiempo de espera agotado.
     throw new ServiceError("NETWORK", "No pudimos conectar con el servidor. Revisa tu conexión e intenta nuevamente.");

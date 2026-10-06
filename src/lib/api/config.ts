@@ -12,7 +12,6 @@ export type ApiMode = "mock" | "http";
 export const API_MODE: ApiMode = process.env.NEXT_PUBLIC_API_MODE === "http" ? "http" : "mock";
 
 const API_PREFIX = "/api/v1";
-const DEFAULT_BACKEND_URL = "http://localhost:3000";
 
 function stripTrailingSlashes(url: string): string {
   return url.replace(/\/+$/, "");
@@ -29,7 +28,11 @@ function stripTrailingSlashes(url: string): string {
  */
 export function getApiBaseUrl(): string {
   if (typeof window === "undefined") {
-    return `${stripTrailingSlashes(process.env.BACKEND_URL ?? DEFAULT_BACKEND_URL)}${API_PREFIX}`;
+    const backendUrl = process.env.BACKEND_URL?.trim() || process.env.NEXT_PUBLIC_AGENT_BACKEND_URL?.trim();
+    if (!backendUrl) {
+      throw new Error("Falta configurar BACKEND_URL para conectar con el backend.");
+    }
+    return `${stripTrailingSlashes(backendUrl)}${API_PREFIX}`;
   }
   return stripTrailingSlashes(process.env.NEXT_PUBLIC_API_BASE_URL ?? API_PREFIX);
 }

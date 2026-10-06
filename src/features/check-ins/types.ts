@@ -1,3 +1,4 @@
+/** `manual` indica entrada pegada/escrita en el panel; el contenido sigue siendo el QR personal. */
 export type CheckInMethod = "qr" | "nfc" | "manual";
 
 /**
@@ -10,20 +11,20 @@ export type CheckInResultStatus = "new" | "duplicate";
 export interface CheckIn {
   id: string;
   standId: string;
-  participantId: string;
-  participantName: string;
+  participantId?: string;
+  participantName?: string;
   participantPhotoUrl?: string;
   method: CheckInMethod;
   pointsAwarded: number;
-  /** ISO 8601 */
-  checkedInAt: string;
+  /** ISO 8601; el endpoint de staff no incluye la hora en su respuesta. */
+  checkedInAt?: string;
   status: CheckInResultStatus;
 }
 
 /** Lo que envía el escáner al registrar un check-in. */
 export interface CheckInInput {
   method: CheckInMethod;
-  /** Token del QR del visitante (o el id leído por NFC/ingresado a mano). */
+  /** Token personal del visitante leído por cámara o ingresado en el campo manual. */
   credential: string;
 }
 

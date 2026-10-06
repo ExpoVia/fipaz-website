@@ -11,6 +11,7 @@ import {
   refreshCompanyTokens,
   type CompanyAuthTokens,
 } from "@/lib/api/company-auth";
+import { setAccessTokenProvider, setUnauthorizedHandler } from "@/lib/api/http-client";
 
 export type CompanyAuthRole = "company_admin" | "guest";
 
@@ -33,9 +34,11 @@ interface CompanyAuthStore {
   loginWithGoogle: (idToken: string) => Promise<void>;
   setCompanyIdentity: (companyId: string, companyName: string) => void;
   refreshAccessToken: () => Promise<boolean>;
-  verifySession: () => Promise<boolean>;
+  verifySession: () => Promise<SessionVerificationResult>;
   logout: () => void;
 }
+
+export type SessionVerificationResult = "valid" | "invalid" | "unavailable";
 
 let refreshInFlight: Promise<boolean> | null = null;
 
@@ -51,6 +54,16 @@ function getDeviceId(): string {
 
 function expiration(seconds: number | undefined, fallbackSeconds: number): string {
   return new Date(Date.now() + (seconds ?? fallbackSeconds) * 1000).toISOString();
+}
+
+function errorStatus(error: unknown): number | undefined {
+  return error instanceof Error && "status" in error && typeof error.status === "number"
+    ? error.status
+    : undefined;
+}
+
+function isAuthenticationFailure(error: unknown): boolean {
+  return [400, 401, 403].includes(errorStatus(error) ?? 0);
 }
 
 function sessionFrom(user: ReturnType<typeof normalizeCompanyUser>, tokens: CompanyAuthTokens, role: CompanyAuthRole): CompanySession {
@@ -92,11 +105,13 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
             return false;
           }
           try {
-            const tokens = await refreshCompanyTokens(current.refreshToken, getDeviceId());
+            const tokens = await refreshCompanyTokens(current.refreshToken);
             set({ session: { ...current, ...tokens, expiresAt: expiration(tokens.expiresIn, 15 * 60), refreshExpiresAt: expiration(tokens.refreshExpiresIn, 30 * 24 * 60 * 60) } });
             return true;
-          } catch {
-            set({ session: null });
+          } catch (error) {
+            if (error instanceof Error && "status" in error && [400, 401, 403].includes(Number(error.status))) {
+              set({ session: null });
+            }
             return false;
           } finally {
             refreshInFlight = null;
@@ -107,17 +122,19 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
 
       verifySession: async () => {
         let current = get().session;
-        if (!current) return false;
+        if (!current) return "invalid";
         if (Date.parse(current.expiresAt) <= Date.now()) {
-          if (!await get().refreshAccessToken()) return false;
+          if (!await get().refreshAccessToken()) {
+            return get().session ? "unavailable" : "invalid";
+          }
           current = get().session;
         }
-        if (!current?.accessToken) return false;
+        if (!current?.accessToken) return "invalid";
         try {
           const user = await fetchCompanyUser(current.accessToken);
           if (!companyUserHasAdminRole(user)) {
             set({ session: null });
-            return false;
+            return "invalid";
           }
           const identity = normalizeCompanyUser(user);
           set({ session: {
@@ -129,12 +146,12 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
             googleSub: identity.googleSub || current.googleSub,
             role: "company_admin",
           } });
-          return true;
+          return "valid";
         } catch (error) {
-          if (error instanceof Error && "status" in error && error.status === 401) {
+          if (errorStatus(error) === 401) {
             if (await get().refreshAccessToken()) {
               const refreshed = get().session;
-              if (!refreshed) return false;
+              if (!refreshed) return "invalid";
               try {
                 const user = await fetchCompanyUser(refreshed.accessToken);
                 if (companyUserHasAdminRole(user)) {
@@ -148,13 +165,25 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
                     googleSub: identity.googleSub || refreshed.googleSub,
                     role: "company_admin",
                   } });
-                  return true;
+                  return "valid";
                 }
-              } catch { /* La sesión se cierra abajo si la API la rechaza. */ }
+                set({ session: null });
+                return "invalid";
+              } catch (retryError) {
+                if (isAuthenticationFailure(retryError)) {
+                  set({ session: null });
+                  return "invalid";
+                }
+                return "unavailable";
+              }
             }
+            return get().session ? "unavailable" : "invalid";
           }
-          set({ session: null });
-          return false;
+          if (isAuthenticationFailure(error)) {
+            set({ session: null });
+            return "invalid";
+          }
+          return "unavailable";
         }
       },
 
@@ -168,6 +197,9 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
     },
   ),
 );
+
+setAccessTokenProvider(() => useCompanyAuthStore.getState().session?.accessToken ?? null);
+setUnauthorizedHandler(() => useCompanyAuthStore.getState().refreshAccessToken());
 
 /** La identidad y el rol provienen de la validación del backend. */
 export function isSessionValid(session: CompanySession | null): boolean {

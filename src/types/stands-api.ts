@@ -1,4 +1,4 @@
-/** Filtros y paginación aceptados por GET /api/v1/stands. */
+/** Filtros y paginación aceptados por GET /api/v1/events/:eventId/stands. */
 export interface ListStandsQueryDto {
   query?: string;
   categoryId?: string;
@@ -42,7 +42,7 @@ export interface StandResponseDto {
   location: StandLocationDto | null;
 }
 
-/** Elemento del listado; `relevance` solo lo devuelve GET /stands. */
+/** Elemento del listado; `relevance` solo lo devuelve GET /events/:eventId/stands. */
 export interface StandListItemDto extends StandResponseDto {
   relevance: number;
 }

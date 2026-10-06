@@ -51,9 +51,21 @@ async function request<T>(path: string, body: unknown, accessToken?: string): Pr
 
   const result = await response.json().catch(() => null) as unknown;
   if (!response.ok) {
-    const payload = result as { message?: string; code?: string } | null;
+    const root = result && typeof result === "object" ? result as Record<string, unknown> : null;
+    const error = root?.error && typeof root.error === "object"
+      ? root.error as Record<string, unknown>
+      : root;
+    const message = typeof error?.message === "string" ? error.message : undefined;
+    const code = typeof error?.code === "string" ? error.code : undefined;
+    const userMessage = code === "DATABASE_UNAVAILABLE" || response.status >= 500
+      ? "El servicio de datos está temporalmente no disponible. Intenta nuevamente en unos minutos."
+      : code === "INVALID_GOOGLE_TOKEN"
+        ? "Google no pudo validar esta cuenta. Intenta iniciar sesión nuevamente."
+        : code === "INVALID_REFRESH_TOKEN" || code === "SESSION_REVOKED"
+          ? "Tu sesión expiró. Inicia sesión nuevamente."
+          : message ?? code ?? `Error de autenticación (${response.status}).`;
     throw new CompanyAuthError(
-      payload?.message ?? payload?.code ?? `Error de autenticación (${response.status}).`,
+      userMessage,
       response.status,
     );
   }
@@ -90,10 +102,9 @@ export async function authenticateCompanyWithGoogle(idToken: string, deviceId: s
   return { tokens, user: unwrap(userPayload as AuthenticatedCompanyUser) };
 }
 
-export async function refreshCompanyTokens(refreshToken: string, deviceId: string) {
+export async function refreshCompanyTokens(refreshToken: string) {
   const response = await request<unknown>("/auth/refresh", {
     refreshToken,
-    device: { id: deviceId, platform: "web" },
   });
   return readTokens(response);
 }

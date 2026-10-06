@@ -14,8 +14,8 @@ import type { CheckIn, CheckInsService } from "./types";
 
 const QR_INVALID_MESSAGE = "El código QR no es válido. Pide al visitante que lo actualice desde su app.";
 
-function isSameCalendarDay(isoA: string, isoB: string): boolean {
-  return isoA.slice(0, 10) === isoB.slice(0, 10);
+function isSameCalendarDay(isoA: string | undefined, isoB: string): boolean {
+  return isoA !== undefined && isoA.slice(0, 10) === isoB.slice(0, 10);
 }
 
 export const checkInsMockService: CheckInsService = {

@@ -152,32 +152,32 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const authHydrated = useCompanyAuthStore((state) => state.hasHydrated);
   const session = useCompanyAuthStore((state) => state.session);
+  const hasSession = Boolean(session);
   const verifySession = useCompanyAuthStore((state) => state.verifySession);
   const logout = useCompanyAuthStore((state) => state.logout);
-  const [sessionVerified, setSessionVerified] = useState(false);
-  const companyAdmin = isSessionValid(session) && sessionVerified;
+  const [sessionVerification, setSessionVerification] = useState<"checking" | "verified" | "unavailable">("checking");
+  const companyAdmin = isSessionValid(session) && sessionVerification === "verified";
 
   const demoModules = isDemoModulesRoute(pathname);
 
   useEffect(() => {
     if (demoModules || !authHydrated) return;
-    if (!session) {
-      setSessionVerified(false);
+    if (!hasSession) {
       router.replace("/registro-empresa");
       return;
     }
     let cancelled = false;
-    setSessionVerified(false);
-    void verifySession().then((valid) => {
+    void verifySession().then((result) => {
       if (cancelled) return;
-      if (valid) setSessionVerified(true);
+      if (result === "valid") setSessionVerification("verified");
+      else if (result === "unavailable") setSessionVerification("unavailable");
       else {
         logout();
         router.replace("/registro-empresa");
       }
     });
     return () => { cancelled = true; };
-  }, [demoModules, authHydrated, session?.accessToken, verifySession, logout, router]);
+  }, [demoModules, authHydrated, hasSession, session?.accessToken, verifySession, logout, router]);
 
   useEffect(() => {
     if (!demoModules && companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands") {
@@ -186,6 +186,33 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }, [demoModules, companyAdmin, pathname, router]);
 
   const restrictedCompanyRoute = !demoModules && (!authHydrated || (companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands"));
+
+  async function retrySessionVerification() {
+    setSessionVerification("checking");
+    const result = await verifySession();
+    if (result === "valid") setSessionVerification("verified");
+    else if (result === "unavailable") setSessionVerification("unavailable");
+    else {
+      logout();
+      router.replace("/registro-empresa");
+    }
+  }
+
+  if (!demoModules && authHydrated && session && sessionVerification === "unavailable") {
+    return (
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-[var(--expo-bg)] px-5 text-center">
+        <p className="font-black text-[var(--expo-navy)]">No se pudo validar la sesión de empresa.</p>
+        <p className="max-w-md text-sm text-slate-500">La sesión se conserva. El servicio de autenticación no responde ahora; inténtalo de nuevo cuando la conexión esté disponible.</p>
+        <button
+          type="button"
+          onClick={() => void retrySessionVerification()}
+          className="rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-4 py-2 text-sm font-black text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)]"
+        >
+          Reintentar
+        </button>
+      </div>
+    );
+  }
 
   if (!demoModules && (!authHydrated || !companyAdmin)) {
     return (

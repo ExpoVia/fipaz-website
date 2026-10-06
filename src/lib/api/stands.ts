@@ -1,4 +1,5 @@
 import { companyApiUrl } from "@/lib/api/company-api-url";
+import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import type {
   ListStandsQueryDto,
   StandListItemDto,
@@ -84,13 +85,19 @@ function parseList(payload: unknown, query: ListStandsQueryDto): StandListRespon
 async function readResponse<T>(response: Response): Promise<T> {
   const payload = await response.json().catch(() => null) as unknown;
   if (!response.ok) {
-    const detail = payload as { message?: string; code?: string } | null;
-    throw new StandsApiError(detail?.message ?? detail?.code ?? `No se pudieron cargar los stands (${response.status}).`, response.status);
+    const root = isRecord(payload) ? payload : null;
+    const detail = root?.error && isRecord(root.error) ? root.error : root;
+    const message = typeof detail?.message === "string" ? detail.message : undefined;
+    const code = typeof detail?.code === "string" ? detail.code : undefined;
+    throw new StandsApiError(message ?? code ?? `No se pudieron cargar los stands (${response.status}).`, response.status);
   }
   return payload as T;
 }
 
-export async function listStands(query: ListStandsQueryDto = {}): Promise<StandListResponseDto> {
+export async function listStands(eventId: string, query: ListStandsQueryDto = {}): Promise<StandListResponseDto> {
+  if (!eventId.trim()) {
+    throw new StandsApiError("Falta configurar el UUID del evento para cargar sus stands.");
+  }
   if (query.query && query.query.length > 100) {
     throw new StandsApiError("La búsqueda no puede superar los 100 caracteres.");
   }
@@ -101,7 +108,7 @@ export async function listStands(query: ListStandsQueryDto = {}): Promise<StandL
   const suffix = params.size ? `?${params.toString()}` : "";
   let response: Response;
   try {
-    response = await fetch(companyApiUrl(`/stands${suffix}`), { headers: { Accept: "application/json" } });
+    response = await fetch(companyApiUrl(`${API_ENDPOINTS.stands.byEvent(eventId)}${suffix}`), { headers: { Accept: "application/json" } });
   } catch {
     throw new StandsApiError("No se pudo conectar con el servicio de stands.");
   }

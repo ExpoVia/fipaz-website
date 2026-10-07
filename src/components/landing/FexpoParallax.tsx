@@ -2,10 +2,11 @@
 
 import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
-import { Building2, Store, User } from "lucide-react";
+import { ArrowRight, Building2, Store, User } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import { jakartaFont, soraFont, spaceMonoFont } from "./fonts";
 import styles from "./FexpoParallax.module.css";
 
 const imageBase = "/img/landing/section2";
@@ -41,21 +42,22 @@ function ContentOverlay() {
     <div className={styles.content}>
       <div className={styles.copy}>
         <span className={styles.eyebrow} data-reveal="eyebrow"><span aria-hidden="true">✦</span> EL DESAFÍO EN LAS FERIAS HOY</span>
-        <h2 className={styles.title} data-reveal="title">Una feria llena de oportunidades no debería sentirse difícil de navegar.</h2>
-        <p className={styles.subtitle} data-reveal="subtitle">En un evento multitudinario, la falta de una capa digital integrada genera fricción en cada paso del recorrido.</p>
+        <h2 className={styles.title} data-reveal="title">Una feria llena de <span className={styles.titleAccent}>oportunidades</span> no debería sentirse difícil de navegar.</h2>
+        <p className={styles.subtitle} data-reveal="subtitle">Sin una capa digital integrada, cada paso del recorrido genera fricción.</p>
       </div>
       <div className={styles.cards} aria-label="Desafíos de cada participante">
         {problems.map((card) => {
           const Icon = card.icon;
           return (
-            <article className={styles.card} data-card key={card.title}>
+            <article className={styles.card} data-card data-color={card.color} key={card.title}>
               <div className={styles.cardTop}>
-                <span className={styles.cardIcon} data-color={card.color}><Icon aria-hidden="true" size={21} strokeWidth={2.5} /></span>
-                <span className={styles.cardBadge} data-color={card.color}>{card.badge}</span>
+                <span className={styles.cardIcon}><Icon aria-hidden="true" size={21} strokeWidth={2.5} /></span>
+                <span className={styles.cardBadge}>{card.badge}</span>
               </div>
               <h3>{card.title}</h3>
               <p className={styles.cardProblem}>{card.problem}</p>
               <p className={styles.cardDetail}>{card.detail}</p>
+              <span className={styles.cardArrow} aria-hidden="true"><ArrowRight size={16} strokeWidth={2.6} /></span>
             </article>
           );
         })}
@@ -154,7 +156,7 @@ export function FexpoParallax() {
   }, []);
 
   return (
-    <section id="problema" ref={sectionRef} className={`${styles.parallax} fexpo-parallax`} aria-label="El desafío en las ferias hoy">
+    <section id="problema" ref={sectionRef} className={`${styles.parallax} ${soraFont.variable} ${jakartaFont.variable} ${spaceMonoFont.variable} fexpo-parallax`} aria-label="El desafío en las ferias hoy">
       <div className={styles.scene} aria-hidden="true">
         <div className={styles.artwork}>
           <SkyLayer /><CloudsLayer /><SkylineLayer /><AirshipLayer /><GroundLayer />

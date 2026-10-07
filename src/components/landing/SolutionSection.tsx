@@ -5,63 +5,81 @@ import { motion } from "motion/react";
 import { Search, Map, Navigation, Smartphone, Gift, Users, ChevronDown } from "lucide-react";
 import { PixelStar } from "./PixelIcons";
 
+// Shared with SolutionOverlay, which plays the same content inside the FexpoParallax scene.
+export const solutionCopy = {
+  eyebrow: "DATOS DE DEMOSTRACIÓN · EXPOVIA",
+  title: "Del descubrimiento a la conexión, en un solo recorrido.",
+  accentWord: "conexión,",
+  subtitle: "Una secuencia fluida e intuitiva diseñada para que cada interacción física tenga valor digital inmediato.",
+};
+
+export const solutionSteps = [
+  {
+    name: "Buscar",
+    desc: "Encuentra empresas por categoría o nombre.",
+    icon: <Search className="h-5 w-5 text-white" />,
+    color: "bg-[var(--expo-blue)]",
+    accent: "var(--expo-blue)",
+  },
+  {
+    name: "Ver mapa",
+    desc: "Consulta la ubicación de referencia en un plano de ejemplo.",
+    icon: <Map className="h-5 w-5 text-white" />,
+    color: "bg-[var(--expo-purple)]",
+    accent: "var(--expo-purple)",
+  },
+  {
+    name: "Llegar",
+    desc: "Prueba un recorrido ilustrativo por los pasillos.",
+    icon: <Navigation className="h-5 w-5 text-white" />,
+    color: "bg-[var(--expo-lilac)]",
+    accent: "var(--expo-lilac)",
+  },
+  {
+    name: "Tocar NFC",
+    desc: "La demo simula un check-in; no valida una visita real.",
+    icon: <Smartphone className="h-5 w-5 text-[var(--expo-navy)]" />,
+    color: "bg-[var(--expo-mint)]",
+    accent: "var(--expo-mint)",
+  },
+  {
+    name: "Ganar",
+    desc: "Explora una misión y puntos de ejemplo, sin sincronización en vivo.",
+    icon: <Gift className="h-5 w-5 text-[var(--expo-navy)]" />,
+    color: "bg-[var(--expo-yellow)]",
+    accent: "var(--expo-yellow)",
+  },
+  {
+    name: "Conectar",
+    desc: "Revisa información ficticia de las empresas del guion.",
+    icon: <Users className="h-5 w-5 text-white" />,
+    color: "bg-[var(--expo-coral)]",
+    accent: "var(--expo-coral)",
+  },
+];
+
+// Static version of the section. With motion allowed the content plays inside the FexpoParallax scene instead
+// (SolutionOverlay), so this one only shows for visitors who prefer reduced motion.
 export function SolutionSection() {
-  const steps = [
-    {
-      name: "Buscar",
-      desc: "Encuentra empresas por categoría o nombre.",
-      icon: <Search className="h-5 w-5 text-white" />,
-      color: "bg-[var(--expo-blue)]",
-    },
-    {
-      name: "Ver mapa",
-      desc: "Consulta la ubicación de referencia en un plano de ejemplo.",
-      icon: <Map className="h-5 w-5 text-white" />,
-      color: "bg-[var(--expo-purple)]",
-    },
-    {
-      name: "Llegar",
-      desc: "Prueba un recorrido ilustrativo por los pasillos.",
-      icon: <Navigation className="h-5 w-5 text-white" />,
-      color: "bg-[var(--expo-lilac)]",
-    },
-    {
-      name: "Tocar NFC",
-      desc: "La demo simula un check-in; no valida una visita real.",
-      icon: <Smartphone className="h-5 w-5 text-[var(--expo-navy)]" />,
-      color: "bg-[var(--expo-mint)]",
-    },
-    {
-      name: "Ganar",
-      desc: "Explora una misión y puntos de ejemplo, sin sincronización en vivo.",
-      icon: <Gift className="h-5 w-5 text-[var(--expo-navy)]" />,
-      color: "bg-[var(--expo-yellow)]",
-    },
-    {
-      name: "Conectar",
-      desc: "Revisa información ficticia de las empresas del guion.",
-      icon: <Users className="h-5 w-5 text-white" />,
-      color: "bg-[var(--expo-coral)]",
-    },
-  ];
+  const steps = solutionSteps;
 
   return (
-    <section className="bg-[var(--expo-bg)] py-16 md:py-24 border-t-2 border-[var(--expo-line)] relative overflow-hidden">
+    <section className="hidden motion-reduce:block bg-[var(--expo-bg)] py-16 md:py-24 border-t-2 border-[var(--expo-line)] relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header */}
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-1.5 font-mono text-xs font-black uppercase tracking-wider text-[var(--expo-purple)] bg-purple-50 px-3 py-1 rounded-full border border-purple-200 mb-3">
             <PixelStar className="w-3.5 h-3.5" />
-            DATOS DE DEMOSTRACIÓN · EXPOVIA
+            {solutionCopy.eyebrow}
           </span>
 
           <h2 className="text-3xl font-black tracking-tight text-[var(--expo-navy)] sm:text-5xl">
-            Del descubrimiento a la conexión, en un solo recorrido.
+            {solutionCopy.title}
           </h2>
 
           <p className="mt-4 text-base sm:text-lg text-slate-700 font-medium">
-            Una secuencia fluida e intuitiva diseñada para que cada interacción física tenga valor digital inmediato.
+            {solutionCopy.subtitle}
           </p>
         </div>
 

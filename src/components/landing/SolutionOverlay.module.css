@@ -1,0 +1,130 @@
+/* Layout mirrors the problem act (.content in FexpoParallax.module.css) so both acts share the same composition. */
+.solution {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(64px, 10vh, 104px) clamp(16px, 4vw, 64px) clamp(16px, 3.5vh, 34px);
+  background: linear-gradient(180deg, rgb(235 247 255 / 28%) 0%, transparent 44%, rgb(36 54 130 / 10%) 100%);
+  /* Revealed by the scroll timeline. */
+  visibility: hidden;
+}
+
+/* The title is a bit longer than the problem one, so it gets a smaller size; the extra parent keeps it above the
+   base .title rule regardless of stylesheet order. */
+.solution .heading { font-size: clamp(2rem, min(4vw, 7vh), 4rem); }
+
+/* Each word sits in a mask and rises into view. The padding keeps descenders from being clipped. */
+.word { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 0.04em 0.16em; margin: 0 -0.04em -0.16em; }
+.wordInner { display: inline-block; will-change: transform; }
+
+.steps {
+  display: grid;
+  width: min(100%, 1180px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(10px, 1.2vw, 16px);
+}
+
+.step {
+  --accent: var(--expo-blue);
+  position: relative;
+  min-width: 0;
+  top: 0;
+  border: 2px solid #1b1d4b;
+  border-radius: 20px;
+  padding: clamp(14px, 1.3vw, 20px);
+  background: rgb(255 255 255 / 90%);
+  box-shadow: 6px 7px 0 #1b1d4b, 0 18px 44px rgb(17 34 91 / 10%);
+  backdrop-filter: blur(10px);
+  color: #1b1d4b;
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  transition: top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+}
+/* Spotlight that follows the cursor (see the card tilt in FexpoParallax.tsx). */
+.step::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--accent) 55%, white) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.stepTop { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.stepIcon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  place-items: center;
+  border: 2px solid #1b1d4b;
+  border-radius: 12px;
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 38%, transparent);
+  transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.stepNumber {
+  font-family: var(--font-space-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #5a6486;
+}
+.step h3 {
+  margin: 16px 0 6px;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(1.1rem, 1.35vw, 1.35rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+.step h3::after { content: ""; display: block; width: 28px; height: 4px; margin-top: 8px; border-radius: 4px; background: var(--accent); transition: width 0.35s ease; }
+.stepDesc { margin: 0; color: #3b4a72; font-size: 0.82rem; font-weight: 500; line-height: 1.45; }
+
+/* Hover (mouse only): same language as the problem cards. */
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .step:hover { top: -12px; box-shadow: 10px 13px 0 #1b1d4b, 0 30px 56px rgb(17 34 91 / 22%); }
+  .step:hover::before { opacity: 0.8; }
+  .step:hover .stepIcon { transform: rotate(-10deg) scale(1.12); }
+  .step:hover h3::after { width: 56px; }
+}
+
+@media (max-width: 1100px) and (min-width: 768px) {
+  .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .step { padding: 14px 16px; box-shadow: 5px 6px 0 #1b1d4b; }
+  .step h3 { margin-top: 12px; }
+}
+
+@media (max-width: 767px) {
+  .solution {
+    padding: max(66px, 10dvh) 16px max(16px, 3dvh);
+    background: linear-gradient(180deg, rgb(234 246 255 / 44%) 0%, transparent 43%, rgb(26 41 95 / 17%) 100%);
+  }
+  .solution .heading { font-size: clamp(26px, 6.6vw, 38px); line-height: 1.05; }
+  .steps { max-width: 560px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .step { border-radius: 12px; padding: 9px 10px; box-shadow: 3px 3px 0 #1b1d4b; }
+  .stepIcon { width: 30px; height: 30px; border-radius: 8px; box-shadow: none; }
+  .stepIcon svg { width: 16px; height: 16px; }
+  .step h3 { margin: 8px 0 3px; font-size: 14px; }
+  .step h3::after { display: none; }
+  .stepDesc { font-size: 10px; line-height: 1.25; }
+}
+
+@media (max-height: 650px) and (min-width: 768px) {
+  .solution { padding-top: 55px; padding-bottom: 16px; }
+  .solution .heading { font-size: clamp(26px, 3.2vw, 44px); }
+  .stepDesc, .step h3::after { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The static SolutionSection is shown instead. */
+  .solution { display: none; }
+}

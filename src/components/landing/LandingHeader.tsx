@@ -1,15 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { PixelLogo } from "./PixelIcons";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, LogIn } from "lucide-react";
 
 export function LandingHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "Inicio", href: "#inicio" },
     { name: "¿Qué es ExpoVia?", href: "#problema" },
     { name: "Cómo funciona", href: "#como-funciona" },
     { name: "Mapa", href: "#mapa" },
@@ -22,18 +21,25 @@ export function LandingHeader() {
     <header className="sticky top-0 z-50 w-full border-b-2 border-[var(--expo-line)] bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6 sm:py-3 lg:px-8">
         {/* Brand Logo */}
-        <Link href="#inicio" className="group flex items-center transition-transform hover:scale-105">
-          <PixelLogo />
+        <Link href="#inicio" aria-label="Fexpo, ir al inicio" className="group flex items-center transition-transform hover:scale-105">
+          <Image
+            src="/img/landing/fexpo-logo.png"
+            alt="Fexpo"
+            width={1254}
+            height={380}
+            priority
+            className="h-9 w-auto sm:h-11"
+          />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden items-center space-x-1 lg:flex xl:space-x-4">
+        <nav className="hidden items-center gap-0.5 lg:flex xl:gap-2">
           {navLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}
               aria-current={link.href === "#inicio" ? "page" : undefined}
-              className={`rounded-md px-3 py-2 text-sm font-bold transition-colors hover:bg-[var(--expo-bg)] hover:text-[var(--expo-blue)] ${link.href === "#inicio" ? "bg-[var(--expo-bg)] text-[var(--expo-blue)]" : "text-[var(--expo-navy)]"}`}
+              className={`whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-bold transition-colors xl:px-3 hover:bg-[var(--expo-bg)] hover:text-[var(--expo-blue)] ${link.href === "#inicio" ? "bg-[var(--expo-bg)] text-[var(--expo-blue)]" : "text-[var(--expo-navy)]"}`}
             >
               {link.name}
             </a>
@@ -41,19 +47,13 @@ export function LandingHeader() {
         </nav>
 
         {/* Action Button */}
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center lg:flex">
           <Link
             href="/panel"
-            className="inline-flex items-center gap-2 border-2 border-[var(--expo-navy)] bg-white px-5 py-2.5 text-sm font-extrabold text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5 hover:bg-[var(--expo-bg)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            className="inline-flex items-center gap-2 whitespace-nowrap border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-5 py-2 text-sm font-extrabold text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5 hover:bg-[#FFE066] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
           >
-            Panel
-          </Link>
-          <Link
-            href="/demo"
-            className="inline-flex items-center gap-2 border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-5 py-2.5 text-sm font-extrabold text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5 hover:bg-[#FFE066] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
-          >
-            Probar demo
-            <ArrowRight className="h-4 w-4 stroke-[3]" />
+            <LogIn className="h-4 w-4 stroke-[3]" />
+            Login
           </Link>
         </div>
 
@@ -61,15 +61,10 @@ export function LandingHeader() {
         <div className="flex items-center gap-2 lg:hidden">
           <Link
             href="/panel"
-            className="inline-flex items-center gap-1 border-2 border-[var(--expo-navy)] bg-white px-3 py-1.5 text-xs font-black text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)]"
+            className="inline-flex items-center gap-1 whitespace-nowrap border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-3 py-1.5 text-xs font-black text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)]"
           >
-            Panel
-          </Link>
-          <Link
-            href="/demo"
-            className="inline-flex items-center gap-1 border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-3 py-1.5 text-xs font-black text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)]"
-          >
-            Demo
+            <LogIn className="h-3.5 w-3.5 stroke-[3]" />
+            Login
           </Link>
 
           <button
@@ -101,17 +96,10 @@ export function LandingHeader() {
               <Link
                 href="/panel"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex w-full items-center justify-center gap-2 border-2 border-[var(--expo-navy)] bg-white py-3 text-center text-base font-black text-[var(--expo-navy)] shadow-[4px_4px_0_var(--expo-navy)]"
-              >
-                Panel expositor / organizador
-              </Link>
-              <Link
-                href="/demo"
-                onClick={() => setMobileMenuOpen(false)}
                 className="flex w-full items-center justify-center gap-2 border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] py-3 text-center text-base font-black text-[var(--expo-navy)] shadow-[4px_4px_0_var(--expo-navy)]"
               >
-                Probar demo
-                <ArrowRight className="h-5 w-5 stroke-[3]" />
+                <LogIn className="h-5 w-5 stroke-[3]" />
+                Login
               </Link>
             </div>
           </div>

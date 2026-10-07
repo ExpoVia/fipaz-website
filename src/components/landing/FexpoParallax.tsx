@@ -31,11 +31,11 @@ function SceneLayer({ number, name, className = "", mouseStrength = 0 }: SceneLa
   );
 }
 
-const SkyLayer = () => <SceneLayer number={1} name="sky" mouseStrength={0.1} />;
-const CloudsLayer = () => <SceneLayer number={2} name="clouds" mouseStrength={0.2} />;
-const SkylineLayer = () => <SceneLayer number={6} name="skyline" className={styles.skyline} mouseStrength={0.35} />;
-const GroundLayer = () => <SceneLayer number={5} name="ground" className={styles.ground} mouseStrength={0.5} />;
-const AirshipLayer = () => <SceneLayer number={4} name="airship" className={styles.airship} mouseStrength={1} />;
+const SkyLayer = () => <SceneLayer number={1} name="sky" mouseStrength={0.15} />;
+const CloudsLayer = () => <SceneLayer number={2} name="clouds" mouseStrength={0.3} />;
+const SkylineLayer = () => <SceneLayer number={6} name="skyline" className={styles.skyline} mouseStrength={0.5} />;
+const GroundLayer = () => <SceneLayer number={5} name="ground" className={styles.ground} mouseStrength={0.8} />;
+const AirshipLayer = () => <SceneLayer number={4} name="airship" className={styles.airship} mouseStrength={1.2} />;
 
 function ContentOverlay() {
   return (
@@ -111,20 +111,23 @@ export function FexpoParallax() {
           .to({}, { duration: hold }, 1);
 
         if (window.matchMedia("(pointer: fine) and (min-width: 768px)").matches) {
+          // Hover parallax stays on for the whole section, including the final pose. Pointer is -0.5..0.5, so each
+          // layer travels up to strength * range / 2 px; the image overscan in the CSS keeps its edges covered.
+          const mouseRangeX = 44;
+          const mouseRangeY = 26;
           let pointerX = 0;
           let pointerY = 0;
           const movers = [...section.querySelectorAll<HTMLElement>("[data-mouse-strength]")]
             .filter((element) => Number(element.dataset.mouseStrength) > 0)
             .map((element) => ({
               strength: Number(element.dataset.mouseStrength),
-              x: gsap.quickTo(element, "x", { duration: 0.7, ease: "power2.out" }),
-              y: gsap.quickTo(element, "y", { duration: 0.7, ease: "power2.out" }),
+              x: gsap.quickTo(element, "x", { duration: 0.9, ease: "power2.out" }),
+              y: gsap.quickTo(element, "y", { duration: 0.9, ease: "power2.out" }),
             }));
           updateMouse = () => {
-            const strength = Math.max(0, 1 - ((timeline.scrollTrigger?.progress ?? 0) * (1 + hold)) / 0.85);
             movers.forEach((mover) => {
-              mover.x(pointerX * mover.strength * 22 * strength);
-              mover.y(pointerY * mover.strength * 14 * strength);
+              mover.x(pointerX * mover.strength * mouseRangeX);
+              mover.y(pointerY * mover.strength * mouseRangeY);
             });
           };
           const onPointerMove = (event: PointerEvent) => {
@@ -136,9 +139,35 @@ export function FexpoParallax() {
           const onPointerLeave = () => { pointerX = 0; pointerY = 0; updateMouse(); };
           section.addEventListener("pointermove", onPointerMove);
           section.addEventListener("pointerleave", onPointerLeave);
+
+          // Cards tilt towards the cursor; --mx/--my feed the spotlight gradient. The lift itself is CSS (`top`): GSAP
+          // owns `transform` and also writes `translate: none` inline, so neither can be used for it.
+          const cardCleanups = [...section.querySelectorAll<HTMLElement>("[data-card]")].map((card) => {
+            gsap.set(card, { transformPerspective: 900 });
+            const tiltX = gsap.quickTo(card, "rotationX", { duration: 0.5, ease: "power3.out" });
+            const tiltY = gsap.quickTo(card, "rotationY", { duration: 0.5, ease: "power3.out" });
+            const onCardMove = (event: PointerEvent) => {
+              const bounds = card.getBoundingClientRect();
+              const x = (event.clientX - bounds.left) / bounds.width;
+              const y = (event.clientY - bounds.top) / bounds.height;
+              tiltY((x - 0.5) * 16);
+              tiltX(-(y - 0.5) * 12);
+              card.style.setProperty("--mx", `${x * 100}%`);
+              card.style.setProperty("--my", `${y * 100}%`);
+            };
+            const onCardLeave = () => { tiltX(0); tiltY(0); };
+            card.addEventListener("pointermove", onCardMove);
+            card.addEventListener("pointerleave", onCardLeave);
+            return () => {
+              card.removeEventListener("pointermove", onCardMove);
+              card.removeEventListener("pointerleave", onCardLeave);
+            };
+          });
+
           return () => {
             section.removeEventListener("pointermove", onPointerMove);
             section.removeEventListener("pointerleave", onPointerLeave);
+            cardCleanups.forEach((cleanup) => cleanup());
           };
         }
       }, section);

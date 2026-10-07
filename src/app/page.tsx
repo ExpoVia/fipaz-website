@@ -1,6 +1,6 @@
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { ProblemSection } from "@/components/landing/ProblemSection";
+import { FexpoParallax } from "@/components/landing/FexpoParallax";
 import { SolutionSection } from "@/components/landing/SolutionSection";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { ActorsSection } from "@/components/landing/ActorsSection";
@@ -17,7 +17,7 @@ export default function Home() {
 
       <main>
         <HeroSection />
-        <ProblemSection />
+        <FexpoParallax />
         <SolutionSection />
         <HowItWorksSection />
         <ActorsSection />

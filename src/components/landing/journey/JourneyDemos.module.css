@@ -19,13 +19,6 @@
 .continue svg { color: #445079; }
 .continue:hover { text-decoration: underline; text-underline-offset: 4px; }
 .continue:hover svg { transform: translateX(3px); }
-.map { display: block; width: 100%; max-height: 158px; border: 1px solid #e3e7ef; border-radius: 10px; }
-.map text { font-family: var(--font-jakarta), sans-serif; font-size: 10px; font-weight: 650; fill: #46516f; }
-.mapLegend { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; font-size: 10px; color: #626b82; }
-.mapLegend > span, .mapLegend > strong { display: inline-flex; align-items: center; gap: 4px; }
-.mapLegend i { width: 6px; height: 6px; border-radius: 50%; background: #20234a; }
-.mapLegend strong { color: #20234a; }
-.mapLegend strong svg { color: var(--accent); }
 .replay { display: grid; place-items: center; min-width: 32px; min-height: 32px; margin-left: auto; border: 0; border-radius: 6px; color: #445079; background: transparent; cursor: pointer; }
 .replay:hover { background: #e7ecf4; }
 .feedback { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 32px; margin: 4px 0; padding: 4px 8px; border-radius: 6px; color: #20234a; background: #f0f6f5; font-size: 12px; font-weight: 700; }
@@ -78,7 +71,7 @@
   .searchField input { font-size: 16px; }
   .result { min-height: 48px; }
   .resultCopy strong { font-size: 13px; }
-  .resultCopy > span, .stand, .mapLegend { font-size: 11px; }
+  .resultCopy > span, .stand { font-size: 11px; }
   .continue, .save, .contactButton, .replay { min-height: 44px; }
   .continue, .save, .contactButton { font-size: 12px; }
   .replay { min-width: 44px; }

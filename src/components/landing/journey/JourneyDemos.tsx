@@ -6,6 +6,7 @@ import { ArrowRight, Bookmark, Check, ChevronRight, Mail, MapPin, Nfc, RotateCcw
 import { demoCompanies, type DemoCompany, type JourneyStepId } from "./journey-data";
 import styles from "./JourneyDemos.module.css";
 
+export { MapDemo } from "./MapDemo";
 export { RouteDemo } from "./RouteDemo";
 
 type DemoProps = { reduced: boolean; company: DemoCompany; onNext: (step: JourneyStepId) => void };
@@ -40,37 +41,6 @@ export function SearchDemo({ reduced, onSelect }: { reduced: boolean; onSelect: 
       {!results.length && <p className={styles.empty}>No encontramos coincidencias. Prueba con “tecnología” o “Nova”.</p>}
     </div>
   );
-}
-
-export function MapDemo({ reduced, company, onNext }: DemoProps) {
-  const root = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    if (reduced) return;
-    const context = gsap.context(() => {
-      const path = root.current!.querySelector<SVGPathElement>("[data-map-route]")!;
-      const length = path.getTotalLength();
-      gsap.timeline().fromTo(path, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: 0.95, ease: "power1.inOut" })
-        .fromTo("[data-destination]", { scale: 0.8, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.25, ease: "power2.out" });
-    }, root);
-    return () => context.revert();
-  }, [reduced, company]);
-  const destination = company.stand.startsWith("A") ? { x: 100, y: 52 } : company.stand.startsWith("C") ? { x: 300, y: 53 } : { x: 202, y: 52 };
-  return <div ref={root}>
-    <svg className={styles.map} viewBox="0 0 360 180" role="img" aria-label={`Mapa de demostración: desde tu ubicación hasta el stand ${company.stand}`}>
-      <rect x="1" y="1" width="358" height="178" rx="10" fill="#f5f7fb" />
-      <path d="M20 104H340M144 16V164M254 16V164" stroke="#e0e5ee" strokeWidth="16" fill="none" />
-      <rect x="18" y="16" width="110" height="65" rx="6" fill="#e4effb" /><text x="73" y="43" textAnchor="middle">Pabellón A</text>
-      <rect x="161" y="16" width="77" height="65" rx="6" fill="#eee5f7" /><text x="199" y="43" textAnchor="middle">Pabellón B</text>
-      <rect x="271" y="16" width="72" height="65" rx="6" fill="#f9e9f2" /><text x="307" y="43" textAnchor="middle">Pabellón C</text>
-      <rect x="18" y="121" width="108" height="41" rx="6" fill="#fff1cb" /><text x="72" y="146" textAnchor="middle">Zona Gaming</text>
-      <rect x="272" y="121" width="71" height="41" rx="6" fill="#dff3ec" /><text x="307" y="146" textAnchor="middle">Startups</text>
-      <path data-map-route d={`M182 150V104H${destination.x}V${destination.y + 12}`} stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <circle cx="182" cy="150" r="5" fill="#20234a" stroke="white" strokeWidth="2" />
-      <circle data-destination cx={destination.x} cy={destination.y + 12} r="6" fill="var(--accent)" stroke="white" strokeWidth="2" />
-    </svg>
-    <div className={styles.mapLegend}><span><i /> Tú estás aquí</span><strong><MapPin size={13} aria-hidden="true" /> Stand {company.stand}</strong></div>
-    <ContinueButton onClick={() => onNext("route")}>Cómo llegar</ContinueButton>
-  </div>;
 }
 
 export function NFCDemo({ reduced, company, onNext }: DemoProps) {

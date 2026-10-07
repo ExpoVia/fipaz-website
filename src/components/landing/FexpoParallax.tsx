@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { jakartaFont, soraFont, spaceMonoFont } from "./fonts";
 import { SolutionOverlay } from "./SolutionOverlay";
+import { journeyOverlayQuery } from "./journey/journey-data";
 import styles from "./FexpoParallax.module.css";
 
 const imageBase = "/img/landing/section2";
@@ -76,7 +77,9 @@ export function FexpoParallax() {
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
 
-    media.add("(prefers-reduced-motion: no-preference)", () => {
+    media.add({ motion: "(prefers-reduced-motion: no-preference)", overlay: journeyOverlayQuery }, ({ conditions }) => {
+      if (!conditions?.motion) return;
+      const withSolution = Boolean(conditions.overlay);
       const lenis = new Lenis({ anchors: true, lerp: 0.12, smoothWheel: true, syncTouch: false });
       lenis.on("scroll", ScrollTrigger.update);
       const tick = (time: number) => lenis.raf(time * 1000);
@@ -94,10 +97,22 @@ export function FexpoParallax() {
         const rest = 0.15;
         const exitAt = 1 + rest;
         const enterAt = exitAt + 0.13;
-        const total = 2.25;
+        const total = withSolution ? 2.25 : 1.15;
+        const solution = section.querySelector<HTMLElement>("[data-solution]")!;
+        solution.inert = true;
+        const cardIntro = withSolution ? gsap.fromTo("[data-solution] [data-journey-intro]", { opacity: 0, y: 35 }, { opacity: 1, y: 0, stagger: 0.07, duration: 0.55, ease: "power2.out", paused: true, clearProps: "transform,opacity" }) : null;
+        let cardsRevealed = false;
+        let solutionActive = false;
         const timeline = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: { trigger: section, start: "top top", end: `+=${total * 200}%`, scrub: 1.2, pin: true, anticipatePin: 1, invalidateOnRefresh: true, onUpdate: () => updateMouse() },
+          onUpdate() {
+            const ready = withSolution && this.time() >= enterAt + 0.32;
+            solution.inert = !ready;
+            if (ready && !cardsRevealed) { cardIntro?.play(); cardsRevealed = true; }
+            if (!ready && solutionActive) solution.dispatchEvent(new Event("journey-hide"));
+            solutionActive = ready;
+          },
         });
 
         // Depth parallax: the nearer the layer, the more it travels between its start and rest pose.
@@ -113,8 +128,10 @@ export function FexpoParallax() {
           .fromTo("[data-reveal='eyebrow']", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.1 }, 0.18)
           .fromTo("[data-reveal='title']", { autoAlpha: 0, y: 44 }, { autoAlpha: 1, y: 0, duration: 0.14 }, 0.31)
           .fromTo("[data-reveal='subtitle']", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.12 }, 0.46)
-          .fromTo("[data-card]", { y: 80, opacity: 0, scale: 0.96 }, { y: 0, opacity: 1, scale: 1, duration: 0.13, stagger: 0.12 }, 0.61)
+          .fromTo("[data-card]", { y: 80, opacity: 0, scale: 0.96 }, { y: 0, opacity: 1, scale: 1, duration: 0.13, stagger: 0.12 }, 0.61);
 
+        if (withSolution) {
+          timeline
           // Act 1 leaves: copy first, then the cards, each drifting up as it fades.
           .to(["[data-reveal='eyebrow']", "[data-reveal='title']", "[data-reveal='subtitle']"], { autoAlpha: 0, y: -36, duration: 0.14, stagger: 0.04 }, exitAt)
           .to("[data-card]", { autoAlpha: 0, y: -48, scale: 0.96, duration: 0.14, stagger: 0.05 }, exitAt + 0.04)
@@ -124,18 +141,18 @@ export function FexpoParallax() {
           .to(layer("clouds"), { xPercent: distance(3, 1.5), duration: 0.85 }, exitAt)
           .to(layer("airship"), { xPercent: 190, yPercent: -20, duration: 0.7, ease: "power1.in" }, exitAt)
 
-          // Act 2 arrives over the same scene: eyebrow, title word by word, subtitle, then the six steps.
+          // Act 2 arrives over the same scene; its cards enter once and then respond only to interaction.
           .fromTo("[data-solution]", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.02 }, enterAt)
           .fromTo("[data-solution-reveal='eyebrow']", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.1 }, enterAt)
-          .fromTo("[data-solution-word]", { yPercent: 115 }, { yPercent: 0, duration: 0.14, stagger: 0.03, ease: "power2.out" }, enterAt + 0.05)
+          .fromTo("[data-solution-reveal='title']", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.18, ease: "power2.out" }, enterAt + 0.05)
           .fromTo("[data-solution-reveal='subtitle']", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.1 }, enterAt + 0.26)
-          .fromTo("[data-step]", { y: 70, autoAlpha: 0, scale: 0.94 }, { y: 0, autoAlpha: 1, scale: 1, duration: 0.13, stagger: 0.055 }, enterAt + 0.32)
-          // Pads the timeline to `total`, which also leaves a rest at the end before the pin releases.
           .to({}, { duration: 0.01 }, total - 0.01);
+        } else {
+          timeline.to({}, { duration: 0.01 }, total - 0.01);
+        }
 
         if (window.matchMedia("(pointer: fine) and (min-width: 768px)").matches) {
-          // Hover parallax stays on for the whole section, including the final pose. Pointer is -0.5..0.5, so each
-          // layer travels up to strength * range / 2 px; the image overscan in the CSS keeps its edges covered.
+          // The artwork responds to the mouse in the first act and settles before the demos appear.
           const mouseRangeX = 44;
           const mouseRangeY = 26;
           let pointerX = 0;
@@ -148,9 +165,11 @@ export function FexpoParallax() {
               y: gsap.quickTo(element, "y", { duration: 0.9, ease: "power2.out" }),
             }));
           updateMouse = () => {
+            // The product demo rests while the visitor reads and interacts with its controls.
+            const strength = withSolution ? Math.max(0, 1 - Math.max(0, timeline.time() - exitAt) / 0.32) : 1;
             movers.forEach((mover) => {
-              mover.x(pointerX * mover.strength * mouseRangeX);
-              mover.y(pointerY * mover.strength * mouseRangeY);
+              mover.x(pointerX * mover.strength * mouseRangeX * strength);
+              mover.y(pointerY * mover.strength * mouseRangeY * strength);
             });
           };
           const onPointerMove = (event: PointerEvent) => {

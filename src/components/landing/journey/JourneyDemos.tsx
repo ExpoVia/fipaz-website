@@ -1,0 +1,171 @@
+"use client";
+
+import { useLayoutEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ArrowRight, Bookmark, Check, ChevronRight, Mail, MapPin, Nfc, RotateCcw, Search, Smartphone, Trophy, UserRound } from "lucide-react";
+import { demoCompanies, type DemoCompany, type JourneyStepId } from "./journey-data";
+import styles from "./JourneyDemos.module.css";
+
+type DemoProps = { reduced: boolean; company: DemoCompany; onNext: (step: JourneyStepId) => void };
+
+function ContinueButton({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+  return <button type="button" className={styles.continue} onClick={onClick}>{children}<ArrowRight size={15} aria-hidden="true" /></button>;
+}
+
+export function SearchDemo({ reduced, onSelect }: { reduced: boolean; onSelect: (company: DemoCompany) => void }) {
+  const [query, setQuery] = useState(reduced ? "Tecnología" : "");
+  const animation = useRef<gsap.core.Timeline | null>(null);
+  useLayoutEffect(() => {
+    if (reduced) return;
+    const timeline = gsap.timeline({ delay: 0.25 });
+    ["T", "Tec", "Tecnología"].forEach((text, index) => timeline.call(() => setQuery(text), [], index * 0.22));
+    animation.current = timeline;
+    return () => { timeline.kill(); animation.current = null; };
+  }, [reduced]);
+  const normalize = (text: string) => text.toLocaleLowerCase("es").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const results = demoCompanies.filter(company => normalize(`${company.name} ${company.category} tecnología ${company.stand}`).includes(normalize(query)));
+  return (
+    <div>
+      <label className={styles.searchField}><Search size={17} aria-hidden="true" /><span className={styles.srOnly}>Buscar empresas</span>
+        <input value={query} placeholder="Buscar empresas..." autoComplete="off" onFocus={() => animation.current?.kill()} onChange={event => { animation.current?.kill(); setQuery(event.target.value); }} />
+      </label>
+      <div className={styles.resultMeta} aria-live="polite">{results.length} empresas de demostración</div>
+      <ul className={styles.results}>
+        {results.map(company => <li key={company.id}><button type="button" className={styles.result} onClick={() => onSelect(company)}>
+          <span className={styles.avatar}>{company.initials}</span><span className={styles.resultCopy}><strong>{company.name}</strong><span>{company.category}</span></span><span className={styles.stand}>{company.stand}</span><ChevronRight size={16} aria-hidden="true" />
+        </button></li>)}
+      </ul>
+      {!results.length && <p className={styles.empty}>No encontramos coincidencias. Prueba con “tecnología” o “Nova”.</p>}
+    </div>
+  );
+}
+
+export function MapDemo({ reduced, company, onNext }: DemoProps) {
+  const root = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (reduced) return;
+    const context = gsap.context(() => {
+      const path = root.current!.querySelector<SVGPathElement>("[data-map-route]")!;
+      const length = path.getTotalLength();
+      gsap.timeline().fromTo(path, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: 0.95, ease: "power1.inOut" })
+        .fromTo("[data-destination]", { scale: 0.8, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.25, ease: "power2.out" });
+    }, root);
+    return () => context.revert();
+  }, [reduced, company]);
+  const destination = company.stand.startsWith("A") ? { x: 100, y: 52 } : company.stand.startsWith("C") ? { x: 300, y: 53 } : { x: 202, y: 52 };
+  return <div ref={root}>
+    <svg className={styles.map} viewBox="0 0 360 180" role="img" aria-label={`Mapa de demostración: desde tu ubicación hasta el stand ${company.stand}`}>
+      <rect x="1" y="1" width="358" height="178" rx="10" fill="#f5f7fb" />
+      <path d="M20 104H340M144 16V164M254 16V164" stroke="#e0e5ee" strokeWidth="16" fill="none" />
+      <rect x="18" y="16" width="110" height="65" rx="6" fill="#e4effb" /><text x="73" y="43" textAnchor="middle">Pabellón A</text>
+      <rect x="161" y="16" width="77" height="65" rx="6" fill="#eee5f7" /><text x="199" y="43" textAnchor="middle">Pabellón B</text>
+      <rect x="271" y="16" width="72" height="65" rx="6" fill="#f9e9f2" /><text x="307" y="43" textAnchor="middle">Pabellón C</text>
+      <rect x="18" y="121" width="108" height="41" rx="6" fill="#fff1cb" /><text x="72" y="146" textAnchor="middle">Zona Gaming</text>
+      <rect x="272" y="121" width="71" height="41" rx="6" fill="#dff3ec" /><text x="307" y="146" textAnchor="middle">Startups</text>
+      <path data-map-route d={`M182 150V104H${destination.x}V${destination.y + 12}`} stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <circle cx="182" cy="150" r="5" fill="#20234a" stroke="white" strokeWidth="2" />
+      <circle data-destination cx={destination.x} cy={destination.y + 12} r="6" fill="var(--accent)" stroke="white" strokeWidth="2" />
+    </svg>
+    <div className={styles.mapLegend}><span><i /> Tú estás aquí</span><strong><MapPin size={13} aria-hidden="true" /> Stand {company.stand}</strong></div>
+    <ContinueButton onClick={() => onNext("route")}>Cómo llegar</ContinueButton>
+  </div>;
+}
+
+export function RouteDemo({ reduced, company, onNext }: DemoProps) {
+  const root = useRef<HTMLDivElement>(null);
+  const [phase, setPhase] = useState(reduced ? 2 : 0);
+  const [run, setRun] = useState(0);
+  useLayoutEffect(() => {
+    if (reduced) return;
+    const context = gsap.context(() => {
+      const path = root.current!.querySelector<SVGPathElement>("[data-route]")!;
+      const dot = root.current!.querySelector<SVGCircleElement>("[data-route-dot]")!;
+      const length = path.getTotalLength();
+      const position = { progress: 0 };
+      let lastPhase = -1;
+      gsap.to(position, { progress: 1, duration: 2.4, delay: 0.2, ease: "none", onUpdate: () => {
+        const point = path.getPointAtLength(length * position.progress);
+        dot.setAttribute("transform", `translate(${point.x} ${point.y})`);
+        const nextPhase = position.progress >= 0.99 ? 2 : position.progress > 0.45 ? 1 : 0;
+        if (lastPhase !== nextPhase) { lastPhase = nextPhase; setPhase(nextPhase); }
+      } });
+    }, root);
+    return () => context.revert();
+  }, [reduced, run]);
+  const messages = ["Avanza recto", "Gira a la derecha", `Llegaste al Stand ${company.stand}`];
+  return <div ref={root}>
+    <div className={styles.routeSummary}><span><strong>120 m</strong> de recorrido</span><span><strong>2 min</strong> a pie</span><button type="button" className={styles.replay} onClick={() => { setPhase(reduced ? 2 : 0); setRun(run + 1); }} aria-label="Repetir recorrido"><RotateCcw size={15} /></button></div>
+    <svg className={styles.route} viewBox="0 0 360 108" role="img" aria-label={`Recorrido hasta el stand ${company.stand}`}>
+      <path d="M34 78H160V32H326" stroke="#e6e9f1" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <path data-route d="M34 78H160V32H326" stroke="var(--accent)" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="34" cy="78" r="4" fill="#20234a" />
+      <circle data-route-dot cx="0" cy="0" r="6" transform={reduced ? "translate(326 32)" : "translate(34 78)"} fill="#20234a" stroke="white" strokeWidth="2" />
+      <text x="18" y="101">Tú estás aquí</text><text x="174" y="84">Pabellón {company.stand[0]}</text><text x="270" y="16">{company.stand}</text>
+    </svg>
+    <p className={styles.feedback} role="status">{phase === 2 ? <Check size={17} aria-hidden="true" /> : <ArrowRight size={17} aria-hidden="true" />}{messages[phase]}</p>
+    <ContinueButton onClick={() => onNext("nfc")}>Probar check-in</ContinueButton>
+  </div>;
+}
+
+export function NFCDemo({ reduced, company, onNext }: DemoProps) {
+  const root = useRef<HTMLDivElement>(null);
+  const [complete, setComplete] = useState(reduced);
+  const [run, setRun] = useState(0);
+  useLayoutEffect(() => {
+    if (reduced) return;
+    const context = gsap.context(() => {
+      gsap.timeline({ delay: 0.2 })
+        .fromTo("[data-phone]", { x: -22, rotate: -6 }, { x: 0, rotate: 0, duration: 0.6, ease: "power2.out" })
+        .fromTo("[data-nfc-wave]", { opacity: 0, scale: 0.65 }, { opacity: 0.65, scale: 1, duration: 0.3, stagger: 0.12 }, 0.5)
+        .to("[data-nfc-wave]", { opacity: 0, scale: 1.2, duration: 0.3, stagger: 0.12 }, 0.95)
+        .call(() => setComplete(true), [], 1.1)
+        .fromTo("[data-nfc-points]", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 1.1);
+    }, root);
+    return () => context.revert();
+  }, [reduced, run]);
+  return <div ref={root}>
+    <div className={styles.nfcStage} aria-hidden="true"><div data-phone className={styles.phone}><Smartphone size={64} strokeWidth={1.5} /><Check size={18} className={styles.phoneCheck} style={{ opacity: complete ? 1 : 0 }} /></div><div className={styles.nfcTarget}><Nfc size={28} />{[0, 1, 2].map(i => <span key={i} data-nfc-wave className={styles.nfcWave} style={{ inset: -8 - i * 8 }} />)}</div><span data-nfc-points className={styles.points}>+25 pts</span></div>
+    <p className={styles.feedback} role="status">{complete ? <Check size={17} aria-hidden="true" /> : <Nfc size={17} aria-hidden="true" />}{complete ? "Check-in realizado" : "Acercando el teléfono…"}</p>
+    <div className={styles.nfcInfo}><span>{company.name} · Stand {company.stand}</span><button type="button" className={styles.replay} aria-label="Repetir simulación NFC" onClick={() => { setComplete(reduced); setRun(run + 1); }}><RotateCcw size={15} /></button></div>
+    <div className={styles.demoNote}>Simulación NFC · No registra una visita real.</div>
+    <ContinueButton onClick={() => onNext("reward")}>Ver mi misión</ContinueButton>
+  </div>;
+}
+
+export function RewardDemo({ reduced, onNext }: DemoProps) {
+  const root = useRef<HTMLDivElement>(null);
+  const [complete, setComplete] = useState(reduced);
+  useLayoutEffect(() => {
+    if (reduced) return;
+    const context = gsap.context(() => {
+      const total = root.current!.querySelector<HTMLElement>("[data-points-total]")!;
+      const score = { value: 330 };
+      gsap.timeline({ delay: 0.35 })
+        .fromTo("[data-progress]", { scaleX: 2 / 3 }, { scaleX: 1, duration: 0.7, ease: "power2.out" })
+        .call(() => setComplete(true))
+        .to(score, { value: 430, duration: 0.7, ease: "power2.out", onUpdate: () => { total.textContent = String(Math.round(score.value)); } })
+        .fromTo("[data-reward-points]", { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25 }, 0.75);
+    }, root);
+    return () => context.revert();
+  }, [reduced]);
+  return <div ref={root}>
+    <div className={styles.missionLabel}><Trophy size={17} aria-hidden="true" /> MISIÓN DE EXPLORACIÓN</div>
+    <h4 className={styles.missionTitle}>Visita 3 stands tecnológicos</h4>
+    <div className={styles.progressLabel}><span>Tu recorrido</span><strong>{complete ? "3 / 3" : "2 / 3"}</strong></div>
+    <div className={styles.progressTrack} role="progressbar" aria-label="Stands visitados" aria-valuemin={0} aria-valuemax={3} aria-valuenow={complete ? 3 : 2}><span data-progress /></div>
+    <div className={styles.rewardStatus}><span role="status">{complete ? <><Check size={16} aria-hidden="true" /> Misión completada</> : "Una visita más para completar"}</span><strong data-reward-points>+100 pts</strong></div>
+    <div className={styles.balance}><span>Tu saldo de ejemplo</span><strong><span data-points-total>{reduced ? 430 : 330}</span> <small>pts</small></strong></div>
+    <ContinueButton onClick={() => onNext("connect")}>Conectar con la empresa</ContinueButton>
+  </div>;
+}
+
+export function ConnectDemo({ company, saved, onSave }: { company: DemoCompany; saved: boolean; onSave: () => void }) {
+  const [contactVisible, setContactVisible] = useState(false);
+  return <div>
+    <div className={styles.company}><span className={styles.companyLogo}>{company.initials}</span><div><h4>{company.name}</h4><p>{company.category}</p><span><MapPin size={12} aria-hidden="true" /> Stand {company.stand}</span></div></div>
+    <div className={styles.contact}><UserRound size={22} aria-hidden="true" /><div><strong>María López</strong><span>Business Development</span></div><span className={styles.sampleBadge}>Ejemplo</span></div>
+    <div className={styles.actions}><button type="button" className={styles.save} onClick={onSave} aria-pressed={saved}>{saved ? <Check size={15} aria-hidden="true" /> : <Bookmark size={15} aria-hidden="true" />}{saved ? "Empresa guardada" : "Guardar empresa"}</button><button type="button" className={styles.contactButton} aria-expanded={contactVisible} onClick={() => setContactVisible(!contactVisible)}>Ver contacto</button></div>
+    {contactVisible && <p className={styles.contactDetail}><Mail size={14} aria-hidden="true" /> maria@{company.id}.example · Contacto de ejemplo</p>}
+    <p className={styles.savedHint} role="status">{saved ? "Podrás consultarla después desde tu perfil. Guardada en esta demo." : "Guarda una empresa para continuar la conversación."}</p>
+  </div>;
+}

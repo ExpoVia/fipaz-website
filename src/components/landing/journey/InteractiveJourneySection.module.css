@@ -12,12 +12,17 @@
 .cards { display: grid; flex: none; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; width: min(100%, 1180px); margin: 0; padding: 0; list-style: none; }
 .cardItem { position: relative; min-width: 0; scroll-margin-top: 88px; }
 .cardItem:not(:last-child)::after { content: "→"; position: absolute; z-index: 1; right: -14px; top: 32px; color: #566181; font-size: 12px; pointer-events: none; }
-.card { position: relative; display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 176px; padding: 24px; border: 1.5px solid var(--ink); border-radius: 16px; background: #fff; box-shadow: 5px 6px 0 var(--ink); color: var(--ink); text-align: left; cursor: pointer; }
-.card[data-active="true"] { box-shadow: 6px 8px 0 var(--ink), 0 12px 24px #131d4812; }
+.card { position: relative; isolation: isolate; display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 176px; padding: 24px; border: 1.5px solid var(--ink); border-radius: 16px; background: #fff; box-shadow: 5px 6px 0 var(--ink); color: var(--ink); text-align: left; cursor: pointer; transition: box-shadow 0.3s ease; }
+/* The brutalist shadow grows with the lift (the lift itself is a GSAP tween). */
+.card[data-active="true"] { box-shadow: 10px 13px 0 var(--ink), 0 28px 50px #11225b33; }
+/* Spotlight that follows the cursor; --mx/--my are set by the tilt handler in JourneyCard. */
+.card::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--accent) 55%, #fff) 0%, transparent 70%); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+@media (hover: hover) and (pointer: fine) { .card:hover::before { opacity: 0.8; } }
 .card[data-pinned="true"] { border-color: var(--accent); }
 .card:focus-visible, .panel:focus-visible, .panel button:focus-visible { outline: 3px solid #1687e8; outline-offset: 4px; }
 .cardTop { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
-.cardIcon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border: 1px solid var(--ink); border-radius: 8px; background: color-mix(in srgb, var(--accent) 25%, #fff); }
+.cardIcon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border: 1px solid var(--ink); border-radius: 8px; background: color-mix(in srgb, var(--accent) 25%, #fff); transition: box-shadow 0.3s ease; }
+.card[data-active="true"] .cardIcon { box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 38%, transparent); }
 .number { font-family: var(--font-space-mono), ui-monospace, monospace; font-size: 11px; color: #636c85; }
 .cardTitle { margin-top: 16px; font-family: var(--font-sora), system-ui, sans-serif; font-size: clamp(14px, 1.15vw, 17px); font-weight: 800; line-height: 1.2; letter-spacing: -0.025em; white-space: nowrap; }
 .cardDescription { display: block; margin-top: 8px; font-size: 11px; line-height: 1.5; color: #5b647c; }
@@ -65,6 +70,7 @@
   .cardItem::after { display: none; }
   .card { display: grid; grid-template-columns: 76px 1fr 24px; align-items: center; column-gap: 12px; min-height: 76px; height: auto; padding: 16px; border-radius: 12px; box-shadow: 3px 4px 0 var(--ink); }
   .card[data-active="true"] { box-shadow: 3px 4px 0 var(--ink); }
+  .card[data-active="true"] .cardIcon { box-shadow: none; }
   .cardTop { grid-row: span 2; flex-direction: row-reverse; }
   .cardTitle { grid-column: 2; margin: 0; font-size: 15px; }
   .cardDescription { grid-column: 2; margin: 4px 0 0; font-size: 11px; line-height: 1.4; }
@@ -78,4 +84,8 @@
   .panelHeading p { font-size: 12px; }
   .iconButton { min-width: 40px; min-height: 40px; }
 }
-@media (prefers-reduced-motion: reduce) { .journey *, .journey *::before, .journey *::after { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: reduce) {
+  .journey *, .journey *::before, .journey *::after { scroll-behavior: auto; }
+  .card, .card::before, .cardIcon { transition: none; }
+  .card::before { display: none; }
+}

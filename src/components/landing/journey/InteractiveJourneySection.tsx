@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from "react";
 import dynamic from "next/dynamic";
 import { autoUpdate, offset, shift, size, useFloating } from "@floating-ui/react";
 import { gsap } from "gsap";
@@ -37,14 +37,42 @@ function JourneyCards({ children }: { children: ReactNode }) {
 }
 
 type JourneyCardProps = {
-  step: JourneyStep; active: boolean; pinned: boolean; panelId: string; triggerId: string;
+  step: JourneyStep; active: boolean; pinned: boolean; tilt: boolean; panelId: string; triggerId: string;
   onPreview: () => void; onLeave: () => void; onActivate: (keyboard: boolean) => void;
 };
 
-function JourneyCard({ step, active, pinned, panelId, triggerId, onPreview, onLeave, onActivate }: JourneyCardProps) {
+function JourneyCard({ step, active, pinned, tilt, panelId, triggerId, onPreview, onLeave, onActivate }: JourneyCardProps) {
   const Icon = step.icon;
-  return <button type="button" id={triggerId} className={styles.card} data-journey-card data-active={active} data-pinned={pinned}
-    aria-expanded={active} aria-controls={panelId} onPointerEnter={event => { if (event.pointerType === "mouse") onPreview(); }} onPointerLeave={onLeave}
+  const button = useRef<HTMLButtonElement>(null);
+  const tiltTo = useRef<{ x: (value: number) => void; y: (value: number) => void } | null>(null);
+
+  // The card tilts towards the cursor, like the problem cards above. The lift, scale and dimming are driven by the
+  // section-level tween on `y`/`scale`/`opacity`; rotationX/Y are separate properties, so the two compose.
+  useLayoutEffect(() => {
+    const element = button.current;
+    if (!element || !tilt) return;
+    gsap.set(element, { transformPerspective: 900 });
+    tiltTo.current = {
+      x: gsap.quickTo(element, "rotationX", { duration: 0.5, ease: "power3.out" }),
+      y: gsap.quickTo(element, "rotationY", { duration: 0.5, ease: "power3.out" }),
+    };
+    return () => { tiltTo.current = null; gsap.set(element, { rotationX: 0, rotationY: 0 }); };
+  }, [tilt]);
+
+  const onPointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType !== "mouse" || !tiltTo.current) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width;
+    const y = (event.clientY - bounds.top) / bounds.height;
+    tiltTo.current.y((x - 0.5) * 16);
+    tiltTo.current.x(-(y - 0.5) * 12);
+    event.currentTarget.style.setProperty("--mx", `${x * 100}%`);
+    event.currentTarget.style.setProperty("--my", `${y * 100}%`);
+  };
+
+  return <button ref={button} type="button" id={triggerId} className={styles.card} data-journey-card data-active={active} data-pinned={pinned}
+    aria-expanded={active} aria-controls={panelId} onPointerEnter={event => { if (event.pointerType === "mouse") onPreview(); }} onPointerMove={onPointerMove}
+    onPointerLeave={() => { tiltTo.current?.x(0); tiltTo.current?.y(0); onLeave(); }}
     onClick={event => onActivate(event.detail === 0)}>
     <span className={styles.cardTop}><span className={styles.cardIcon} data-journey-icon><Icon size={21} strokeWidth={2} aria-hidden="true" /></span><span className={styles.number}>{step.number}</span></span>
     <span className={styles.cardTitle}>{step.title}</span><span className={styles.cardDescription}>{step.description}</span>
@@ -198,12 +226,13 @@ export function InteractiveJourneySection({ variant }: { variant: "overlay" | "s
     const icons = gsap.utils.toArray<HTMLElement>("[data-journey-icon]", root.current);
     const arrows = gsap.utils.toArray<HTMLElement>("[data-journey-arrow]", root.current);
     const duration = reduced || compact ? 0 : 0.28;
-    const tween = gsap.to(buttons, { y: index => activeIndex === index && !reduced && !compact ? -12 : 0, scale: index => !active || reduced || compact ? 1 : index === activeIndex ? 1.025 : 0.99,
+    const tween = gsap.to(buttons, { y: index => activeIndex === index && !reduced && !compact ? -12 : 0, scale: index => !active || reduced || compact || index === activeIndex ? 1 : 0.99,
       opacity: index => !active || compact || index === activeIndex ? 1 : 0.72, duration, ease: "power2.out", overwrite: "auto",
       onStart: () => buttons.forEach(button => { button.style.willChange = "transform,opacity"; }), onComplete: () => buttons.forEach(button => { button.style.willChange = ""; }),
     });
-    const iconTween = gsap.to(icons, { rotation: index => !reduced && !compact && index === activeIndex ? 2 : 0, scale: index => !reduced && !compact && index === activeIndex ? 1.04 : 1, duration, ease: "power2.out" });
-    const arrowTween = gsap.to(arrows, { x: index => !reduced && !compact && index === activeIndex ? 3 : 0, duration, ease: "power2.out" });
+    // Icon tips and pops with a small overshoot, the arrow slides: same as the problem cards above.
+    const iconTween = gsap.to(icons, { rotation: index => !reduced && !compact && index === activeIndex ? -10 : 0, scale: index => !reduced && !compact && index === activeIndex ? 1.12 : 1, duration: duration && 0.4, ease: "back.out(2.2)" });
+    const arrowTween = gsap.to(arrows, { x: index => !reduced && !compact && index === activeIndex ? 5 : 0, duration, ease: "power2.out" });
     return () => { tween.kill(); iconTween.kill(); arrowTween.kill(); buttons.forEach(button => { button.style.willChange = ""; }); };
   }, [active, activeIndex, compact, reduced, enabled]);
 
@@ -236,7 +265,7 @@ export function InteractiveJourneySection({ variant }: { variant: "overlay" | "s
       <div ref={setFloating} className={styles.floating} style={floatingStyles}>{panel}</div></>}
     <JourneyCards>
       {journeySteps.map(step => <li className={styles.cardItem} key={step.id} data-journey-intro style={{ "--accent": step.color } as CSSProperties} ref={node => { if (node) cards.current[step.id] = node; else delete cards.current[step.id]; }}>
-        <JourneyCard step={step} active={activeStep === step.id} pinned={pinnedStep === step.id} panelId={panelId(step.id)} triggerId={`${prefix}-${step.id}`}
+        <JourneyCard step={step} active={activeStep === step.id} pinned={pinnedStep === step.id} tilt={enabled && !reduced && !compact} panelId={panelId(step.id)} triggerId={`${prefix}-${step.id}`}
           onPreview={() => { if (compact || !enabled) return; cancelClose(); setHoveredStep(step.id); }} onLeave={scheduleClose}
           onActivate={keyboard => { if (pinnedStep === step.id) close(false); else { focusPending.current = keyboard && !compact; selectStep(step.id); } }} />
         {compact && activeStep === step.id && <div className={styles.accordionBody}>{panel}</div>}

@@ -152,11 +152,13 @@ export function FexpoParallax() {
         }
 
         if (window.matchMedia("(pointer: fine) and (min-width: 768px)").matches) {
-          // The artwork responds to the mouse in the first act and settles before the demos appear.
+          // The artwork responds to the mouse in the first act and settles before the demos appear. In the solution act it
+          // only wakes up while the pointer is over the step cards; the cards themselves never move with the mouse.
           const mouseRangeX = 44;
           const mouseRangeY = 26;
           let pointerX = 0;
           let pointerY = 0;
+          let overCards = false;
           const movers = [...section.querySelectorAll<HTMLElement>("[data-mouse-strength]")]
             .filter((element) => Number(element.dataset.mouseStrength) > 0)
             .map((element) => ({
@@ -165,8 +167,10 @@ export function FexpoParallax() {
               y: gsap.quickTo(element, "y", { duration: 0.9, ease: "power2.out" }),
             }));
           updateMouse = () => {
-            // The product demo rests while the visitor reads and interacts with its controls.
-            const strength = withSolution ? Math.max(0, 1 - Math.max(0, timeline.time() - exitAt) / 0.32) : 1;
+            // The product demo rests while the visitor reads and interacts with its controls, unless they are hovering
+            // the cards.
+            const resting = withSolution ? Math.max(0, 1 - Math.max(0, timeline.time() - exitAt) / 0.32) : 1;
+            const strength = overCards ? 1 : resting;
             movers.forEach((mover) => {
               mover.x(pointerX * mover.strength * mouseRangeX * strength);
               mover.y(pointerY * mover.strength * mouseRangeY * strength);
@@ -176,9 +180,10 @@ export function FexpoParallax() {
             const bounds = section.getBoundingClientRect();
             pointerX = (event.clientX - bounds.left) / bounds.width - 0.5;
             pointerY = (event.clientY - bounds.top) / bounds.height - 0.5;
+            overCards = event.target instanceof Element && event.target.closest("[data-journey-intro]") !== null;
             updateMouse();
           };
-          const onPointerLeave = () => { pointerX = 0; pointerY = 0; updateMouse(); };
+          const onPointerLeave = () => { pointerX = 0; pointerY = 0; overCards = false; updateMouse(); };
           section.addEventListener("pointermove", onPointerMove);
           section.addEventListener("pointerleave", onPointerLeave);
 

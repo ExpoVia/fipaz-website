@@ -6,6 +6,8 @@ import { ArrowRight, Bookmark, Check, ChevronRight, Mail, MapPin, Nfc, RotateCcw
 import { demoCompanies, type DemoCompany, type JourneyStepId } from "./journey-data";
 import styles from "./JourneyDemos.module.css";
 
+export { RouteDemo } from "./RouteDemo";
+
 type DemoProps = { reduced: boolean; company: DemoCompany; onNext: (step: JourneyStepId) => void };
 
 function ContinueButton({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
@@ -68,42 +70,6 @@ export function MapDemo({ reduced, company, onNext }: DemoProps) {
     </svg>
     <div className={styles.mapLegend}><span><i /> Tú estás aquí</span><strong><MapPin size={13} aria-hidden="true" /> Stand {company.stand}</strong></div>
     <ContinueButton onClick={() => onNext("route")}>Cómo llegar</ContinueButton>
-  </div>;
-}
-
-export function RouteDemo({ reduced, company, onNext }: DemoProps) {
-  const root = useRef<HTMLDivElement>(null);
-  const [phase, setPhase] = useState(reduced ? 2 : 0);
-  const [run, setRun] = useState(0);
-  useLayoutEffect(() => {
-    if (reduced) return;
-    const context = gsap.context(() => {
-      const path = root.current!.querySelector<SVGPathElement>("[data-route]")!;
-      const dot = root.current!.querySelector<SVGCircleElement>("[data-route-dot]")!;
-      const length = path.getTotalLength();
-      const position = { progress: 0 };
-      let lastPhase = -1;
-      gsap.to(position, { progress: 1, duration: 2.4, delay: 0.2, ease: "none", onUpdate: () => {
-        const point = path.getPointAtLength(length * position.progress);
-        dot.setAttribute("transform", `translate(${point.x} ${point.y})`);
-        const nextPhase = position.progress >= 0.99 ? 2 : position.progress > 0.45 ? 1 : 0;
-        if (lastPhase !== nextPhase) { lastPhase = nextPhase; setPhase(nextPhase); }
-      } });
-    }, root);
-    return () => context.revert();
-  }, [reduced, run]);
-  const messages = ["Avanza recto", "Gira a la derecha", `Llegaste al Stand ${company.stand}`];
-  return <div ref={root}>
-    <div className={styles.routeSummary}><span><strong>120 m</strong> de recorrido</span><span><strong>2 min</strong> a pie</span><button type="button" className={styles.replay} onClick={() => { setPhase(reduced ? 2 : 0); setRun(run + 1); }} aria-label="Repetir recorrido"><RotateCcw size={15} /></button></div>
-    <svg className={styles.route} viewBox="0 0 360 108" role="img" aria-label={`Recorrido hasta el stand ${company.stand}`}>
-      <path d="M34 78H160V32H326" stroke="#e6e9f1" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <path data-route d="M34 78H160V32H326" stroke="var(--accent)" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="34" cy="78" r="4" fill="#20234a" />
-      <circle data-route-dot cx="0" cy="0" r="6" transform={reduced ? "translate(326 32)" : "translate(34 78)"} fill="#20234a" stroke="white" strokeWidth="2" />
-      <text x="18" y="101">Tú estás aquí</text><text x="174" y="84">Pabellón {company.stand[0]}</text><text x="270" y="16">{company.stand}</text>
-    </svg>
-    <p className={styles.feedback} role="status">{phase === 2 ? <Check size={17} aria-hidden="true" /> : <ArrowRight size={17} aria-hidden="true" />}{messages[phase]}</p>
-    <ContinueButton onClick={() => onNext("nfc")}>Probar check-in</ContinueButton>
   </div>;
 }
 

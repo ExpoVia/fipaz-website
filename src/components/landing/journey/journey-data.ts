@@ -10,7 +10,7 @@ export const journeyCopy = {
 export const journeySteps = [
   { id: "search", number: "01", title: "Buscar", color: "#1687E8", icon: Search, description: "Encuentra tu próxima oportunidad.", demoTitle: "Buscar empresas", demoDescription: "Encuentra expositores por categoría, nombre o rubro." },
   { id: "map", number: "02", title: "Ver mapa", color: "#8B4FC7", icon: Map, description: "Ubica cada stand en el recinto.", demoTitle: "Tu feria, en un mapa", demoDescription: "Ubica tu próximo destino y traza el recorrido." },
-  { id: "route", number: "03", title: "Llegar", color: "#D86BAC", icon: Navigation, description: "Sigue el camino hasta tu destino.", demoTitle: "Un camino claro", demoDescription: "Indicaciones simples, paso a paso." },
+  { id: "route", number: "03", title: "Llegar", color: "#D86BAC", icon: Navigation, description: "Sigue el camino hasta tu destino.", demoTitle: "Ruta hacia tu destino", demoDescription: "Sigue la ruta paso a paso para llegar a tu stand de forma rápida y sencilla." },
   { id: "nfc", number: "04", title: "Tocar NFC", color: "#82D6BF", icon: Smartphone, description: "Acerca tu teléfono. Registra tu visita.", demoTitle: "Un toque, una visita", demoDescription: "Acerca el teléfono al punto del stand." },
   { id: "reward", number: "05", title: "Ganar", color: "#FFBD18", icon: Gift, description: "Completa misiones y suma puntos.", demoTitle: "Cada visita cuenta", demoDescription: "Explora la feria y completa una misión." },
   { id: "connect", number: "06", title: "Conectar", color: "#F27C68", icon: Users, description: "Guarda empresas y sigue en contacto.", demoTitle: "La conexión sigue", demoDescription: "Lleva tus descubrimientos contigo." },

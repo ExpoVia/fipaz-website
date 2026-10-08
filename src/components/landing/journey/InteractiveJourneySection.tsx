@@ -120,7 +120,7 @@ function InteractiveDemoPanel({ stepId, id, labelledBy, pinned, reduced, compact
         {displayedStep === "route" && <RouteDemo reduced={reduced} company={company} onNext={onNext} />}
         {displayedStep === "nfc" && <NFCDemo reduced={reduced} company={company} onNext={onNext} />}
         {displayedStep === "reward" && <RewardDemo reduced={reduced} company={company} onNext={onNext} />}
-        {displayedStep === "connect" && <ConnectDemo company={company} saved={saved} onSave={onSave} />}
+        {displayedStep === "connect" && <ConnectDemo reduced={reduced} company={company} saved={saved} onSave={onSave} />}
       </div>
     </div>
   </div>;
@@ -262,7 +262,7 @@ export function InteractiveJourneySection({ variant }: { variant: "overlay" | "s
       {!active && <p className={styles.idleHint}><MousePointer2 size={15} aria-hidden="true" /> Pasa por una tarjeta para explorar. Haz clic para fijarla.</p>}
     </div>
     {!compact && active && <><ConnectionLine root={root} reference={elements.reference instanceof Element ? elements.reference : null} floating={elements.floating} active={active} reduced={reduced} x={x} y={y} />
-      <div ref={setFloating} className={styles.floating} data-wide={active.id === "route" || active.id === "map" || active.id === "nfc" || active.id === "reward"} style={floatingStyles}>{panel}</div></>}
+      <div ref={setFloating} className={styles.floating} data-wide={active.id === "route" || active.id === "map" || active.id === "nfc" || active.id === "reward" || active.id === "connect"} style={floatingStyles}>{panel}</div></>}
     <JourneyCards>
       {journeySteps.map(step => <li className={styles.cardItem} key={step.id} data-journey-intro style={{ "--accent": step.color } as CSSProperties} ref={node => { if (node) cards.current[step.id] = node; else delete cards.current[step.id]; }}>
         <JourneyCard step={step} active={activeStep === step.id} pinned={pinnedStep === step.id} tilt={enabled && !reduced && !compact} panelId={panelId(step.id)} triggerId={`${prefix}-${step.id}`}

@@ -2,10 +2,11 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { ArrowRight, Bookmark, Check, ChevronRight, Mail, MapPin, Nfc, RotateCcw, Search, Smartphone, Trophy, UserRound } from "lucide-react";
-import { demoCompanies, type DemoCompany, type JourneyStepId } from "./journey-data";
+import { ArrowRight, Bookmark, Check, Mail, MapPin, Nfc, RotateCcw, Smartphone, Trophy, UserRound } from "lucide-react";
+import type { DemoCompany, JourneyStepId } from "./journey-data";
 import styles from "./JourneyDemos.module.css";
 
+export { SearchDemo } from "./SearchDemo";
 export { MapDemo } from "./MapDemo";
 export { RouteDemo } from "./RouteDemo";
 
@@ -13,34 +14,6 @@ type DemoProps = { reduced: boolean; company: DemoCompany; onNext: (step: Journe
 
 function ContinueButton({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
   return <button type="button" className={styles.continue} onClick={onClick}>{children}<ArrowRight size={15} aria-hidden="true" /></button>;
-}
-
-export function SearchDemo({ reduced, onSelect }: { reduced: boolean; onSelect: (company: DemoCompany) => void }) {
-  const [query, setQuery] = useState(reduced ? "Tecnología" : "");
-  const animation = useRef<gsap.core.Timeline | null>(null);
-  useLayoutEffect(() => {
-    if (reduced) return;
-    const timeline = gsap.timeline({ delay: 0.25 });
-    ["T", "Tec", "Tecnología"].forEach((text, index) => timeline.call(() => setQuery(text), [], index * 0.22));
-    animation.current = timeline;
-    return () => { timeline.kill(); animation.current = null; };
-  }, [reduced]);
-  const normalize = (text: string) => text.toLocaleLowerCase("es").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  const results = demoCompanies.filter(company => normalize(`${company.name} ${company.category} tecnología ${company.stand}`).includes(normalize(query)));
-  return (
-    <div>
-      <label className={styles.searchField}><Search size={17} aria-hidden="true" /><span className={styles.srOnly}>Buscar empresas</span>
-        <input value={query} placeholder="Buscar empresas..." autoComplete="off" onFocus={() => animation.current?.kill()} onChange={event => { animation.current?.kill(); setQuery(event.target.value); }} />
-      </label>
-      <div className={styles.resultMeta} aria-live="polite">{results.length} empresas de demostración</div>
-      <ul className={styles.results}>
-        {results.map(company => <li key={company.id}><button type="button" className={styles.result} onClick={() => onSelect(company)}>
-          <span className={styles.avatar}>{company.initials}</span><span className={styles.resultCopy}><strong>{company.name}</strong><span>{company.category}</span></span><span className={styles.stand}>{company.stand}</span><ChevronRight size={16} aria-hidden="true" />
-        </button></li>)}
-      </ul>
-      {!results.length && <p className={styles.empty}>No encontramos coincidencias. Prueba con “tecnología” o “Nova”.</p>}
-    </div>
-  );
 }
 
 export function NFCDemo({ reduced, company, onNext }: DemoProps) {

@@ -1,7 +1,6 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
-import Image from "next/image";
 import { ArrowRight, Building2, Store, User } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -9,9 +8,11 @@ import Lenis from "lenis";
 import { jakartaFont, soraFont, spaceMonoFont } from "./fonts";
 import { SolutionOverlay } from "./SolutionOverlay";
 import { journeyOverlayQuery } from "./journey/journey-data";
+import { FairScene } from "./FairScene";
+import { EntranceSkip } from "./EntrancePortal";
+import { appendEntrance, entranceDuration } from "./entrance-motion";
+import entranceStyles from "./FexpoEntranceExperience.module.css";
 import styles from "./FexpoParallax.module.css";
-
-const imageBase = "/img/landing/section2";
 
 const problems = [
   { title: "Visitante", badge: "DESORIENTACIÓN", icon: User, color: "pink", problem: "No siempre sabe qué empresas existen, dónde están o cuál puede resolver lo que busca.", detail: "Se pierden buenas oportunidades por falta de guía clara dentro del recinto." },
@@ -19,29 +20,9 @@ const problems = [
   { title: "Organizador", badge: "FALTA DE CAPA DIGITAL", icon: Building2, color: "mint", problem: "Gestiona espacios, expositores y actividades sin una capa digital integrada para toda la experiencia.", detail: "Falta de analítica en tiempo real sobre el flujo real de asistentes." },
 ] as const;
 
-type SceneLayerProps = { number: number; name: string; className?: string; mouseStrength?: number };
-
-function SceneLayer({ number, name, className = "", mouseStrength = 0 }: SceneLayerProps) {
-  return (
-    <div className={`${styles.layer} ${className}`} data-layer={name}>
-      <div className={styles.mouseLayer} data-mouse-strength={mouseStrength}>
-        <Image src={`${imageBase}/p2-img${number}.png`} alt="" fill unoptimized loading="eager"
-          fetchPriority={number === 1 ? "high" : "auto"} sizes="100vw"
-          draggable={false} className={styles.layerImage} />
-      </div>
-    </div>
-  );
-}
-
-const SkyLayer = () => <SceneLayer number={1} name="sky" mouseStrength={0.15} />;
-const CloudsLayer = () => <SceneLayer number={2} name="clouds" mouseStrength={0.3} />;
-const SkylineLayer = () => <SceneLayer number={6} name="skyline" className={styles.skyline} mouseStrength={0.5} />;
-const GroundLayer = () => <SceneLayer number={5} name="ground" className={styles.ground} mouseStrength={0.8} />;
-const AirshipLayer = () => <SceneLayer number={4} name="airship" className={styles.airship} mouseStrength={1.2} />;
-
 function ContentOverlay() {
   return (
-    <div className={styles.content}>
+    <div className={styles.content} data-problem-content>
       <div className={styles.copy}>
         <span className={styles.eyebrow} data-reveal="eyebrow"><span aria-hidden="true">✦</span> EL DESAFÍO EN LAS FERIAS HOY</span>
         <h2 className={styles.title} data-reveal="title">Una feria llena de <span className={styles.titleAccent}>oportunidades</span> no debería sentirse difícil de navegar.</h2>
@@ -91,13 +72,13 @@ export function FexpoParallax() {
         const mobile = () => window.matchMedia("(max-width: 767px)").matches;
         const distance = (desktop: number, small: number) => () => mobile() ? small : desktop;
         let updateMouse = () => {};
-        // One pinned scroll, two acts over the same scene. Timeline units: 0-1 is the problem act (scene pulls back, copy and
-        // cards come in); it rests for `rest`, then fades out while the background keeps drifting, and the solution act
-        // (SolutionOverlay) comes in over the same artwork. Scroll length is 200% of the viewport per unit.
+        // Three acts share one scene and one pin: problem, interactive journey, then the entrance.
         const rest = 0.15;
         const exitAt = 1 + rest;
         const enterAt = exitAt + 0.13;
-        const total = withSolution ? 2.25 : 1.15;
+        const entranceAt = 2.4;
+        const total = withSolution ? entranceAt + entranceDuration : 1.15;
+        let disposeEntrance = () => {};
         const solution = section.querySelector<HTMLElement>("[data-solution]")!;
         solution.inert = true;
         const cardIntro = withSolution ? gsap.fromTo("[data-solution] [data-journey-intro]", { opacity: 0, y: 35 }, { opacity: 1, y: 0, stagger: 0.07, duration: 0.55, ease: "power2.out", paused: true, clearProps: "transform,opacity" }) : null;
@@ -105,9 +86,9 @@ export function FexpoParallax() {
         let solutionActive = false;
         const timeline = gsap.timeline({
           defaults: { ease: "none" },
-          scrollTrigger: { trigger: section, start: "top top", end: `+=${total * 200}%`, scrub: 1.2, pin: true, anticipatePin: 1, invalidateOnRefresh: true, onUpdate: () => updateMouse() },
+          scrollTrigger: { id: "fexpo-story", trigger: section, start: "top top", end: `+=${total * 200}%`, scrub: 1.2, pin: true, anticipatePin: 1, invalidateOnRefresh: true, onUpdate: () => updateMouse() },
           onUpdate() {
-            const ready = withSolution && this.time() >= enterAt + 0.32;
+            const ready = withSolution && this.time() >= enterAt + 0.32 && this.time() < entranceAt - 0.18;
             solution.inert = !ready;
             if (ready && !cardsRevealed) { cardIntro?.play(); cardsRevealed = true; }
             if (!ready && solutionActive) solution.dispatchEvent(new Event("journey-hide"));
@@ -135,6 +116,7 @@ export function FexpoParallax() {
           // Act 1 leaves: copy first, then the cards, each drifting up as it fades.
           .to(["[data-reveal='eyebrow']", "[data-reveal='title']", "[data-reveal='subtitle']"], { autoAlpha: 0, y: -36, duration: 0.14, stagger: 0.04 }, exitAt)
           .to("[data-card]", { autoAlpha: 0, y: -48, scale: 0.96, duration: 0.14, stagger: 0.05 }, exitAt + 0.04)
+          .to("[data-problem-content]", { autoAlpha: 0, duration: 0.18 }, exitAt + 0.28)
           // The scene keeps moving underneath: slow push-in, the city drifts up, clouds slide, the airship flies off.
           .to(layer("ground"), { scale: 1.05, duration: 0.85, ease: "power1.inOut" }, exitAt)
           .to(layer("skyline"), { yPercent: -2.5, duration: 0.85 }, exitAt)
@@ -146,7 +128,8 @@ export function FexpoParallax() {
           .fromTo("[data-solution-reveal='eyebrow']", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.1 }, enterAt)
           .fromTo("[data-solution-reveal='title']", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.18, ease: "power2.out" }, enterAt + 0.05)
           .fromTo("[data-solution-reveal='subtitle']", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.1 }, enterAt + 0.26)
-          .to({}, { duration: 0.01 }, total - 0.01);
+          .to("[data-solution]", { autoAlpha: 0, y: -24, duration: 0.18 }, entranceAt - 0.18);
+          disposeEntrance = appendEntrance(timeline, section, entranceAt);
         } else {
           timeline.to({}, { duration: 0.01 }, total - 0.01);
         }
@@ -170,7 +153,7 @@ export function FexpoParallax() {
             // The product demo rests while the visitor reads and interacts with its controls, unless they are hovering
             // the cards.
             const resting = withSolution ? Math.max(0, 1 - Math.max(0, timeline.time() - exitAt) / 0.32) : 1;
-            const strength = overCards ? 1 : resting;
+            const strength = timeline.time() >= entranceAt - 0.18 ? 0 : overCards ? 1 : resting;
             movers.forEach((mover) => {
               mover.x(pointerX * mover.strength * mouseRangeX * strength);
               mover.y(pointerY * mover.strength * mouseRangeY * strength);
@@ -212,11 +195,13 @@ export function FexpoParallax() {
           });
 
           return () => {
+            disposeEntrance();
             section.removeEventListener("pointermove", onPointerMove);
             section.removeEventListener("pointerleave", onPointerLeave);
             cardCleanups.forEach((cleanup) => cleanup());
           };
         }
+        return () => disposeEntrance();
       }, section);
 
       ScrollTrigger.refresh();
@@ -233,13 +218,11 @@ export function FexpoParallax() {
 
   return (
     <section id="problema" ref={sectionRef} className={`${styles.parallax} ${soraFont.variable} ${jakartaFont.variable} ${spaceMonoFont.variable} fexpo-parallax`} aria-label="El desafío en las ferias hoy y cómo lo resuelve Fexpo">
-      <div className={styles.scene} aria-hidden="true">
-        <div className={styles.artwork}>
-          <SkyLayer /><CloudsLayer /><SkylineLayer /><AirshipLayer /><GroundLayer />
-        </div>
-      </div>
+      <FairScene />
+      <EntranceSkip />
       <ContentOverlay />
       <SolutionOverlay />
+      <div className={entranceStyles.exit} data-entrance-exit aria-hidden="true" />
     </section>
   );
 }

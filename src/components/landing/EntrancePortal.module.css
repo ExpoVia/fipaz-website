@@ -1,0 +1,40 @@
+.registration { position: absolute; inset: 0; transform: scale(1.06); pointer-events: none; }
+.skip { position: absolute; z-index: 10; top: 90px; left: 24px; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 2px solid #1b1d4b; border-radius: 10px; background: white; color: #1b1d4b; visibility: hidden; }
+.skip:focus-visible { width: auto; height: auto; padding: 12px 20px; clip-path: none; outline: 3px solid #ffc817; outline-offset: 4px; }
+.detail {
+  position: absolute; left: 37.4402%; top: 43.8895%; width: 25.1196%; height: 31.8809%; opacity: 0;
+  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent), linear-gradient(transparent, #000 16%, #000 72%, transparent);
+  mask-composite: intersect;
+}
+.detail img { object-fit: fill; }
+.portal {
+  position: absolute;
+  left: 50%; top: 59.2%;
+  width: 3.75%; height: 2.9%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  visibility: hidden;
+}
+.aperture { position: absolute; inset: 4% 3% 2%; overflow: hidden; background: #eaf5ff; }
+.interior { position: absolute; left: 50%; top: 50%; transform-origin: center; will-change: transform; }
+.interiorImage { object-fit: cover; }
+.frame { object-fit: fill; pointer-events: none; }
+.door {
+  position: absolute; top: 0; bottom: 0; width: 50%;
+  border: 1px solid #d7e9fa;
+  background: linear-gradient(115deg, #3696eb 0%, #86c2f5 35%, #2585d7 36%, #1669c1 69%, #68b1ee 100%);
+  box-shadow: inset 1px 0 2px #effaff;
+  will-change: transform;
+}
+.left { left: 0; }
+.right { right: 0; background-position: right; }
+.door::before { content: ""; position: absolute; inset: 47% 0 auto; height: 2%; background: #cee8ff; opacity: .85; }
+.door i { position: absolute; top: 48%; height: 16%; width: 2%; background: #eaf6ff; border-radius: 2px; }
+.left i { right: 8%; }
+.right i { left: 8%; }
+.glow {
+  position: absolute; inset: -140% -75%;
+  background: radial-gradient(ellipse, #fff 0%, rgb(255 255 255 / .92) 12%, rgb(232 245 255 / .5) 32%, transparent 67%);
+  opacity: 0; pointer-events: none; will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) { .registration { display: none; } }

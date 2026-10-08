@@ -25,6 +25,12 @@ export function EntrancePortal() {
         <Image src="/img/landing/entrance/entrance-frame.png" alt="" fill sizes="100vw" loading="eager" className={styles.frame} />
         <div className={styles.glow} data-entrance-glow />
       </div>
+      <div className={styles.peopleWide} data-entrance-people>
+        <Image src="/img/landing/entrance/people-ground-wide.png" alt="" fill unoptimized sizes="(max-aspect-ratio: 16/9) 178vh, 100vw" loading="eager" />
+      </div>
+      <div className={styles.peopleNear} data-entrance-people>
+        <Image src="/img/landing/entrance/people-ground-near.png" alt="" fill unoptimized sizes="(max-aspect-ratio: 16/9) 178vh, 100vw" loading="eager" />
+      </div>
     </div>
   );
 }

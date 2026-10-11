@@ -8,8 +8,17 @@ import { UI_OUT, revealHeading, useScrollFx } from "./scroll-fx";
 import fx from "./landing-fx.module.css";
 
 const CONTACT_EMAIL = "quispevargasomar@gmail.com";
-/** Delivers the form to CONTACT_EMAIL. The first submission asks the owner of the inbox to confirm once. */
-const DELIVERY_ENDPOINT = `https://formsubmit.co/ajax/${CONTACT_EMAIL}`;
+/**
+ * Where the form goes. With NEXT_PUBLIC_CONTACT_ENDPOINT (the Google Apps Script web app in docs/contact-form-apps-script.md)
+ * every message becomes a row in a Google Sheet plus an email. Without it, FormSubmit delivers straight to CONTACT_EMAIL;
+ * its first submission asks the owner of the inbox to confirm once.
+ */
+const SCRIPT_ENDPOINT =
+  process.env.NEXT_PUBLIC_CONTACT_ENDPOINT?.trim() ||
+  // Public by design (the visitor's browser calls it) and it only appends rows, so it ships in the code: the hosting
+  // account does not have to define the variable. Set NEXT_PUBLIC_CONTACT_ENDPOINT to override it.
+  "https://script.google.com/macros/s/AKfycbwTEczsYU_WL-gvyYRrVtLNbTP_U38OWTiPy23aHKVJqMwhKbfEulpNsnBW99ss-CeY/exec";
+const FORMSUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${CONTACT_EMAIL}`;
 
 const roles = ["Visitante", "Expositor", "Organizador", "Otro"] as const;
 
@@ -79,14 +88,18 @@ export function ContactSection() {
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 15000);
     try {
-      const response = await fetch(DELIVERY_ENDPOINT, {
+      // Apps Script cannot answer a CORS preflight, so its request must stay "simple": text/plain, JSON in the body.
+      const response = await fetch(SCRIPT_ENDPOINT || FORMSUBMIT_ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: SCRIPT_ENDPOINT
+          ? { "Content-Type": "text/plain;charset=utf-8" }
+          : { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(payload),
         signal: controller.signal,
       });
-      const result = (await response.json().catch(() => ({}))) as { success?: boolean | string; message?: string };
-      if (!response.ok || result.success === false || result.success === "false") throw new Error(result.message || `delivery failed (${response.status})`);
+      const result = (await response.json().catch(() => ({}))) as { success?: boolean | string; ok?: boolean; message?: string; error?: string };
+      const rejected = SCRIPT_ENDPOINT ? result.ok !== true : result.success === false || result.success === "false";
+      if (!response.ok || rejected) throw new Error(result.message || result.error || `delivery failed (${response.status})`);
       form.reset();
       setStatus("sent");
     } catch (error) {

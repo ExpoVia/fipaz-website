@@ -14,7 +14,7 @@ export function LandingHeader() {
     { name: "Mapa", href: "#mapa" },
     { name: "Para expositores", href: "#expositores" },
     { name: "Para organizadores", href: "#organizadores" },
-    { name: "Contacto", href: "#contacto" },
+    { name: "Contacto", href: "#escribenos" },
   ];
 
   return (

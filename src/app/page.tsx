@@ -8,6 +8,7 @@ import { ActorsSection } from "@/components/landing/ActorsSection";
 import { MapShowcaseSection } from "@/components/landing/MapShowcaseSection";
 import { NfcSection } from "@/components/landing/NfcSection";
 import { MultiEventSection } from "@/components/landing/MultiEventSection";
+import { ContactSection } from "@/components/landing/ContactSection";
 import { FinalCTASection } from "@/components/landing/FinalCTASection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
@@ -26,6 +27,7 @@ export default function Home() {
         <MapShowcaseSection />
         <NfcSection />
         <MultiEventSection />
+        <ContactSection />
         <FinalCTASection />
       </main>
 

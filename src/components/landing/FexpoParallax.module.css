@@ -24,7 +24,10 @@
 
 .layer, .mouseLayer, .layerImage { position: absolute; inset: 0; width: 100%; height: 100%; }
 .camera { position: absolute; inset: 0; transform-origin: 50% 67.5%; will-change: transform; }
-.layer, .mouseLayer { pointer-events: none; will-change: transform; }
+/* Only the outer layer is promoted: it is the one the scroll animates. The mouse layer paints into it, so each scene
+   layer costs one full-size GPU texture instead of two (a dozen at once starved the tile budget while scrolling). */
+.layer, .mouseLayer { pointer-events: none; }
+.layer { will-change: transform; }
 .layerImage { object-fit: cover; user-select: none; }
 /* Overscan so the hover parallax can shift every layer without exposing its edges. */
 .layer .layerImage { transform: scale(1.04); }
@@ -136,7 +139,6 @@
   padding: clamp(18px, 1.9vw, 28px);
   background: rgb(255 255 255 / 90%);
   box-shadow: 7px 8px 0 #1b1d4b, 0 18px 44px rgb(17 34 91 / 10%);
-  backdrop-filter: blur(10px);
   color: #1b1d4b;
   font-family: var(--font-jakarta), system-ui, sans-serif;
   top: 0;
@@ -262,6 +264,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .layer, .mouseLayer { will-change: auto; }
+  .layer { will-change: auto; }
   .card, .card::before, .cardIcon, .cardArrow, .card h3::after { transition: none; }
 }

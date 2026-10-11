@@ -2,12 +2,13 @@
 .skip { position: absolute; z-index: 10; top: 90px; left: 24px; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 2px solid #1b1d4b; border-radius: 10px; background: white; color: #1b1d4b; visibility: hidden; }
 .skip:focus-visible { width: auto; height: auto; padding: 12px 20px; clip-path: none; outline: 3px solid #ffc817; outline-offset: 4px; }
 .detail {
-  position: absolute; left: 37.4402%; top: 43.8895%; width: 25.1196%; height: 31.8809%; opacity: 0;
+  position: absolute; left: 37.4402%; top: 43.8895%; width: 25.1196%; height: 31.8809%; opacity: 0; visibility: hidden;
   mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent), linear-gradient(#000 0%, #000 44%, transparent 59%);
   mask-composite: intersect;
 }
 .detail img { object-fit: fill; }
-.peopleWide, .peopleNear { position: absolute; opacity: 0; pointer-events: none; }
+/* visibility:hidden as well as opacity:0, so the big masked plates are not painted until the entrance needs them. */
+.peopleWide, .peopleNear { position: absolute; opacity: 0; visibility: hidden; pointer-events: none; }
 .peopleWide { inset: 0; mask-image: radial-gradient(ellipse 24% 28% at 50% 67%, transparent 58%, #000 100%); }
 .peopleNear {
   left: 37.4402%; top: 43.8895%; width: 25.1196%; height: 31.8809%;

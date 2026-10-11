@@ -18,7 +18,7 @@ export function LandingHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b-2 border-[var(--expo-line)] bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b-2 border-[var(--expo-line)] bg-white/95">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6 sm:py-3 lg:px-8">
         {/* Brand Logo */}
         <Link href="#inicio" aria-label="Fexpo, ir al inicio" className="group flex items-center transition-transform hover:scale-105">

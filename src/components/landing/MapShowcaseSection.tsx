@@ -47,7 +47,7 @@ function playMap(root: HTMLElement, finePointer: boolean) {
   return cleanup.run;
 }
 
-const toggleBase = `${fx.slab} ${fx.press} inline-flex items-center gap-2 rounded-full border-2 border-[var(--expo-navy)] px-5 py-2 [--slab-lift:2px] [--slab-offset:3px]`;
+const toggleBase = `${fx.slab} ${fx.press} inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-[var(--expo-navy)] px-5 py-2 [--slab-lift:2px] [--slab-offset:3px]`;
 
 export function MapShowcaseSection() {
   const root = useRef<HTMLElement>(null);
@@ -121,7 +121,7 @@ export function MapShowcaseSection() {
 
         {/* Map frame: the section's one peak */}
         <div data-fx-frame className="mt-12">
-          <div className="relative overflow-hidden rounded-3xl border-3 border-[var(--expo-navy)] bg-slate-900 p-3 shadow-[12px_12px_0_var(--expo-navy)] sm:p-6">
+          <div className="relative overflow-hidden rounded-3xl border-3 border-[var(--expo-navy)] bg-slate-900 p-3 shadow-[7px_7px_0_var(--expo-navy)] sm:p-6 sm:shadow-[12px_12px_0_var(--expo-navy)]">
             {/* Top bar inside the frame */}
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 text-white">
               <div data-fx-bar className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export function MapShowcaseSection() {
             {/* Map content */}
             <div
               data-fx-screen
-              className="relative mt-4 h-[440px] w-full overflow-hidden rounded-2xl border-2 border-slate-700 bg-[#eef7fb] sm:h-[520px]"
+              className="relative mt-4 h-[min(560px,78svh)] w-full overflow-hidden rounded-2xl border-2 border-slate-700 bg-[#eef7fb] sm:h-[520px]"
             >
               {viewMode === "interactive" ? (
                 <div className="relative h-full w-full">

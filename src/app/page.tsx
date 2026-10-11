@@ -14,7 +14,7 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[var(--expo-bg)] text-[var(--expo-navy)] antialiased">
+    <div className="min-h-screen touch-pan-y touch-pinch-zoom bg-[var(--expo-bg)] text-[var(--expo-navy)] antialiased">
       <LandingHeader />
 
       <main>

@@ -126,9 +126,9 @@ export function ExpoInteractiveMap({ stands, selectedStandId, visitedStandIds, o
       </>}
     </header>
 
-    <div className={`${styles.canvas} ${!plan && OverviewComponent ? styles.overviewCanvas : ""}`}>
+    <div data-zoomed={scale > 1.02} className={`${styles.canvas} ${!plan && OverviewComponent ? styles.overviewCanvas : ""}`}>
       {!plan && OverviewComponent ? <OverviewComponent onSelect={(id) => changePlan(id)} /> : <>
-      <TransformWrapper key={planId ?? "overview"} ref={transform} centerOnInit initialScale={1} minScale={1} maxScale={4} wheel={{ step: .16 }} doubleClick={{ mode: "zoomIn", animationTime: duration }} zoomAnimation={{ disabled: reducedMotion }} autoAlignment={{ animationTime: duration, velocityAlignmentTime: duration }} velocityAnimation={{ disabled: reducedMotion }} onTransform={(_, state) => setScale(state.scale)} onInit={(ref) => {
+      <TransformWrapper key={planId ?? "overview"} ref={transform} centerOnInit initialScale={1} minScale={1} maxScale={4} panning={{ disabled: scale <= 1.02 }} wheel={{ step: .16 }} doubleClick={{ mode: "zoomIn", animationTime: duration }} zoomAnimation={{ disabled: reducedMotion }} autoAlignment={{ animationTime: duration, velocityAlignmentTime: duration }} velocityAnimation={{ disabled: reducedMotion }} onTransform={(_, state) => setScale(state.scale)} onInit={(ref) => {
         transform.current = ref;
         const target = pendingFocus.current;
         if (target) {

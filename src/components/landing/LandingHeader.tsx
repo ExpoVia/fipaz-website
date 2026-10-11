@@ -61,7 +61,7 @@ export function LandingHeader() {
         <div className="flex items-center gap-2 lg:hidden">
           <Link
             href="/panel"
-            className="inline-flex items-center gap-1 whitespace-nowrap border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-3 py-1.5 text-xs font-black text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)]"
+            className="inline-flex min-h-11 items-center gap-1 whitespace-nowrap border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-3 py-1.5 text-xs font-black text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)]"
           >
             <LogIn className="h-3.5 w-3.5 stroke-[3]" />
             <span className="text-xs font-black">Login</span>
@@ -70,7 +70,7 @@ export function LandingHeader() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="inline-flex items-center justify-center rounded-lg border-2 border-[var(--expo-navy)] p-2 text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)] hover:bg-slate-100"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg border-2 border-[var(--expo-navy)] text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)] hover:bg-slate-100"
             aria-label="Alternar menú"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

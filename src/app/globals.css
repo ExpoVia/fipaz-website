@@ -45,6 +45,8 @@
 }
 
 html {
+  overflow-x: clip;
+  overscroll-behavior-x: none;
   background: var(--expo-bg);
   color-scheme: light;
   scroll-behavior: smooth;

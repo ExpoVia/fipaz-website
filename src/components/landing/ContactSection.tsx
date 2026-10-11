@@ -85,11 +85,13 @@ export function ContactSection() {
         body: JSON.stringify(payload),
         signal: controller.signal,
       });
-      const result = (await response.json().catch(() => ({}))) as { success?: boolean | string };
-      if (!response.ok || result.success === false || result.success === "false") throw new Error("delivery failed");
+      const result = (await response.json().catch(() => ({}))) as { success?: boolean | string; message?: string };
+      if (!response.ok || result.success === false || result.success === "false") throw new Error(result.message || `delivery failed (${response.status})`);
       form.reset();
       setStatus("sent");
-    } catch {
+    } catch (error) {
+      // The visitor gets the generic message; the reason (e.g. the form still needs activating) goes to the console.
+      console.warn("[contacto] No se pudo entregar el mensaje:", error);
       setFailedBody(
         `Nombre: ${payload.name}\nCorreo: ${payload.email}\nOrganización: ${payload.organization || "—"}\nSoy: ${payload.role}\n\n${payload.message}`,
       );
@@ -214,7 +216,7 @@ export function ContactSection() {
                     {roles.map((role) => (
                       <label key={role} className="relative cursor-pointer">
                         <input type="radio" name="role" value={role} className="peer sr-only" />
-                        <span className="block rounded-full border-2 border-[var(--expo-navy)] bg-white px-4 py-2 text-sm font-bold text-[var(--expo-navy)] transition-[background-color,box-shadow] duration-150 peer-checked:bg-[var(--expo-yellow)] peer-checked:shadow-[2px_2px_0_var(--expo-navy)] peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--expo-blue)] hover:bg-[var(--expo-bg)]">
+                        <span className="block rounded-full border-2 border-[var(--expo-navy)] bg-white px-4 py-2.5 text-sm font-bold text-[var(--expo-navy)] transition-[background-color,box-shadow] duration-150 peer-checked:bg-[var(--expo-yellow)] peer-checked:shadow-[2px_2px_0_var(--expo-navy)] peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--expo-blue)] hover:bg-[var(--expo-bg)]">
                           {role}
                         </span>
                       </label>

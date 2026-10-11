@@ -96,7 +96,7 @@ export function FinalCTASection() {
               data-fx-line
               className="block bg-gradient-to-r from-[var(--expo-yellow)] to-[var(--expo-pink)] bg-clip-text text-transparent"
             >
-              ExpoVia para ti?
+              Fexpo para ti?
             </span>
           </span>
         </h2>

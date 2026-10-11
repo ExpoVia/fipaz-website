@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { PixelLogo, PixelStar } from "./PixelIcons";
+import { PixelStar } from "./PixelIcons";
 import fx from "./landing-fx.module.css";
 
 const linkClass = `${fx.underline} text-sm font-bold transition-colors duration-150 hover:text-[var(--expo-blue)]`;
@@ -15,7 +16,7 @@ export function LandingFooter() {
           {/* Brand & tagline */}
           <div className="flex flex-col items-center gap-1 sm:items-start">
             <span className={`${fx.lift} inline-flex`}>
-              <PixelLogo />
+              <Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={1254} height={388} className="h-10 w-auto" />
             </span>
             <p className="font-mono text-xs font-bold text-slate-500">Eventos que te mueven.</p>
           </div>
@@ -46,7 +47,7 @@ export function LandingFooter() {
         </div>
 
         <div className="mt-8 border-t border-slate-200 pt-6 text-center text-xs font-medium text-slate-500">
-          <p>© 2026 ExpoVia. Plataforma digital para ferias y eventos físicos.</p>
+          <p>© 2026 Fexpo. Plataforma digital para ferias y eventos físicos.</p>
         </div>
       </div>
     </footer>

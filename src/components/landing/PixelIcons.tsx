@@ -27,7 +27,7 @@ export function PixelLogo({ className = "w-8 h-8" }: { className?: string }) {
         <rect x="10" y="20" width="3" height="3" fill="#B984B6" />
       </svg>
       <span className="text-xl font-extrabold tracking-tight text-[var(--expo-navy)]">
-        Expo<span className="text-[var(--expo-blue)]">Via</span>
+        Fexpo
       </span>
     </div>
   );

@@ -151,7 +151,7 @@ export function MultiEventSection() {
 
                   <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-3 font-mono text-[11px] text-slate-400">
                     <span>Plataforma</span>
-                    <span className="font-bold text-[var(--expo-navy)]">ExpoVia</span>
+                    <span className="font-bold text-[var(--expo-navy)]">Fexpo</span>
                   </div>
                 </div>
               </li>

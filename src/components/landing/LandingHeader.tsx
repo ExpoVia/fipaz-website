@@ -9,7 +9,7 @@ export function LandingHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "¿Qué es ExpoVia?", href: "#problema" },
+    { name: "¿Qué es Fexpo?", href: "#problema" },
     { name: "Cómo funciona", href: "#como-funciona" },
     { name: "Mapa", href: "#mapa" },
     { name: "Para expositores", href: "#expositores" },
@@ -33,7 +33,7 @@ export function LandingHeader() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden items-center gap-0.5 lg:flex xl:gap-2">
+        <nav className="hidden items-center gap-0.5 text-sm font-bold lg:flex xl:gap-2">
           {navLinks.map((link) => (
             <a
               key={link.name}
@@ -53,7 +53,7 @@ export function LandingHeader() {
             className="inline-flex items-center gap-2 whitespace-nowrap border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-5 py-2 text-sm font-extrabold text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5 hover:bg-[#FFE066] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
           >
             <LogIn className="h-4 w-4 stroke-[3]" />
-            Login
+            <span className="text-sm font-extrabold">Login</span>
           </Link>
         </div>
 
@@ -64,7 +64,7 @@ export function LandingHeader() {
             className="inline-flex items-center gap-1 whitespace-nowrap border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-3 py-1.5 text-xs font-black text-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)]"
           >
             <LogIn className="h-3.5 w-3.5 stroke-[3]" />
-            Login
+            <span className="text-xs font-black">Login</span>
           </Link>
 
           <button
@@ -81,7 +81,7 @@ export function LandingHeader() {
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="max-h-[calc(100vh-64px)] overflow-y-auto border-b-2 border-[var(--expo-navy)] bg-white px-4 pt-2 pb-6 shadow-lg animate-in slide-in-from-top-2 lg:hidden">
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2 text-base font-bold">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -99,7 +99,7 @@ export function LandingHeader() {
                 className="flex w-full items-center justify-center gap-2 border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] py-3 text-center text-base font-black text-[var(--expo-navy)] shadow-[4px_4px_0_var(--expo-navy)]"
               >
                 <LogIn className="h-5 w-5 stroke-[3]" />
-                Login
+                <span className="text-base font-black">Login</span>
               </Link>
             </div>
           </div>

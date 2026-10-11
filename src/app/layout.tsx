@@ -14,12 +14,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "ExpoVia Demo",
-    template: "%s · ExpoVia",
+    default: "Fexpo Demo",
+    template: "%s · Fexpo",
   },
   description:
     "Landing y simulación móvil para validar una nueva experiencia de ferias con mapas, NFC y recompensas.",
-  applicationName: "ExpoVia",
+  applicationName: "Fexpo",
   icons: {
     icon: "/assets/brand/expovia-app-icon.svg",
   },

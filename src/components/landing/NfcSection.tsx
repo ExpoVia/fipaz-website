@@ -137,7 +137,7 @@ export function NfcSection() {
           </h2>
 
           <p data-fx-intro className="mx-auto mt-6 max-w-2xl text-base font-medium text-slate-700 sm:text-lg">
-            Una demostración del recorrido que podría ofrecer ExpoVia durante una feria.
+            Una demostración del recorrido que podría ofrecer Fexpo durante una feria.
           </p>
 
           {/* Mandatory tag label */}

@@ -185,7 +185,7 @@ export function ActorsSection() {
                   href={actor.href}
                   className={`${fx.cardLink} flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4`}
                 >
-                  <span className="font-mono text-xs font-bold text-slate-500">Plataforma ExpoVia</span>
+                  <span className="font-mono text-xs font-bold text-slate-500">Plataforma Fexpo</span>
                   <span className="flex items-center gap-1 text-right font-mono text-xs font-bold text-[var(--expo-blue)]">
                     {actor.cta} <ArrowUpRight aria-hidden="true" className={`${fx.arrow} h-3.5 w-3.5`} />
                   </span>

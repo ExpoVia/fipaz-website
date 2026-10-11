@@ -43,6 +43,18 @@
 }
 .airship .layerImage { object-fit: contain; transform: none; }
 
+/* Entrance: once the doors open the facade fills the frame, so the backdrop behind it is never seen again. */
+.scene[data-entrance-deep] :is([data-layer="sky"], [data-layer="clouds"], [data-layer="skyline"], [data-layer="airship"]) { visibility: hidden; }
+
+/* The interior in screen space: clipped to the doorway by script, then opened to the full frame. */
+.iris { position: absolute; inset: 0; overflow: hidden; background: #eaf5ff; opacity: 0; visibility: hidden; pointer-events: none; }
+.irisRoom { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
+.irisGlow {
+  position: absolute; inset: -20%;
+  background: radial-gradient(ellipse at center, #fff 0%, rgb(255 255 255 / .9) 18%, rgb(232 245 255 / .5) 42%, transparent 72%);
+  opacity: 0; pointer-events: none;
+}
+
 .content {
   position: relative;
   z-index: 2;

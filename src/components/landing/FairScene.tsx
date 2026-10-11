@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { EntrancePortal } from "./EntrancePortal";
+import { EntrancePortal, interiorImage } from "./EntrancePortal";
 import styles from "./FexpoParallax.module.css";
 
 function SceneLayer({ number, name, className = "", mouseStrength = 0, children }: {
@@ -28,6 +28,14 @@ export function FairScene() {
           <EntrancePortal />
         </SceneLayer>
       </div>
+    </div>
+    {/* Screen-space interior. It continues the doorway's own pixels and opens to the full frame, so the exterior
+        artwork never has to be zoomed to 30x+ to arrive inside. */}
+    <div className={styles.iris} data-entrance-iris>
+      <div className={styles.irisRoom} data-entrance-iris-room>
+        <Image src={interiorImage} alt="" fill sizes="(max-aspect-ratio: 16/9) 178vh, 100vw" loading="eager" draggable={false} className={styles.layerImage} />
+      </div>
+      <div className={styles.irisGlow} data-entrance-iris-glow />
     </div>
   </div>;
 }

@@ -7,10 +7,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { jakartaFont, soraFont, spaceMonoFont } from "./fonts";
 import { SolutionOverlay } from "./SolutionOverlay";
+import { ArrivalOverlay } from "./HowItWorksSection";
 import { journeyOverlayQuery } from "./journey/journey-data";
 import { FairScene } from "./FairScene";
 import { EntranceSkip } from "./EntrancePortal";
-import { appendEntrance, entranceDuration } from "./entrance-motion";
+import { appendEntrance, arrivalOverlap, entranceDuration } from "./entrance-motion";
 import entranceStyles from "./FexpoEntranceExperience.module.css";
 import styles from "./FexpoParallax.module.css";
 
@@ -77,7 +78,7 @@ export function FexpoParallax() {
         const exitAt = 1 + rest;
         const enterAt = exitAt + 0.13;
         const entranceAt = 2.4;
-        const total = withSolution ? entranceAt + entranceDuration : 1.15;
+        const total = withSolution ? entranceAt + entranceDuration + arrivalOverlap : 1.15;
         let disposeEntrance = () => {};
         const solution = section.querySelector<HTMLElement>("[data-solution]")!;
         solution.inert = true;
@@ -130,6 +131,13 @@ export function FexpoParallax() {
           .fromTo("[data-solution-reveal='subtitle']", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.1 }, enterAt + 0.26)
           .to("[data-solution]", { autoAlpha: 0, y: -24, duration: 0.18 }, entranceAt - 0.18);
           disposeEntrance = appendEntrance(timeline, section, entranceAt);
+          // "Cómo funciona" arrives while the iris is still opening: the veil, the heading, then the four steps. The scroll
+          // that follows is only dwell time with the finished scene held in place.
+          timeline
+            .fromTo("[data-arrival-wash]", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.34 }, entranceAt + 1.36)
+            .fromTo("[data-arrival-header]", { autoAlpha: 0, y: 34 }, { autoAlpha: 1, y: 0, duration: 0.24, ease: "power2.out" }, entranceAt + 1.4)
+            .fromTo("[data-arrival-card]", { autoAlpha: 0, y: 64, scale: 0.96 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.22, stagger: 0.07, ease: "power2.out" }, entranceAt + 1.48)
+            .to({}, { duration: arrivalOverlap }, entranceAt + entranceDuration);
         } else {
           timeline.to({}, { duration: 0.01 }, total - 0.01);
         }
@@ -222,6 +230,7 @@ export function FexpoParallax() {
       <EntranceSkip />
       <ContentOverlay />
       <SolutionOverlay />
+      <ArrivalOverlay />
       <div className={entranceStyles.exit} data-entrance-exit aria-hidden="true" />
     </section>
   );

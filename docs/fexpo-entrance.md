@@ -8,9 +8,11 @@ La secuencia usa las capas existentes de section2. En escritorio prolonga la mis
 - El marco y el detalle comparten el overscan 1.06 de la capa de suelo.
 - El detalle de fachada se registra en el recorte (626, 413, 420, 300) de p2-img5 y sus bordes se funden con una máscara estática.
 - Dos capas PNG transparentes, una del suelo completo y otra del tramo cercano, quedan delante del marco y de las hojas. El centro del suelo completo tiene una máscara suave donde se registra el detalle cercano para evitar figuras duplicadas. Ambas desaparecen durante el cruce.
-- La cámara se mantiene en una escala moderada mientras el público es visible y acelera al cruzar la puerta.
+- La cámara se mantiene en una escala moderada mientras el público es visible y acelera al cruzar la puerta. Nunca supera `cameraCeiling` (4.6): el zoom de ~35x que había antes obligaba a rasterizar ~12 capas compuestas a esa escala y la GPU las pintaba a trozos (parches azules y capas desalineadas).
 - Un único interior permanece montado detrás de las hojas. La escala inversa compensa la cámara exterior para que el pasillo conserve profundidad durante el cruce.
-- Las hojas se deslizan, la apertura recorta el interior y el resplandor nace en esa apertura. No hay sustitución de la imagen interior ni un corte de pantalla completa.
+- Las hojas se deslizan, la apertura recorta el interior y el resplandor nace en esa apertura.
+- En el umbral el relevo lo toma el «iris» (`data-entrance-iris`, en `FairScene`): el mismo interior en espacio de pantalla, recortado con `clip-path` al rectángulo exacto de la apertura y abierto hasta el encuadre completo. El relevo es píxel a píxel (se mide con `getBoundingClientRect` de ambos interiores) y el final es el interior a pantalla completa.
+- Desde que se abren las puertas la fachada llena el encuadre; `data-entrance-deep` oculta cielo, nubes, skyline y dirigible para que dejen de rasterizarse.
 - El estado se puede recorrer en ambos sentidos. Movimiento reducido muestra una escena estática; el enlace de teclado permite saltar la entrada.
 
 ## Assets generados
@@ -70,3 +72,9 @@ Use case: background-extraction / precise-object-edit. Edit the supplied close-u
 
 Referencia: public/img/landing/entrance/facade-detail.png y la misma captura del usuario.
 
+
+## Llegada: «Cómo funciona» mientras el interior se abre
+
+En escritorio (misma condición que `journeyOverlayQuery`) el texto y las cuatro tarjetas de «Cómo funciona» viven dentro de la escena fija (`ArrivalOverlay`, en `HowItWorksSection.tsx`) y los conduce la misma timeline de la entrada: el velo blanco entra en entrance+1.36, el encabezado en +1.40 y las tarjetas en cascada desde +1.48, es decir, mientras el iris todavía se está abriendo (+1.31 a +1.79). Después el pin sostiene la escena un viewport más (`arrivalOverlap`) para dar tiempo de lectura antes de soltarse.
+
+`HowItWorksSection` se queda en el documento solo como ancla de `#como-funciona` (altura cero, invisible, un viewport por encima de la liberación del pin) para que la navegación y «Saltar entrada» aterricen con todo ya visible. En pantallas pequeñas, táctiles o con movimiento reducido el overlay no existe y la sección es la franja blanca de siempre.

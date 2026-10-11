@@ -18,18 +18,23 @@ export function HeroSection() {
   return (
     <section
       id="inicio"
-      className="relative isolate overflow-hidden bg-[#eaf6fa] py-10 sm:py-16 lg:min-h-[calc(100vh-72px)] lg:py-10"
+      className="relative isolate overflow-hidden bg-[#eaf6fa] pt-10 pb-[250px] sm:pt-16 sm:pb-[300px] lg:min-h-[calc(100vh-72px)] lg:py-10"
     >
       <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_78%_32%,#d8eff6_0%,transparent_32%),linear-gradient(135deg,#f4fafc_0%,#e9f4fb_55%,#eee5f4_100%)]" />
-      <Image
-        src={heroImage}
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="pointer-events-none -z-10 object-cover object-[68%_center] lg:object-center"
-      />
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(244,250,252,0.95)_0%,rgba(244,250,252,0.88)_52%,rgba(244,250,252,0.4)_100%)] lg:bg-[linear-gradient(90deg,rgba(244,250,252,0.97)_0%,rgba(244,250,252,0.92)_36%,rgba(244,250,252,0.5)_58%,rgba(244,250,252,0)_78%)]" />
+      {/* Phones and tablets: the illustration is its own band under the content, in full colour, so the copy never
+          needs a white veil. From lg up it is the full-bleed backdrop with a veil only on the text side. */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[330px] sm:h-[380px] lg:inset-0 lg:h-auto">
+        <Image
+          src={heroImage}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[64%_center] lg:object-center"
+        />
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#eaf6fa] via-[#eaf6fa]/70 to-transparent lg:hidden" />
+      </div>
+      <div className="pointer-events-none absolute inset-0 -z-10 hidden bg-[linear-gradient(90deg,rgba(244,250,252,0.97)_0%,rgba(244,250,252,0.92)_36%,rgba(244,250,252,0.5)_58%,rgba(244,250,252,0)_78%)] lg:block" />
       <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-5 sm:px-10 lg:grid-cols-12 lg:gap-8 lg:px-8">
         <div className="max-w-xl sm:max-w-2xl lg:col-span-7">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="mb-4 inline-block max-w-full sm:mb-5">
@@ -45,7 +50,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.05 }}
-            className={`${pixelifyFont.className} text-center text-[2.65rem] leading-[0.98] font-bold tracking-tight text-[var(--expo-navy)] sm:text-left sm:text-7xl sm:leading-[0.96] lg:text-8xl`}
+            className={`${pixelifyFont.className} text-left text-[2.65rem] leading-[0.98] font-bold tracking-tight text-[var(--expo-navy)] sm:text-7xl sm:leading-[0.96] lg:text-8xl`}
           >
             Explora. <br />
             Conecta. <br />
@@ -64,15 +69,15 @@ export function HeroSection() {
             Fexpo ya es real: es la app para ferias que ya tenemos. Explora stands y rutas, haz check-in con NFC y suma puntos en cada visita.
           </motion.p>
 
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.15 }} className="mt-7 flex flex-col items-stretch gap-4 sm:mt-8 sm:flex-row sm:items-center">
-            <Link href="/demo" className="group inline-flex w-full items-center justify-center gap-3 border-3 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-7 py-3.5 text-lg font-black text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 hover:bg-[#ffe066] active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.15 }} className="mt-7 grid grid-cols-2 gap-3 sm:mt-8 sm:flex sm:flex-row sm:items-center sm:gap-4">
+            <Link href="/demo" className="group col-span-2 inline-flex w-full items-center justify-center gap-3 border-3 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-7 py-3.5 text-lg font-black text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 hover:bg-[#ffe066] active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
               <span className="text-lg font-black">Probar demo</span>
               <ArrowRight className="h-5 w-5 stroke-[3] transition-transform group-hover:translate-x-1" />
             </Link>
-            <Link href="/panel" className="inline-flex w-full items-center justify-center gap-2 border-3 border-[var(--expo-navy)] bg-[var(--expo-sky)] px-6 py-3.5 text-base font-extrabold text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
+            <Link href="/panel" className="inline-flex w-full items-center justify-center gap-2 border-3 border-[var(--expo-navy)] bg-[var(--expo-sky)] px-3 py-3.5 sm:px-6 text-base font-extrabold text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
               <span className="text-base font-extrabold">Ver el panel</span>
             </Link>
-            <a href="#problema" className="inline-flex w-full items-center justify-center gap-2 border-3 border-[var(--expo-navy)] bg-white/95 px-6 py-3.5 text-base font-extrabold text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 hover:bg-white active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
+            <a href="#problema" className="inline-flex w-full items-center justify-center gap-2 border-3 border-[var(--expo-navy)] bg-white px-3 py-3.5 sm:px-6 text-base font-extrabold text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 hover:bg-white active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
               <span className="text-base font-extrabold">Conoce más</span>
               <ChevronDown className="h-5 w-5 stroke-[2.5]" />
             </a>
@@ -80,7 +85,7 @@ export function HeroSection() {
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.2 }} className="mt-8 grid max-w-2xl grid-cols-2 gap-2.5 sm:mt-10 sm:grid-cols-4 sm:gap-3">
             {benefits.map((item) => (
-              <div key={item.text} className="flex min-h-14 min-w-0 items-center gap-2 rounded-lg border-2 border-[var(--expo-line)] bg-white/92 p-2.5 shadow-sm backdrop-blur-sm">
+              <div key={item.text} className="flex min-h-14 min-w-0 items-center gap-2 rounded-lg border-2 border-[var(--expo-line)] bg-white p-2.5 shadow-sm">
                 {item.icon}
                 <span className="min-w-0 text-[11px] leading-tight font-bold text-[var(--expo-navy)] [overflow-wrap:anywhere] sm:text-xs">{item.text}</span>
               </div>

@@ -6,10 +6,10 @@ import { ArrowRight, ChevronDown, Compass, Gift, Smartphone, Award } from "lucid
 import { pixelifyFont, pressStartFont } from "./fonts";
 
 const benefits = [
-  { icon: <Compass className="h-4 w-4 text-[var(--expo-blue)]" />, text: "Explora el mapa demo" },
-  { icon: <Smartphone className="h-4 w-4 text-[var(--expo-green)]" />, text: "Simula visitas NFC" },
-  { icon: <Award className="h-4 w-4 text-[var(--expo-purple)]" />, text: "Prueba misiones" },
-  { icon: <Gift className="h-4 w-4 text-[var(--expo-coral)]" />, text: "Mira premios propuestos" },
+  { icon: <Compass className="h-4 w-4 text-[var(--expo-blue)]" />, text: "Explora el mapa" },
+  { icon: <Smartphone className="h-4 w-4 text-[var(--expo-green)]" />, text: "Haz check-in con NFC" },
+  { icon: <Award className="h-4 w-4 text-[var(--expo-purple)]" />, text: "Completa misiones" },
+  { icon: <Gift className="h-4 w-4 text-[var(--expo-coral)]" />, text: "Canjea premios" },
 ];
 
 export function HeroSection() {
@@ -30,7 +30,7 @@ export function HeroSection() {
             <div className="inline-flex max-w-full items-center gap-2 rounded-full border-2 border-[var(--expo-navy)] bg-white/95 px-3 py-2 shadow-[3px_3px_0_var(--expo-navy)] sm:px-4">
               <span className="text-xs font-black text-[var(--expo-blue)]">✦</span>
               <span className={`${pressStartFont.className} text-[8px] leading-relaxed uppercase tracking-wide text-[var(--expo-navy)] sm:text-[10px] sm:tracking-wider`}>
-                Datos de demostración · NFC simulado · Puntos reales
+                La app ya es real · NFC y puntos
               </span>
             </div>
           </motion.div>
@@ -55,7 +55,7 @@ export function HeroSection() {
             transition={{ duration: 0.45, delay: 0.1 }}
             className="mt-6 max-w-xl text-[15px] leading-relaxed font-medium text-pretty text-slate-700 sm:mt-7 sm:text-xl"
           >
-            Fexpo es una propuesta digital para ferias. Esta demo usa stands, rutas y visitas ficticios, y el check-in NFC es una simulación. Los puntos no: son reales y ya los tenemos.
+            Fexpo ya es real: es la app para ferias que ya tenemos. Explora stands y rutas, haz check-in con NFC y suma puntos en cada visita.
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.15 }} className="mt-7 flex flex-col items-stretch gap-4 sm:mt-8 sm:flex-row sm:items-center">

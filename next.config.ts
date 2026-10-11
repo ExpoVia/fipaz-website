@@ -2,11 +2,11 @@ import type { NextConfig } from "next";
 
 /**
  * El backend (`fexpo-backend`) no habilita CORS, así que el navegador no puede llamarlo
- * directamente. Con `BACKEND_URL` definida, Next reenvía `/api/v1/*` al backend desde el
- * servidor y el navegador solo habla con su propio origen. Sin `BACKEND_URL` no se agrega
- * ninguna regla (modo demostración con datos simulados).
+ * directamente. Next reenvía `/api/v1/*` al backend desde el servidor y el navegador solo
+ * habla con su propio origen. `BACKEND_URL` es la configuración recomendada; se conserva
+ * `NEXT_PUBLIC_AGENT_BACKEND_URL` como alternativa durante la transición de entornos locales.
  */
-const backendUrl = process.env.BACKEND_URL?.replace(/\/+$/, "");
+const backendUrl = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_AGENT_BACKEND_URL)?.trim().replace(/\/+$/, "");
 
 const nextConfig: NextConfig = {
   async rewrites() {

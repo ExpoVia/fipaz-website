@@ -5,6 +5,7 @@ import type { ListStandsQueryDto, StandListItemDto, StandResponseDto } from "@/t
 
 /** Opt-in: backend errors never silently switch the panel to demo data. */
 export const DEMO_PANEL_STANDS = process.env.NEXT_PUBLIC_DEMO_PANEL_STANDS === "true";
+const FIPAZ_EVENT_ID = process.env.NEXT_PUBLIC_FIPAZ_EVENT_ID?.trim() ?? "";
 
 export type PanelStand = StandResponseDto & { demoBlock?: string };
 
@@ -25,7 +26,10 @@ const demoStands: (StandListItemDto & PanelStand)[] = DEMO_FIXTURE.stands.map((s
 }));
 
 export async function listStands(query: ListStandsQueryDto = {}) {
-  if (!DEMO_PANEL_STANDS) return listApiStands(query);
+  if (!DEMO_PANEL_STANDS) {
+    if (!FIPAZ_EVENT_ID) throw new StandsApiError("Configura NEXT_PUBLIC_FIPAZ_EVENT_ID con el UUID real del evento para consultar stands.");
+    return listApiStands(FIPAZ_EVENT_ID, query);
+  }
   if ((query.query?.length ?? 0) > 100) throw new StandsApiError("La búsqueda no puede superar los 100 caracteres.");
   const text = query.query?.trim().toLocaleLowerCase() ?? "";
   const filtered = demoStands.filter((stand) =>

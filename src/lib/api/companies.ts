@@ -29,8 +29,13 @@ export async function createCompany(input: CompanyRegistrationInput & { particip
   });
   const payload = await response.json().catch(() => null) as unknown;
   if (!response.ok) {
-    const detail = payload as { message?: string; code?: string } | null;
-    throw new CompanyRegistrationError(detail?.message ?? detail?.code ?? `No se pudo registrar la empresa (${response.status}).`);
+    const root = payload && typeof payload === "object" ? payload as Record<string, unknown> : null;
+    const detail = root?.error && typeof root.error === "object"
+      ? root.error as Record<string, unknown>
+      : root;
+    const message = typeof detail?.message === "string" ? detail.message : undefined;
+    const code = typeof detail?.code === "string" ? detail.code : undefined;
+    throw new CompanyRegistrationError(message ?? code ?? `No se pudo registrar la empresa (${response.status}).`);
   }
   const result = payload as CreateCompanyResponse | null;
   const company = result?.data?.company ?? result?.company ?? result?.data ?? result;

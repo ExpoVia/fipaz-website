@@ -1,0 +1,279 @@
+/* Hover, press and ambient motion for the landing sections below the entrance.
+
+   What holds throughout:
+   - Hover sits behind (hover: hover) and (pointer: fine), so touch never gets a stuck state.
+   - Travel is `translate`, `scale` or `rotate` plus the plate's own hard shadow, on the shared --ease-out curve
+     (globals.css). Hover-in is 220-260ms and release is faster than entry; press is faster still.
+   - Hover effects are transitions, not keyframes, so they retarget when the pointer leaves mid-motion.
+   - Reduced motion keeps the state change (colour, shadow, opacity) and drops the travel.
+   - GSAP drives wrappers and never an element that owns one of these hovers (see scroll-fx.ts). */
+
+/* ── Plate: the system's hard-shadow surface, with a lift on hover ─────────────────────────────── */
+
+/* Tune per element with --slab-offset, --slab-lift and --slab-color; the fallbacks below are the defaults. */
+.slab {
+  box-shadow: var(--slab-offset, 7px) var(--slab-offset, 7px) 0 var(--slab-color, var(--expo-navy));
+  transition:
+    translate 170ms var(--ease-out),
+    box-shadow 170ms var(--ease-out),
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .slab:hover {
+    translate: calc(var(--slab-lift, 3px) * -1) calc(var(--slab-lift, 3px) * -1);
+    box-shadow:
+      calc(var(--slab-offset, 7px) + var(--slab-lift, 3px) * 2) calc(var(--slab-offset, 7px) + var(--slab-lift, 3px) * 2) 0
+      var(--slab-color, var(--expo-navy));
+    transition-duration: 220ms, 220ms, 160ms, 160ms;
+  }
+}
+
+/* Buttons and links sink into their shadow while pressed; the press is the fastest beat. */
+.press:active {
+  translate: var(--slab-offset, 7px) var(--slab-offset, 7px);
+  box-shadow: 0 0 0 0 var(--slab-color, var(--expo-navy));
+  transition-duration: 80ms;
+}
+
+/* ── Actors ────────────────────────────────────────────────────────────────────────────────────── */
+
+.actorBand {
+  background-image: radial-gradient(rgb(255 255 255 / 28%) 1.5px, transparent 1.5px);
+  background-size: 14px 14px;
+}
+
+.actorIcon,
+.check {
+  transition: translate 160ms var(--ease-out), rotate 160ms var(--ease-out), scale 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .actorCard:hover .actorIcon {
+    translate: 0 -3px;
+    rotate: -7deg;
+    scale: 1.08;
+    transition-duration: 220ms;
+  }
+
+  /* The ticks pop one after another on entry only; leaving resets them together. */
+  .actorCard:hover .check {
+    scale: 1.22;
+    transition-duration: 200ms;
+    transition-delay: calc(var(--i) * 32ms);
+  }
+}
+
+.cardLink {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* The accent floods in from the left and the arrow steps toward the destination. */
+.cardLink::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--accent) 22%, white);
+  translate: -101% 0;
+  transition: translate 160ms var(--ease-out);
+}
+
+.arrow {
+  transition: translate 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cardLink:hover::before {
+    translate: 0 0;
+    transition-duration: 260ms;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .cardLink:hover .arrow {
+    translate: 2px -2px;
+    transition-duration: 200ms;
+  }
+}
+
+/* ── Map ───────────────────────────────────────────────────────────────────────────────────────── */
+
+.route {
+  animation: route-flow 7s linear infinite;
+}
+
+@keyframes route-flow {
+  to {
+    stroke-dashoffset: -140;
+  }
+}
+
+.pavilion {
+  transition: translate 160ms var(--ease-out), border-color 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pavilion:hover {
+    border-color: rgb(255 255 255 / 70%);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .pavilion:hover {
+    translate: 0 -4px;
+    transition-duration: 200ms, 160ms;
+  }
+}
+
+/* ── NFC ───────────────────────────────────────────────────────────────────────────────────────── */
+
+.step,
+.chip,
+.chest {
+  transition: translate 160ms var(--ease-out), rotate 160ms var(--ease-out), scale 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .step:hover {
+    translate: 5px 0;
+    transition-duration: 200ms;
+  }
+
+  .step:hover .chip {
+    rotate: -6deg;
+    scale: 1.1;
+    transition-duration: 200ms;
+  }
+
+  /* The chest tips toward you; a transition, so leaving mid-tip retargets instead of snapping. */
+  .rewardCard:hover .chest {
+    rotate: -8deg;
+    translate: 0 -4px;
+    scale: 1.06;
+    transition-duration: 240ms;
+  }
+}
+
+/* ── Multi-event ───────────────────────────────────────────────────────────────────────────────── */
+
+.pilot {
+  outline: 3px solid var(--expo-blue);
+  outline-offset: 4px;
+}
+
+.pin {
+  display: inline-flex;
+  transition: translate 160ms var(--ease-out), scale 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .eventCard:hover .pin {
+    translate: 0 -3px;
+    scale: 1.2;
+    transition-duration: 220ms;
+  }
+}
+
+/* ── Closing call to action ────────────────────────────────────────────────────────────────────── */
+
+/* Decorative idle drift: on-screen movement, so ease-in-out; it parks under reduced motion. */
+.float {
+  animation: ornament-float 4.2s var(--ease-in-out) infinite alternate;
+}
+
+@keyframes ornament-float {
+  from {
+    translate: 0 -6px;
+  }
+  to {
+    translate: 0 6px;
+  }
+}
+
+.pixel {
+  border-radius: 2px;
+}
+
+/* ── Shared ────────────────────────────────────────────────────────────────────────────────────── */
+
+.dots {
+  background-image: radial-gradient(color-mix(in srgb, var(--expo-navy) 16%, transparent) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+/* A link whose underline draws in from the left and leaves to the right, so it reads as one pass. */
+.underline {
+  position: relative;
+}
+
+.underline::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -3px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentcolor;
+  scale: 0 1;
+  transform-origin: right;
+  transition: scale 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .underline:hover::after {
+    scale: 1 1;
+    transform-origin: left;
+    transition-duration: 240ms;
+  }
+}
+
+.lift {
+  transition: translate 160ms var(--ease-out), rotate 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lift:hover {
+    translate: 0 -2px;
+    rotate: -2deg;
+    transition-duration: 200ms;
+  }
+}
+
+/* ── Reduced motion: keep the state change, lose the travel ───────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .slab,
+  .slab:hover,
+  .press:active {
+    translate: none;
+    transition-property: box-shadow, background-color, color;
+  }
+
+  .route,
+  .float {
+    animation: none;
+  }
+
+  .cardLink::before {
+    translate: none;
+    opacity: 0;
+    transition: opacity 160ms ease;
+  }
+
+  .cardLink:hover::before {
+    opacity: 1;
+  }
+
+  .underline::after {
+    scale: 1 1;
+    opacity: 0;
+    transition: opacity 160ms ease;
+  }
+
+  .underline:hover::after {
+    opacity: 1;
+  }
+}

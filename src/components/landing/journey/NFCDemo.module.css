@@ -1,0 +1,62 @@
+/* "Tocar NFC" preview: the video on the left, the steps it goes through on the right. */
+.root { container-type: inline-size; display: flex; flex-direction: column; gap: 8px; color: #20234a; font-family: var(--font-jakarta), system-ui, sans-serif; }
+.stage { display: grid; grid-template-columns: minmax(0, 1.28fr) minmax(0, 1fr); gap: 14px; align-items: stretch; }
+
+/* The video has a white background, so it sits on a white card with a hairline border. */
+.frame { position: relative; overflow: hidden; align-self: start; border: 1px solid #e1e6f0; border-radius: 14px; background: #fff; aspect-ratio: 16 / 9; }
+.video, .fallback { display: block; width: 100%; height: 100%; }
+.video { object-fit: contain; }
+.fallback { display: grid; place-content: center; justify-items: center; gap: 8px; background: #e8f7f1; color: #1d6b5a; font-size: 12px; font-weight: 700; }
+.tag { position: absolute; top: 8px; left: 8px; padding: 4px 9px; border: 1px solid #cdeee3; border-radius: 999px; background: #ffffffeb; color: #1d6b5a; font-family: var(--font-space-mono), ui-monospace, monospace; font-size: 9px; font-weight: 700; letter-spacing: 0.06em; }
+.progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #e8edf5; }
+.progress > span { display: block; width: 100%; height: 100%; background: linear-gradient(90deg, var(--accent), #2fa97c); transform: scaleX(0); transform-origin: left; }
+.replay { position: absolute; top: 8px; right: 8px; display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border: 1px solid #d5dbe7; border-radius: 999px; background: #ffffffeb; color: #20234a; font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s ease; }
+.frame[data-ended="true"] .replay, .frame:hover .replay, .replay:focus-visible { opacity: 1; transform: none; pointer-events: auto; }
+.replay:hover { background: #fff; }
+
+.side { display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-width: 0; }
+.steps { position: relative; display: flex; flex-direction: column; gap: 9px; margin: 0; padding: 0; list-style: none; }
+.steps::before { content: ""; position: absolute; top: 14px; bottom: 14px; left: 13px; width: 2px; border-radius: 1px; background: #e3e8f1; }
+.step { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.node { position: relative; z-index: 1; display: grid; flex: none; place-items: center; width: 28px; height: 28px; border: 2px solid #fff; border-radius: 50%; background: #eef1f7; color: #8a93aa; box-shadow: 0 2px 6px #1d285921; transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease; }
+.step[data-state="active"] .node { background: var(--accent); color: #0f4b3f; transform: scale(1.1); animation: pulse 1.2s ease-out infinite; }
+.step[data-state="done"] .node { background: #2fa97c; color: #fff; }
+.stepText { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.stepText strong { color: #8a93aa; font-size: 12.5px; font-weight: 750; transition: color 0.3s ease; }
+.stepText small { color: #8a93aa; font-size: 10.5px; transition: color 0.3s ease; }
+.step[data-state="active"] .stepText strong, .step[data-state="done"] .stepText strong { color: #20234a; }
+.step[data-state="active"] .stepText small, .step[data-state="done"] .stepText small { color: #626b82; }
+
+.points { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid #f3dc9a; border-radius: 12px; background: #fff7dc; color: #7a5a00; font-size: 12px; font-weight: 600; opacity: 0.35; transition: opacity 0.3s ease, transform 0.3s ease; }
+.points svg { color: #e0a800; fill: #ffd34d; }
+.points strong { color: #5f4600; font-size: 17px; font-variant-numeric: tabular-nums; }
+.points span { margin-left: auto; font-size: 10px; font-weight: 600; opacity: 0.8; }
+.points[data-visible="true"] { opacity: 1; }
+.primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; padding: 0 18px; border: 0; border-radius: 10px; background: #20234a; color: #fff; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover { transform: translateY(-1px); box-shadow: 0 6px 14px #20234a40; }
+  .primary:active { transform: translateY(1px); }
+}
+.note { margin: 0; color: #626b82; font-size: 10px; line-height: 1.4; }
+
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent); } 100% { box-shadow: 0 0 0 9px transparent; } }
+
+@container (max-width: 520px) {
+  .stage { grid-template-columns: 1fr; gap: 12px; }
+  .steps { gap: 8px; }
+  .primary { min-height: 44px; }
+  .replay { opacity: 1; transform: none; pointer-events: auto; }
+}
+@media (max-height: 819px) and (min-width: 1101px) {
+  .stage { gap: 12px; }
+  .steps { gap: 6px; }
+  .stepText small { display: none; }
+  .points { padding: 5px 10px; }
+  .primary { min-height: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step[data-state="active"] .node { animation: none; }
+  .node, .stepText strong, .stepText small, .points, .replay, .primary { transition: none; }
+  .primary:hover { transform: none; }
+}

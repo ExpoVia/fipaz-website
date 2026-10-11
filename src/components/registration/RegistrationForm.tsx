@@ -452,7 +452,11 @@ export function RegistrationForm() {
         contactEmail: email.trim(), description: description.trim(),
       }, newCompany.id);
       setCompanyIdentity(newCompany.id, newCompany.name);
-      if (!await verifySession()) {
+      const verification = await verifySession();
+      if (verification === "unavailable") {
+        throw new Error("La empresa se registró, pero el servicio de autenticación no está disponible para confirmar la sesión. Inténtalo nuevamente; la sesión se conserva.");
+      }
+      if (verification === "invalid") {
         throw new Error("La empresa se registró, pero el backend no confirmó el rol company_admin para esta cuenta.");
       }
       setStep(2);

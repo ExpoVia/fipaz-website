@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { ArrowRight, ChevronDown, Compass, Gift, Smartphone, Award } from "lucide-react";
 import { pixelifyFont, pressStartFont } from "./fonts";
+import heroImage from "../../../public/img/landing/1ra landing.png";
 
 const benefits = [
   { icon: <Compass className="h-4 w-4 text-[var(--expo-blue)]" />, text: "Explora el mapa" },
@@ -19,11 +21,15 @@ export function HeroSection() {
       className="relative isolate overflow-hidden bg-[#eaf6fa] py-10 sm:py-16 lg:min-h-[calc(100vh-72px)] lg:py-10"
     >
       <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_78%_32%,#d8eff6_0%,transparent_32%),linear-gradient(135deg,#f4fafc_0%,#e9f4fb_55%,#eee5f4_100%)]" />
-      <video autoPlay loop muted playsInline className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover">
-        <source src="/videos/landing%20page.mp4" type="video/mp4" />
-        <source src="/videos/landing page.mp4" type="video/mp4" />
-      </video>
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(244,250,252,0.94)_0%,rgba(244,250,252,0.78)_54%,rgba(244,250,252,0.2)_100%)] lg:bg-[linear-gradient(90deg,rgba(244,250,252,0.97)_0%,rgba(244,250,252,0.88)_33%,rgba(244,250,252,0.42)_59%,rgba(244,250,252,0.08)_100%)]" />
+      <Image
+        src={heroImage}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="pointer-events-none -z-10 object-cover object-[68%_center] lg:object-center"
+      />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(244,250,252,0.95)_0%,rgba(244,250,252,0.88)_52%,rgba(244,250,252,0.4)_100%)] lg:bg-[linear-gradient(90deg,rgba(244,250,252,0.97)_0%,rgba(244,250,252,0.92)_36%,rgba(244,250,252,0.5)_58%,rgba(244,250,252,0)_78%)]" />
       <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-5 sm:px-10 lg:grid-cols-12 lg:gap-8 lg:px-8">
         <div className="max-w-xl sm:max-w-2xl lg:col-span-7">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="mb-4 inline-block max-w-full sm:mb-5">

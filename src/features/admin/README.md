@@ -58,7 +58,7 @@ textos estrictos), `lib/mock/` (latencia, persistencia de sesión, fallo simulad
 
 ### Cómo activarla
 
-1. Copia `.env.example` a `.env.local` y pon `NEXT_PUBLIC_API_MODE=http`. Ajusta `BACKEND_URL`.
+1. Copia `.env.example` a `.env.local`, pon `NEXT_PUBLIC_API_MODE=http` y configura `BACKEND_URL` con el origen público del backend (sin `/api/v1`).
 2. Levanta el backend (`fexpo-backend`, puerto 3000 por defecto) y el frontend en **otro puerto**:
    `pnpm dev -p 3001`. Reinicia `next dev` cada vez que cambies las variables.
 3. Sin `NEXT_PUBLIC_API_MODE=http` todo sigue funcionando con datos simulados.
@@ -72,6 +72,7 @@ Habla el contrato del backend: éxito `{ success: true, data, meta }` y error
 
 - **Proxy, no CORS.** El backend no habilita CORS, así que el navegador no puede llamarlo directo.
   `next.config.ts` reenvía `/api/v1/*` a `BACKEND_URL` y el navegador solo habla con su propio origen.
+  Las llamadas de autenticación y stands de empresa usan el mismo proxy.
   Las páginas de servidor (nombre del stand) sí llaman directo a `BACKEND_URL`.
 - **Paginación.** El backend pagina (20 por defecto, máximo 100). `apiGetAll` pide la primera página sin
   parámetros y recorre el resto con el `limit` que devuelve `meta`, porque las tablas filtran en cliente.
@@ -89,20 +90,29 @@ Habla el contrato del backend: éxito `{ success: true, data, meta }` y error
   | 404 genérico | `NOT_FOUND` | El de la entidad (p. ej. «No encontramos la dinámica solicitada.») |
   | 400 / 422 (`VALIDATION_ERROR`…) | `VALIDATION` | Algunos datos no son válidos. Revisa el formulario… |
   | 409 `CONFLICT` | `CONFLICT` | La operación no se pudo completar porque el registro cambió… |
-  | 5xx, sin red, tiempo agotado (15 s) | `NETWORK` | No pudimos conectar con el servidor… |
+  | 503 `DATABASE_UNAVAILABLE` | `NETWORK` | El servicio de datos está temporalmente no disponible… |
+  | otros 5xx, sin red, tiempo agotado (15 s) | `NETWORK` | No pudimos conectar con el servidor… |
 
 ### Estado frente a `fexpo-backend`
 
-Solo existe `GET /stands/:standId` (público; lo usa `adminScopeService` para el nombre del stand).
-**Dinámicas, premios, inventario y actividades aún no existen en el backend**: con `http` cada llamada
-responde 404 y las pantallas muestran el mensaje de «no encontramos…». Además:
+El backend actual expone `GET /health` (consulta PostgreSQL), `GET /events/:eventId/stands` y
+`GET /stands/:standId`. Los issues #13 y #14 se cerraron en el commit `2435b6f`: refresh inválido y
+evento inexistente se clasifican como `401` y `404`; fallas de PostgreSQL como `503 DATABASE_UNAVAILABLE`.
+La conexión de producción debe devolver `database: up` en health para confirmar que la BD también responde.
+Además:
 
 - **Ids UUID.** El backend valida `standId`/`eventId` con `ParseUUIDPipe`. Los ids de la demo
   (`stand-altura-labs`, `event-fipaz-2026`) darán 400 en modo `http`; hay que navegar con UUID reales.
   `adminScopeService.getEvent` sigue usando el catálogo estático (no existe `GET /events/:id`).
-- **Sin sesión en el frontend.** Los endpoints protegidos exigen JWT y todavía no hay pantalla de inicio de
-  sesión. Cuando exista, debe llamar a `setAccessTokenProvider(() => token)` (`lib/api/http-client.ts`);
-  mientras tanto las rutas protegidas responden 401.
+- **Autenticación.** El frontend obtiene tokens con Google, verifica `/auth/me` y renueva una vez tras un
+  `401`; el refresh envía solo `{ refreshToken }`, como exige el DTO backend. El servicio HTTP toma el JWT
+  desde la sesión persistida.
+- **Bloqueo pendiente de backend.** En el commit `2435b6f`, `/auth/me` todavía devuelve `roles: []` y no
+  existe `POST /companies`; por ello no se puede completar ni verificar el flujo `company_admin` y registro
+  de empresa contra producción.
+- **Stands del evento.** El directorio llama `GET /events/:eventId/stands`; configura
+  `NEXT_PUBLIC_FIPAZ_EVENT_ID` con el UUID real. El id demostrativo `event-fipaz-2026` no es un UUID y no
+  debe enviarse a la API.
 - **Cambiar estado.** `toggleDynamicStatus` / `toggleRewardStatus` leen el estado vigente (`GET`) y envían el
   contrario en `PATCH …/status { status }`. Si backend prefiere alternar por su cuenta, se simplifica en
   `*.http-service.ts`.
@@ -141,7 +151,8 @@ PUT    /activities/:activityId                         editar
 POST   /activities/:activityId/cancel                  cancelar
 GET    /activities/:activityId/attendance              participantes
 PUT    /activities/:activityId/attendance/:participantId   { status: "present" | "absent" | "pending" }
-POST   /stands/:standId/check-ins                      { method: "qr" | "nfc" | "manual", credential }
+POST   /stands/:standId/check-ins                      { method: "qr" | "nfc", credential, requestKey } (visitante autenticado)
+POST   /stands/:standId/manual-check-ins               { userId | userQrToken, requestKey } (staff autenticado)
 ```
 
 ### Contratos que el backend debe respetar

@@ -10,6 +10,8 @@ export const categoryMeta: CategoryMeta[] = [
   { id: "food", label: "Gastronomia (demo)", pattern: "GAS" },
   { id: "gastronomy", label: "Gastronomia artesanal (demo)", pattern: "ART" },
   { id: "finance", label: "Finanzas (demo)", pattern: "FIN" },
+  { id: "education", label: "Educación (demo)", pattern: "EDU" },
+  { id: "startups", label: "Emprendimientos (demo)", pattern: "EMP" },
   { id: "unassigned", label: "Sin rubro confirmado", pattern: "S/R" },
 ];
 

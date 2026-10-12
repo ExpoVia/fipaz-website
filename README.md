@@ -11,6 +11,10 @@ Abrir `http://localhost:3000`. Requisito: Node.js 20.9 o superior.
 
 Base incluida: Next.js 16, TypeScript, Tailwind, Motion, Lucide, Zustand, Vaul, Zod, Embla y zoom/pan.
 
+La demo pública `/demo` refleja la aplicación visitante Expo, con temas claro y
+oscuro, mapa integrado y recorridos de demostración. Ver las rutas y las
+instrucciones de prueba en [Demo mobile](Doc/demo-mobile-parity.md).
+
 ## Equipo
 
 | Responsable | Entrega | Documento |

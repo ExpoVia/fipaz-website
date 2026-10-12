@@ -14,6 +14,9 @@
 .title { font-size:13px; font-weight:700; margin:10px 0 0; }
 .canvas { position:relative; flex:1; min-height:200px; overflow:hidden; padding-top:50px; }
 .svg { height:100%; width:100%; user-select:none; color:#25382e; fill:#25382e; touch-action:none; }
+/* At 1x there is nothing to pan, so one finger scrolls the page instead of trapping it; pinch and the zoom buttons still work.
+   Once the map is zoomed in, the surface owns every gesture again. */
+.canvas[data-zoomed="false"] .svg { touch-action:pan-y; }
 .mapTarget { cursor:pointer; outline:none; }
 .mapTarget:focus-visible > rect, .mapTarget:focus-visible > path { stroke:#006fbd; stroke-width:4px; }
 .mapTarget:hover > rect, .mapTarget:hover > path { filter:brightness(.96); }
@@ -38,6 +41,15 @@
 .sheet p { font-size:12px; line-height:1.5; margin:8px 0; }
 .command { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:36px; border:1px solid #31714d; border-radius:4px; padding:7px 10px; background:#e2f1e7; font-size:12px; font-weight:700; color:#285f40; cursor:pointer; }
 .command:disabled { opacity:.5; cursor:default; }
+
+/* Fingers need 44px, not the 36px a cursor gets. */
+@media (pointer:coarse) {
+  .iconButton { width:44px; height:44px; }
+  .select { height:44px; }
+  .command { min-height:44px; }
+  .tabs button { padding:12px 10px; }
+  .check { min-height:44px; }
+}
 .exhibitorDialog { margin:auto; width:calc(100% - 32px); max-width:380px; border:1px solid #b8c9bd; border-radius:6px; padding:18px; background:white; color:#263a31; }
 .exhibitorDialog::backdrop { background:#14281b66; }
 .exhibitorDialog h2 { margin:6px 0; font-size:20px; font-weight:700; overflow-wrap:anywhere; }
@@ -48,3 +60,21 @@
 @keyframes trace { from { stroke-dashoffset:1; } to { stroke-dashoffset:0; } }
 @media (prefers-reduced-motion:reduce) { .route { animation:none; } }
 @media (max-height:650px) { .root { min-height:450px; } .header { padding-top:8px; } .sheet { max-height:50%; } }
+.embedded { min-height:0; background:var(--m-bg); color:var(--m-ink); font-family:inherit; }
+.embedded .header { padding:10px 4px; background:var(--m-bg); border:0; }
+.embedded .heading h1 { font-family:inherit; font-size:16px; }
+.embedded .heading { align-items:center; }
+.embedded .iconButton { width:40px; height:40px; border:0; border-radius:50%; color:var(--m-primaryText); background:var(--m-soft); }
+.embedded .select { background:var(--m-surface); color:var(--m-ink); border-color:var(--m-border); border-radius:12px; height:40px; }
+.embedded .tabs { border-color:var(--m-border); border-radius:12px; }
+.embedded .tabs button { background:var(--m-surface); color:var(--m-ink); min-height:40px; }
+.embedded .tabs button[aria-pressed=true] { background:var(--m-primary); color:white; }
+.embedded .canvas:not(.overviewCanvas) { background:var(--m-muted); border:1px solid var(--m-border); border-radius:20px; }
+.overviewCanvas { padding:0; overflow:auto; }
+.embedded .footer { padding:7px 4px 0; font-size:9px; background:var(--m-bg); color:var(--m-secondary); border:0; }
+.embedded .panel,.embedded .sheet { background:var(--m-surface); color:var(--m-ink); border-color:var(--m-border); border-radius:16px; }
+.embedded .panel input,.embedded .result,.embedded .search { background:var(--m-surface); color:var(--m-ink); border-color:var(--m-border); }
+.embedded .result:hover { background:var(--m-soft); }
+.embedded .muted,.embedded .result small { color:var(--m-secondary); }
+.embedded .command { background:var(--m-soft); color:var(--m-primaryText); border-color:var(--m-border); border-radius:10px; min-height:44px; }
+.embedded .svg { color:#25382e; }

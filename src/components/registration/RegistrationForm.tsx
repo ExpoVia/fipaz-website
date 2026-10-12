@@ -416,11 +416,13 @@ export function RegistrationForm() {
         customCategory: category === "other" ? customCategory.trim() : undefined,
         contactEmail: email.trim(), description: description.trim(),
       }, newCompany.id);
-
-      // El rol nuevo (company_admin) solo aparece al volver a leer /auth/me.
-      const confirmed = await verifySession();
-      if (!confirmed || !hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) {
-        throw new Error("La empresa se registró, pero el backend no confirmó el rol de administrador para esta cuenta. Inicia sesión de nuevo.");
+      // El rol nuevo solo aparece después de consultar /auth/me otra vez.
+      const verification = await verifySession();
+      if (verification === "unavailable") {
+        throw new Error("La empresa se registró, pero el servicio de autenticación no está disponible para confirmar la sesión. Inténtalo nuevamente; la sesión se conserva.");
+      }
+      if (verification === "invalid" || !hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) {
+        throw new Error("La empresa se registró, pero el backend no confirmó el rol de expositor para esta cuenta. Inicia sesión de nuevo.");
       }
       setStep(2);
       window.setTimeout(() => router.push("/panel"), 900);

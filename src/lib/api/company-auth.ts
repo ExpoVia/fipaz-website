@@ -83,11 +83,29 @@ async function readJson(response: Response): Promise<unknown> {
   return response.json().catch(() => null) as Promise<unknown>;
 }
 
+function authErrorMessage(payload: unknown, status: number, fallback: string): string {
+  const root = payload && typeof payload === "object" ? payload as Record<string, unknown> : null;
+  const error = root?.error && typeof root.error === "object"
+    ? root.error as Record<string, unknown>
+    : root;
+  const code = typeof error?.code === "string" ? error.code : undefined;
+  if (code === "DATABASE_UNAVAILABLE" || status >= 500) {
+    return "El servicio de datos está temporalmente no disponible. Intenta nuevamente en unos minutos.";
+  }
+  if (code === "INVALID_GOOGLE_TOKEN") {
+    return "Google no pudo validar esta cuenta. Intenta iniciar sesión nuevamente.";
+  }
+  if (code === "INVALID_REFRESH_TOKEN" || code === "SESSION_REVOKED") {
+    return "Tu sesión expiró. Inicia sesión nuevamente.";
+  }
+  return readApiErrorMessage(payload, fallback);
+}
+
 async function postForTokens(path: string, body: unknown, fallbackError: string): Promise<CompanyAuthTokens> {
   const response = await postJson(path, body);
   const payload = await readJson(response);
   if (!response.ok) {
-    throw new CompanyAuthError(readApiErrorMessage(payload, fallbackError), response.status);
+    throw new CompanyAuthError(authErrorMessage(payload, response.status, fallbackError), response.status);
   }
   const parsed = tokensSchema.safeParse(unwrapEnvelope(payload));
   if (!parsed.success) {
@@ -122,7 +140,7 @@ export async function fetchAuthMe(accessToken: string): Promise<AuthMe> {
   }
   const payload = await readJson(response);
   if (!response.ok) {
-    throw new CompanyAuthError(readApiErrorMessage(payload, "La sesión ya no es válida."), response.status);
+    throw new CompanyAuthError(authErrorMessage(payload, response.status, "La sesión ya no es válida."), response.status);
   }
   const parsed = meSchema.safeParse(unwrapEnvelope(payload));
   if (!parsed.success) {

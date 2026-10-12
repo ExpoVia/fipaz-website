@@ -28,7 +28,7 @@ interface PanelShellProps {
  */
 export function PanelShell({ children }: PanelShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [verified, setVerified] = useState(false);
+  const [verification, setVerification] = useState<"checking" | "verified" | "unavailable">("checking");
   const pathname = usePathname();
   const router = useRouter();
   const hydrated = useCompanyAuthStore((state) => state.hasHydrated);
@@ -51,11 +51,17 @@ export function PanelShell({ children }: PanelShellProps) {
   useEffect(() => {
     if (!hydrated) return;
     let cancelled = false;
-    void verifySession().then((valid) => {
-      if (!cancelled) setVerified(valid);
+    void verifySession().then((result) => {
+      if (!cancelled) setVerification(result === "valid" ? "verified" : result === "unavailable" ? "unavailable" : "checking");
     });
     return () => { cancelled = true; };
   }, [hydrated, verifySession]);
+
+  async function retrySessionVerification() {
+    setVerification("checking");
+    const result = await verifySession();
+    setVerification(result === "valid" ? "verified" : result === "unavailable" ? "unavailable" : "checking");
+  }
 
   useEffect(() => {
     if (!hydrated) return;
@@ -64,7 +70,7 @@ export function PanelShell({ children }: PanelShellProps) {
       router.replace(accessRoute(required ?? lastPanel.current));
       return;
     }
-    if (!verified) return;
+    if (verification !== "verified") return;
     // Sesión válida pero sin el rol que exige la ruta: la pantalla de acceso explica por qué.
     if (!allowed) {
       router.replace(accessRoute(required));
@@ -75,9 +81,9 @@ export function PanelShell({ children }: PanelShellProps) {
       const role = getRolesForPanel(session, required)[0];
       if (role) setActiveRole(role.id);
     }
-  }, [hydrated, session, verified, allowed, required, activePanel, router, setActiveRole]);
+  }, [hydrated, session, verification, allowed, required, activePanel, router, setActiveRole]);
 
-  const ready = hydrated && !!session && verified && allowed;
+  const ready = hydrated && !!session && verification === "verified" && allowed;
 
   return (
     <div className="flex min-h-dvh flex-col bg-[var(--expo-bg)]">
@@ -87,7 +93,15 @@ export function PanelShell({ children }: PanelShellProps) {
         <PanelMobileDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-[1400px]">
-            {!ready ? (
+            {verification === "unavailable" && session ? (
+              <div className="flex min-h-[35vh] flex-col items-center justify-center gap-3 text-center">
+                <p className="font-black text-[var(--expo-navy)]">No pudimos validar tu sesión ahora.</p>
+                <p className="max-w-md text-sm text-slate-500">La sesión se conserva. Comprueba la conexión con el servicio e inténtalo de nuevo.</p>
+                <button type="button" onClick={() => void retrySessionVerification()} className="rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-4 py-2 text-sm font-black text-[var(--expo-navy)]">
+                  Reintentar
+                </button>
+              </div>
+            ) : !ready ? (
               <div className="flex min-h-[35vh] items-center justify-center gap-3 text-sm font-bold text-slate-400">
                 <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
                 Preparando tu panel…

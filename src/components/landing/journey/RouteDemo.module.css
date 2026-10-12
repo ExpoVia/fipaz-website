@@ -1,0 +1,71 @@
+/* "Llegar" preview. Sizes shrink with the viewport height because the panel lives between the title and the cards. */
+.root { --map-h: 150px; container-type: inline-size; display: flex; flex-direction: column; gap: 10px; color: #20234a; font-family: var(--font-jakarta), system-ui, sans-serif; }
+
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.stat { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 10px 12px; border-radius: 14px; background: #f3f5fa; }
+.stat[data-tone="destination"] { background: color-mix(in srgb, var(--accent) 12%, #fff); }
+.statIcon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 50%; background: #fff; color: #1687e8; box-shadow: 0 2px 6px #1d28591a; }
+.stat[data-tone="destination"] .statIcon { color: var(--accent); }
+.statText { display: flex; flex-direction: column; min-width: 0; }
+.statText strong { font-family: var(--font-sora), system-ui, sans-serif; font-size: 15px; font-weight: 750; letter-spacing: -0.02em; line-height: 1.2; white-space: nowrap; }
+.statText small { margin-top: 1px; color: #626b82; font-size: 10.5px; }
+
+/* The ground is CSS (isometric grid), so the illustration can keep its aspect ratio and sit centred. */
+.mapFrame { position: relative; overflow: hidden; border: 1px solid #d9e7e0; border-radius: 14px;
+  background-color: #e3f2e8;
+  background-image: repeating-linear-gradient(26.565deg, #ffffff73 0 1px, transparent 1px 15px), repeating-linear-gradient(-26.565deg, #ffffff73 0 1px, transparent 1px 15px), linear-gradient(180deg, #eef8f1, #d8ede2); }
+.map { display: block; width: 100%; max-width: calc(var(--map-h) * 640 / 150); height: auto; margin: 0 auto; }
+.chip text { font-family: var(--font-jakarta), system-ui, sans-serif; font-size: 10px; font-weight: 700; fill: #fff; }
+.replay { position: absolute; top: 8px; left: 8px; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 1px solid #d5dbe7; border-radius: 50%; background: #ffffffe6; color: #445079; cursor: pointer; transition: background-color 0.2s ease, transform 0.2s ease; }
+.replay:hover { background: #fff; transform: rotate(-30deg); }
+
+.track { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
+.track::before, .track::after { content: ""; position: absolute; top: 16px; left: calc(100% / 6); right: calc(100% / 6); height: 3px; border-radius: 2px; }
+.track::before { background: #e3e8f1; }
+.track::after { background: linear-gradient(90deg, #1687e8, var(--accent)); transform-origin: left; transform: scaleX(var(--route-progress, 0)); }
+.trackItem { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; color: #46516f; font-size: 10.5px; font-weight: 600; text-align: center; }
+.node { display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid #fff; border-radius: 50%; background: #eef1f7; color: #8a93aa; box-shadow: 0 2px 8px #1d285926; transition: background-color 0.3s ease, color 0.3s ease; }
+.trackItem[data-kind="start"] { --node: #1687e8; }
+.trackItem[data-kind="middle"] { --node: #8b4fc7; }
+.trackItem[data-kind="end"] { --node: var(--accent); }
+.trackItem[data-reached="true"] .node { background: var(--node); color: #fff; }
+
+.footer { display: flex; gap: 10px; }
+.status { display: flex; flex: 1; align-items: center; gap: 8px; min-width: 0; min-height: 40px; margin: 0; padding: 0 14px; border-radius: 10px; background: #eef1f8; color: #20234a; font-size: 13px; font-weight: 700; transition: background-color 0.3s ease, color 0.3s ease; }
+.status[data-arrived="true"] { background: #e4f6ea; color: #1d6b43; }
+.primary { display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 0 18px; border: 0; border-radius: 10px; background: #20234a; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover { transform: translateY(-1px); box-shadow: 0 6px 14px #20234a40; }
+  .primary:active { transform: translateY(1px); }
+}
+
+/* Narrow containers (accordion on small screens): tiles stack their content and the map drops its labels. */
+@container (max-width: 520px) {
+  .stat { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px; }
+  .statText strong { font-size: 13px; }
+  .chips { display: none; }
+  .footer { flex-direction: column; }
+  .primary { width: 100%; min-height: 44px; }
+}
+
+/* The panel sits between the title and the cards, which leaves roughly 360-390px whatever the screen height up to
+   ~1000px, so below that the preview switches to a compact build; below ~820px it also drops the progress track. */
+@media (max-height: 999px) {
+  .root { --map-h: 112px; gap: 8px; }
+  .stat { padding: 6px 10px; }
+  .statIcon { width: 28px; height: 28px; }
+  .statText strong { font-size: 13.5px; }
+  .node { width: 28px; height: 28px; }
+  .track::before, .track::after { top: 13px; }
+  .status, .primary { min-height: 36px; }
+}
+@media (max-height: 819px) and (min-width: 1101px) {
+  .root { --map-h: 100px; }
+  .statText small { display: none; }
+  .track { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .replay, .node, .status, .primary, .track::after { transition: none; }
+  .replay:hover, .primary:hover { transform: none; }
+}

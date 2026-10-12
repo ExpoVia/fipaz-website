@@ -21,29 +21,59 @@ export function CompanyAuthGuard({ children, redirectTo = accessRoute("expositor
   const panelHydrated = usePanelStore((state) => state.hasHydrated);
   const session = useCompanyAuthStore((state) => state.session);
   const verifySession = useCompanyAuthStore((state) => state.verifySession);
+  const hasSession = Boolean(session);
   const valid = isSessionValid(session) && hasPanelAccess(session, "expositor");
-  const [verified, setVerified] = useState(false);
+  const [verification, setVerification] = useState<"checking" | "verified" | "unavailable">("checking");
+
+  async function checkSession() {
+    setVerification("checking");
+    const result = await verifySession();
+    if (result === "valid" && hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) {
+      setVerification("verified");
+    }
+    else if (result === "unavailable") setVerification("unavailable");
+    else router.replace(redirectTo);
+  }
 
   useEffect(() => {
     if (!hasHydrated) return;
-    if (!session) {
+    if (!hasSession) {
       router.replace(redirectTo);
       return;
     }
     let cancelled = false;
-    void verifySession().then((isValid) => {
+    void verifySession().then((result) => {
       if (cancelled) return;
-      if (isValid && hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) setVerified(true);
+      if (result === "valid" && hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) {
+        setVerification("verified");
+      }
+      else if (result === "unavailable") setVerification("unavailable");
       else router.replace(redirectTo);
     });
     return () => { cancelled = true; };
-  }, [hasHydrated, session?.accessToken, verifySession, router, redirectTo]);
+  }, [hasHydrated, hasSession, session?.accessToken, verifySession, router, redirectTo]);
 
-  if (!hasHydrated || !panelHydrated || !verified || (session && !valid)) {
+  if (!hasHydrated || !panelHydrated || verification === "checking" || (verification === "verified" && !valid)) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center gap-3 text-slate-400">
         <Loader2 className="h-5 w-5 animate-spin" />
         <span className="text-sm font-bold">Verificando sesión de empresa…</span>
+      </div>
+    );
+  }
+
+  if (verification === "unavailable") {
+    return (
+      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-center">
+        <p className="font-black text-[var(--expo-navy)]">No pudimos validar tu sesión ahora.</p>
+        <p className="max-w-md text-sm text-slate-500">La sesión se conserva. Comprueba la conexión con el servicio e inténtalo otra vez.</p>
+        <button
+          type="button"
+          onClick={() => void checkSession()}
+          className="rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-4 py-2 text-sm font-black text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)]"
+        >
+          Reintentar
+        </button>
       </div>
     );
   }

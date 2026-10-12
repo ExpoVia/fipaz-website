@@ -2,20 +2,33 @@ import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import { apiPost } from "@/lib/api/http-client";
 import type { CheckIn, CheckInsService } from "./types";
 
-/**
- * Servicio de check-ins contra el backend (`NEXT_PUBLIC_API_MODE=http`).
- *
- * `POST /stands/:standId/check-ins` es una propuesta: no existe todavía en `fexpo-backend`
- * (ver `features/admin/README.md`). Debe responder con el check-in creado (o el existente, con
- * `status: "duplicate"`, si el visitante ya registró presencia hoy en este stand) y usar los
- * códigos `QR_INVALID`, `QR_EXPIRED`, `PARTICIPANT_NOT_ACTIVE` o `STAND_NOT_ACTIVE` para los
- * rechazos, que `lib/api/http-client.ts` ya traduce a mensajes en español.
- */
+/** Servicio del escáner de staff contra el contrato actual de `fexpo-backend`. */
 
 const STAND_NOT_FOUND = "No encontramos el stand solicitado.";
 
+interface BackendCheckInResult {
+  checkinId: string;
+  dailyDuplicate: boolean;
+  pointsAwarded: number;
+}
+
 export const checkInsHttpService: CheckInsService = {
-  registerCheckIn(standId, input) {
-    return apiPost<CheckIn>(API_ENDPOINTS.checkIns.byStand(standId), input, { notFoundMessage: STAND_NOT_FOUND });
+  async registerCheckIn(standId, input) {
+    const result = await apiPost<BackendCheckInResult>(
+      API_ENDPOINTS.checkIns.manualByStand(standId),
+      {
+        userQrToken: input.credential,
+        requestKey: crypto.randomUUID(),
+      },
+      { notFoundMessage: STAND_NOT_FOUND },
+    );
+
+    return {
+      id: result.checkinId,
+      standId,
+      method: input.method,
+      pointsAwarded: result.pointsAwarded,
+      status: result.dailyDuplicate ? "duplicate" : "new",
+    } satisfies CheckIn;
   },
 };

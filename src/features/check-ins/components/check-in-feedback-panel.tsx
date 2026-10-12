@@ -61,6 +61,7 @@ export function CheckInFeedbackPanel({ feedback }: CheckInFeedbackPanelProps) {
 
   const { checkIn } = feedback;
   const isDuplicate = feedback.kind === "duplicate";
+  const participantName = checkIn.participantName ?? "Visitante";
 
   return (
     <div
@@ -77,10 +78,10 @@ export function CheckInFeedbackPanel({ feedback }: CheckInFeedbackPanelProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <VisitorAvatar name={checkIn.participantName} photoUrl={checkIn.participantPhotoUrl} />
+        <VisitorAvatar name={participantName} photoUrl={checkIn.participantPhotoUrl} />
         <div className="min-w-0">
-          <p className="truncate text-lg font-black">{checkIn.participantName}</p>
-          <p className="text-xs font-bold opacity-80">{formatTime(checkIn.checkedInAt)}</p>
+          <p className="truncate text-lg font-black">{participantName}</p>
+          {checkIn.checkedInAt && <p className="text-xs font-bold opacity-80">{formatTime(checkIn.checkedInAt)}</p>}
         </div>
       </div>
 

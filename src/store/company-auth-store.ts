@@ -13,18 +13,14 @@ import {
   type CompanyAuthTokens,
   type RoleAssignment,
 } from "@/lib/api/company-auth";
+import { setAccessTokenProvider, setUnauthorizedHandler } from "@/lib/api/http-client";
 
-/**
- * Sesión del panel. Una sola sesión (cuenta de Google) puede tener varios roles reales
- * (`GET /auth/me`): expositor de una o más empresas y/o organizador de eventos.
- * El rol activo decide en qué panel está trabajando; los permisos siempre los valida el backend.
- */
+/** Una cuenta puede tener varios roles de empresa o evento; el backend valida cada permiso. */
 export interface CompanySession {
   userId: string;
   email: string;
   displayName: string;
   roles: RoleAssignment[];
-  /** Id de la asignación de `user_roles` con la que se opera ahora. */
   activeRoleId: string | null;
   accessToken: string;
   refreshToken: string;
@@ -32,29 +28,23 @@ export interface CompanySession {
   refreshExpiresAt: string;
 }
 
+export type SessionVerificationResult = "valid" | "invalid" | "unavailable";
+
 interface CompanyAuthStore {
   session: CompanySession | null;
   hasHydrated: boolean;
   setHasHydrated: () => void;
-  /** Inicia sesión y devuelve la identidad con sus roles, para que quien llama decida a dónde ir. */
   loginWithGoogle: (idToken: string) => Promise<AuthMe>;
-  /** Cambia el rol con el que se opera (p. ej. de una empresa a otra, o de expositor a organizador). */
   setActiveRole: (roleId: string) => void;
   refreshAccessToken: () => Promise<boolean>;
-  /**
-   * Renueva el token si hace falta y vuelve a leer `/auth/me`, de modo que los roles reflejen
-   * al instante cualquier alta o revocación. Devuelve `false` si la sesión ya no es válida.
-   */
-  verifySession: () => Promise<boolean>;
-  /** Cierra la sesión local de inmediato e invalida la del servidor (`POST /auth/logout`). */
+  /** Actualiza los roles; conserva la sesión si el servicio está temporalmente caído. */
+  verifySession: () => Promise<SessionVerificationResult>;
   logout: () => Promise<void>;
-  /** Como `logout`, pero invalida todos los dispositivos (`POST /auth/logout-all`). */
   logoutAll: () => Promise<void>;
 }
 
 const ACCESS_TOKEN_FALLBACK_SECONDS = 15 * 60;
 const REFRESH_TOKEN_SECONDS = 30 * 24 * 60 * 60;
-
 let refreshInFlight: Promise<boolean> | null = null;
 
 function getDeviceId(): string {
@@ -76,6 +66,11 @@ function isPast(isoDate: string): boolean {
   return !Number.isFinite(time) || time <= Date.now();
 }
 
+function isAuthenticationFailure(error: unknown): boolean {
+  return error instanceof Error && "status" in error &&
+    [400, 401, 403].includes(Number(error.status));
+}
+
 function sessionFrom(me: AuthMe, tokens: CompanyAuthTokens): CompanySession {
   return {
     userId: me.id,
@@ -90,14 +85,9 @@ function sessionFrom(me: AuthMe, tokens: CompanyAuthTokens): CompanySession {
   };
 }
 
-function hasStatus(error: unknown, status: number): boolean {
-  return error instanceof Error && "status" in error && error.status === status;
-}
-
 export const useCompanyAuthStore = create<CompanyAuthStore>()(
   persist(
     (set, get) => {
-      /** Aplica la identidad recién leída conservando el rol activo si todavía existe. */
       function applyIdentity(me: AuthMe): void {
         const current = get().session;
         if (!current) return;
@@ -118,7 +108,6 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
         revoke: (tokens: CompanyAuthTokens, accessTokenExpired: boolean) => Promise<void>,
       ): Promise<void> {
         const current = get().session;
-        // Primero lo local: el cierre no puede depender de que el backend responda.
         set({ session: null });
         if (!current || isPast(current.refreshExpiresAt)) return;
         await revoke(
@@ -156,7 +145,8 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
             }
             try {
               const tokens = await refreshCompanyTokens(current.refreshToken);
-              const latest = get().session ?? current;
+              const latest = get().session;
+              if (!latest || latest.refreshToken !== current.refreshToken) return false;
               set({
                 session: {
                   ...latest,
@@ -167,8 +157,8 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
                 },
               });
               return true;
-            } catch {
-              set({ session: null });
+            } catch (error) {
+              if (isAuthenticationFailure(error)) set({ session: null });
               return false;
             } finally {
               refreshInFlight = null;
@@ -178,31 +168,42 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
         },
 
         verifySession: async () => {
-          const initial = get().session;
-          if (!initial) return false;
-          if (isPast(initial.expiresAt) && !(await get().refreshAccessToken())) return false;
-
-          const current = get().session;
-          if (!current) return false;
+          let current = get().session;
+          if (!current) return "invalid";
+          if (isPast(current.expiresAt)) {
+            if (!await get().refreshAccessToken()) {
+              return get().session ? "unavailable" : "invalid";
+            }
+            current = get().session;
+          }
+          if (!current?.accessToken) return "invalid";
 
           try {
             applyIdentity(await fetchAuthMe(current.accessToken));
-            return true;
+            return "valid";
           } catch (error) {
-            // Un 401 puede ser solo un access token vencido: se renueva y se reintenta una vez.
-            if (hasStatus(error, 401) && (await get().refreshAccessToken())) {
-              const refreshed = get().session;
-              if (refreshed) {
+            if (error instanceof Error && "status" in error && error.status === 401) {
+              if (await get().refreshAccessToken()) {
+                const refreshed = get().session;
+                if (!refreshed) return "invalid";
                 try {
                   applyIdentity(await fetchAuthMe(refreshed.accessToken));
-                  return true;
-                } catch {
-                  // La sesión se cierra abajo si la API la rechaza otra vez.
+                  return "valid";
+                } catch (retryError) {
+                  if (isAuthenticationFailure(retryError)) {
+                    set({ session: null });
+                    return "invalid";
+                  }
+                  return "unavailable";
                 }
               }
+              return get().session ? "unavailable" : "invalid";
             }
-            set({ session: null });
-            return false;
+            if (isAuthenticationFailure(error)) {
+              set({ session: null });
+              return "invalid";
+            }
+            return "unavailable";
           }
         },
 
@@ -219,7 +220,10 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
   ),
 );
 
-/** La sesión tiene tokens y el access token no ha vencido (el rol y los permisos los valida el backend). */
+setAccessTokenProvider(() => useCompanyAuthStore.getState().session?.accessToken ?? null);
+setUnauthorizedHandler(() => useCompanyAuthStore.getState().refreshAccessToken());
+
+/** Comprueba los tokens locales; las vistas protegidas confirman roles con el backend. */
 export function isSessionValid(session: CompanySession | null): session is CompanySession {
   return !!session && !!session.accessToken && !!session.refreshToken && !isPast(session.expiresAt);
 }

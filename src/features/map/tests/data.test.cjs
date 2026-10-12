@@ -65,6 +65,7 @@ test("Routes start at a free simulated origin and end on the intended stand", ()
 });
 test("POIs have a known plan; only explicit demo exhibitors have a category", () => {
   for (const poi of pois) assert.ok(mapPlans.some((plan) => plan.id === poi.planId));
-  assert.equal(expoStands.filter((stand) => stand.demo).length, 12);
+  // Twelve original map examples plus the three shared FIPAZ demo exhibitors.
+  assert.equal(expoStands.filter((stand) => stand.demo).length, 15);
   for (const stand of expoStands) assert.equal(stand.category !== "unassigned", stand.demo);
 });

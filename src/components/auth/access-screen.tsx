@@ -52,7 +52,7 @@ export function AccessScreen({ panel }: AccessScreenProps) {
   const setActiveRole = useCompanyAuthStore((state) => state.setActiveRole);
   const logout = useCompanyAuthStore((state) => state.logout);
 
-  const [verifiedOnce, setVerifiedOnce] = useState(false);
+  const [verification, setVerification] = useState<"checking" | "verified" | "unavailable">("checking");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -60,12 +60,14 @@ export function AccessScreen({ panel }: AccessScreenProps) {
   useEffect(() => {
     if (!hydrated || !useCompanyAuthStore.getState().session) return;
     let cancelled = false;
-    void verifySession().then(() => { if (!cancelled) setVerifiedOnce(true); });
+    void verifySession().then((result) => {
+      if (!cancelled) setVerification(result === "valid" ? "verified" : result === "unavailable" ? "unavailable" : "checking");
+    });
     return () => { cancelled = true; };
   }, [hydrated, verifySession]);
 
   // Sin sesión no hay nada que confirmar; con una guardada, se espera la verificación.
-  const checked = hydrated && (verifiedOnce || !session);
+  const checked = hydrated && (verification === "verified" || !session);
 
   const available = getAvailablePanels(session);
   const target = panel && hasPanelAccess(session, panel) ? panel : panel ? null : available[0] ?? null;
@@ -83,7 +85,7 @@ export function AccessScreen({ panel }: AccessScreenProps) {
     setBusy(true);
     try {
       await loginWithGoogle(idToken);
-      setVerifiedOnce(true); // La sesión recién creada ya viene confirmada por el backend.
+      setVerification("verified"); // La sesión recién creada ya viene confirmada por el backend.
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "No se pudo iniciar sesión. Inténtalo nuevamente.");
     } finally {
@@ -97,8 +99,14 @@ export function AccessScreen({ panel }: AccessScreenProps) {
     router.replace("/panel");
   }
 
+  async function retrySessionVerification() {
+    setVerification("checking");
+    const result = await verifySession();
+    setVerification(result === "valid" ? "verified" : result === "unavailable" ? "unavailable" : "checking");
+  }
+
   const copy = COPY[panel ?? "any"];
-  const loading = !hydrated || !checked || (!!session && !!target);
+  const loading = !hydrated || (verification === "checking" && !!session) || (checked && !!session && !!target);
 
   return (
     <div className="min-h-dvh bg-[var(--expo-bg)] text-[var(--expo-navy)] antialiased">
@@ -114,7 +122,15 @@ export function AccessScreen({ panel }: AccessScreenProps) {
 
       <main className="mx-auto max-w-md px-4 py-12 sm:px-6">
         <div className="rounded-2xl border-2 border-[var(--expo-navy)] bg-white p-6 shadow-[5px_5px_0_var(--expo-navy)]">
-          {loading ? (
+          {verification === "unavailable" && session ? (
+            <div className="flex flex-col items-center gap-3 text-center">
+              <p className="font-black text-[var(--expo-navy)]">No pudimos validar tu sesión ahora.</p>
+              <p className="text-sm text-slate-500">La sesión se conserva. Comprueba la conexión con el servicio e inténtalo de nuevo.</p>
+              <button type="button" onClick={() => void retrySessionVerification()} className="rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-4 py-2 text-sm font-black">
+                Reintentar
+              </button>
+            </div>
+          ) : loading ? (
             <div className="flex min-h-40 items-center justify-center gap-3 text-sm font-bold text-slate-400">
               <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin" />
               {session ? "Entrando a tu panel…" : "Preparando el acceso…"}

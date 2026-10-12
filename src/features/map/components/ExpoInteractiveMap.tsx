@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, Check, List, LocateFixed, Minus, Plus, RotateCcw, Route, Search, SlidersHorizontal, X } from "lucide-react";
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { TransformComponent, TransformWrapper, type ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
 import { categoryMeta, expoStands, mapPlans, poiMeta, routeDefinitions, zones } from "../data/expoMapData";
 import type { ExpoMapProps, PoiType, StandCategory } from "../types";
@@ -16,7 +16,7 @@ function IconButton({ label, children, onClick, pressed }: { label: string; chil
   return <button type="button" aria-label={label} title={label} aria-pressed={pressed} className={styles.iconButton} onClick={onClick}>{children}</button>;
 }
 
-export function ExpoInteractiveMap({ stands, selectedStandId, visitedStandIds, onSelectStand, onOpenStand, initialZoneId = null }: ExpoMapProps) {
+export function ExpoInteractiveMap({ stands, selectedStandId, visitedStandIds, onSelectStand, onOpenStand, initialZoneId = null, embedded = false, OverviewComponent }: ExpoMapProps & { embedded?: boolean; OverviewComponent?: ComponentType<{ onSelect: (id: string) => void }> }) {
   const idPrefix = useId().replaceAll(":", "");
   const [planId, setPlanId] = useState<string | null>(() => resolvePlan(stands.find((stand) => stand.id === selectedStandId)?.planId ?? initialZoneId));
   const [scale, setScale] = useState(1);
@@ -98,26 +98,26 @@ export function ExpoInteractiveMap({ stands, selectedStandId, visitedStandIds, o
     else root.current?.querySelector<SVGElement>(`[id="${CSS.escape(`${idPrefix}-stand-${sheetId}`)}"]`)?.focus({ preventScroll: true });
   }
 
-  return <section ref={root} className={styles.root} aria-label="Mapa FIPAZ 2026" onKeyDown={(event) => {
+  return <section ref={root} className={`${styles.root} ${embedded ? styles.embedded : ""}`} aria-label="Mapa FIPAZ 2026" onKeyDown={(event) => {
     if (event.key === "Escape") { if (panel) setPanel(null); else closeSheet(); }
   }}>
     <header className={styles.header}>
       <div className={styles.heading}>
-        <div><h1>FIPAZ 2026</h1><p className={styles.muted}>Mapa demostrativo · Referencias proporcionadas</p></div>
+        <div><h1>{embedded ? "Recinto FIPAZ" : "FIPAZ 2026"}</h1>{!embedded && <p className={styles.muted}>Mapa demostrativo · Referencias proporcionadas</p>}</div>
         <div style={{ display: "flex", gap: 5 }}>
           <IconButton label="Buscar espacios" pressed={panel === "list"} onClick={() => setPanel(panel === "list" ? null : "list")}><List size={18} /></IconButton>
           <IconButton label="Filtros" pressed={panel === "filters"} onClick={() => setPanel(panel === "filters" ? null : "filters")}><SlidersHorizontal size={18} /></IconButton>
         </div>
       </div>
-      <p className={styles.demoNotice}>Datos de demostración · expositores, ubicaciones y visitas simulados</p>
-      <div className={styles.row}>
+      {!embedded && <p className={styles.demoNotice}>Datos de demostración · expositores, ubicaciones y visitas simulados</p>}
+      {(!embedded || plan) && <div className={styles.row}>
         {plan && <IconButton label="Volver al recinto" onClick={() => changePlan(null)}><ArrowLeft size={18} /></IconButton>}
         <select aria-label="Bloque o plaza" className={styles.select} value={plan?.zoneId ?? ""} onChange={(event) => changePlan(resolvePlan(event.target.value))}>
           <option value="">Todo el recinto</option>
           {zones.map((zone) => <option key={zone.id} value={zone.id}>{zone.name}</option>)}
           <option value="entrance">Plaza Akapana · Ingreso</option><option value="food">Patio de comidas</option>
         </select>
-      </div>
+      </div>}
       {plan && <>
         <div className={styles.row}><div className={styles.tabs} aria-label="Planta">
           {mapPlans.filter((item) => item.zoneId === plan.zoneId).map((item) => <button type="button" key={item.id} aria-pressed={item.id === planId} onClick={() => { if (item.id !== planId) changePlan(item.id); }}>{item.level}</button>)}
@@ -126,8 +126,9 @@ export function ExpoInteractiveMap({ stands, selectedStandId, visitedStandIds, o
       </>}
     </header>
 
-    <div className={styles.canvas}>
-      <TransformWrapper key={planId ?? "overview"} ref={transform} centerOnInit initialScale={1} minScale={1} maxScale={4} wheel={{ step: .16 }} doubleClick={{ mode: "zoomIn", animationTime: duration }} zoomAnimation={{ disabled: reducedMotion }} autoAlignment={{ animationTime: duration, velocityAlignmentTime: duration }} velocityAnimation={{ disabled: reducedMotion }} onTransform={(_, state) => setScale(state.scale)} onInit={(ref) => {
+    <div data-zoomed={scale > 1.02} className={`${styles.canvas} ${!plan && OverviewComponent ? styles.overviewCanvas : ""}`}>
+      {!plan && OverviewComponent ? <OverviewComponent onSelect={(id) => changePlan(id)} /> : <>
+      <TransformWrapper key={planId ?? "overview"} ref={transform} centerOnInit initialScale={1} minScale={1} maxScale={4} panning={{ disabled: scale <= 1.02 }} wheel={{ step: .16 }} doubleClick={{ mode: "zoomIn", animationTime: duration }} zoomAnimation={{ disabled: reducedMotion }} autoAlignment={{ animationTime: duration, velocityAlignmentTime: duration }} velocityAnimation={{ disabled: reducedMotion }} onTransform={(_, state) => setScale(state.scale)} onInit={(ref) => {
         transform.current = ref;
         const target = pendingFocus.current;
         if (target) {
@@ -152,6 +153,7 @@ export function ExpoInteractiveMap({ stands, selectedStandId, visitedStandIds, o
           else zoomTo("you-are-here", 2.4);
         }}><LocateFixed size={18} /></IconButton>
       </div>
+      </>}
     </div>
     <footer className={styles.footer}><span>{plan ? `${results.length} espacios de ejemplo` : "3 bloques · 7 planos de referencia"}</span><span><span className={styles.dot} />{plan ? "Acceso simulado · recinto sujeto a confirmación" : "Recinto sujeto a confirmación"}</span></footer>
 

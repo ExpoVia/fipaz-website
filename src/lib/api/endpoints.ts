@@ -3,9 +3,7 @@
  * (el prefijo lo agrega `getApiBaseUrl()`). Las consumen los `*.http-service.ts` de cada
  * feature (activos con `NEXT_PUBLIC_API_MODE=http`); los componentes nunca deben importarlo.
  *
- * Estado en `fexpo-backend`: `health`, `stands.byEvent`, `stands.byId` existen. Dinámicas, premios, inventario y
- * actividades siguen pendientes en el backend. Las marcadas "(propuesta)" ni siquiera
- * estaban definidas en el enunciado.
+ * Rutas verificadas contra los controladores de `fexpo-backend`.
  */
 export const API_ENDPOINTS = {
   health: "/health",
@@ -16,41 +14,36 @@ export const API_ENDPOINTS = {
     byId: (standId: string) => `/stands/${encodeURIComponent(standId)}`,
   },
   dynamics: {
-    /** GET (listar) · POST (crear) */
+    /** GET público (solo activas) · POST autenticado */
     byStand: (standId: string) => `/stands/${encodeURIComponent(standId)}/dynamics`,
-    /** PUT (editar) · DELETE (eliminar) */
+    manageByStand: (standId: string) => `/stands/${encodeURIComponent(standId)}/manage/dynamics`,
+    manageById: (dynamicId: string) => `/dynamics/${encodeURIComponent(dynamicId)}/manage`,
+    byStandAndId: (standId: string, dynamicId: string) =>
+      `/stands/${encodeURIComponent(standId)}/dynamics/${encodeURIComponent(dynamicId)}`,
     byId: (dynamicId: string) => `/dynamics/${encodeURIComponent(dynamicId)}`,
-    /** PATCH (activar/desactivar) */
-    status: (dynamicId: string) => `/dynamics/${encodeURIComponent(dynamicId)}/status`,
   },
   rewards: {
-    /** GET (listar) · POST (crear) */
     byEvent: (eventId: string) => `/events/${encodeURIComponent(eventId)}/rewards`,
-    /** GET · PUT · DELETE */
-    byId: (rewardId: string) => `/rewards/${encodeURIComponent(rewardId)}`,
-    /** PATCH (activar/desactivar) — propuesta */
-    status: (rewardId: string) => `/rewards/${encodeURIComponent(rewardId)}/status`,
+    byId: (eventId: string, rewardId: string) =>
+      `/events/${encodeURIComponent(eventId)}/rewards/${encodeURIComponent(rewardId)}`,
   },
   inventory: {
-    /** GET */
     byEvent: (eventId: string) => `/events/${encodeURIComponent(eventId)}/inventory`,
-    /** GET */
-    byId: (inventoryId: string) => `/inventory/${encodeURIComponent(inventoryId)}`,
-    /** GET (historial) · POST (registrar ajuste) */
-    adjustments: (inventoryId: string) => `/inventory/${encodeURIComponent(inventoryId)}/adjustments`,
+    byId: (eventId: string, inventoryId: string) =>
+      `/events/${encodeURIComponent(eventId)}/inventory/${encodeURIComponent(inventoryId)}`,
+    adjustments: (eventId: string, inventoryId: string) =>
+      `/events/${encodeURIComponent(eventId)}/inventory/${encodeURIComponent(inventoryId)}/adjustments`,
   },
   activities: {
-    /** GET · POST — propuesta */
+    byEvent: (eventId: string) => `/events/${encodeURIComponent(eventId)}/activities`,
     byStand: (standId: string) => `/stands/${encodeURIComponent(standId)}/activities`,
-    /** GET · PUT — propuesta */
+    manageByStand: (standId: string) => `/stands/${encodeURIComponent(standId)}/manage/activities`,
     byId: (activityId: string) => `/activities/${encodeURIComponent(activityId)}`,
-    /** POST (cancelar) — propuesta */
-    cancel: (activityId: string) => `/activities/${encodeURIComponent(activityId)}/cancel`,
-    /** GET (lista de participantes) — propuesta */
+    manageById: (activityId: string) => `/activities/${encodeURIComponent(activityId)}/manage`,
+    byStandAndId: (standId: string, activityId: string) =>
+      `/stands/${encodeURIComponent(standId)}/activities/${encodeURIComponent(activityId)}`,
     attendance: (activityId: string) => `/activities/${encodeURIComponent(activityId)}/attendance`,
-    /** PUT (present | absent | pending) — propuesta */
-    participantAttendance: (activityId: string, participantId: string) =>
-      `/activities/${encodeURIComponent(activityId)}/attendance/${encodeURIComponent(participantId)}`,
+    register: (activityId: string) => `/activities/${encodeURIComponent(activityId)}/register`,
   },
   checkIns: {
     /** POST — check-in del visitante autenticado con QR/NFC del stand. */

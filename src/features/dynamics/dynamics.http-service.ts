@@ -1,45 +1,36 @@
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
-import { apiDelete, apiGet, apiGetAll, apiPatch, apiPost, apiPut } from "@/lib/api/http-client";
-import type { Dynamic, DynamicsService } from "./types";
-
-/**
- * Servicio de dinámicas contra el backend (`NEXT_PUBLIC_API_MODE=http`).
- *
- * El backend valida los cuerpos con `forbidNonWhitelisted`: una propiedad de más (por ejemplo
- * `standId`, que ya va en la URL) provoca un 400. Por eso solo se envían los campos del formulario.
- */
+import { apiDelete, apiGet, apiGetAll, apiPatch, apiPost } from "@/lib/api/http-client";
+import { fromDynamic, toDynamic, type BackendDynamic } from "@/features/admin/backend-adapters";
+import type { DynamicsService } from "./types";
 
 const NOT_FOUND = "No encontramos la dinámica solicitada.";
 const STAND_NOT_FOUND = "No encontramos el stand solicitado.";
 
+/** El panel usa la lectura administrable para incluir dinámicas inactivas. */
 export const dynamicsHttpService: DynamicsService = {
-  getDynamicsByStand(standId) {
-    return apiGetAll<Dynamic>(API_ENDPOINTS.dynamics.byStand(standId), { notFoundMessage: STAND_NOT_FOUND });
+  async getDynamicsByStand(standId) {
+    const rows = await apiGetAll<BackendDynamic>(API_ENDPOINTS.dynamics.manageByStand(standId), { notFoundMessage: STAND_NOT_FOUND });
+    return rows.map(fromDynamic);
   },
-
-  getDynamicById(dynamicId) {
-    return apiGet<Dynamic>(API_ENDPOINTS.dynamics.byId(dynamicId), { notFoundMessage: NOT_FOUND });
+  async getDynamicById(dynamicId) {
+    return fromDynamic(await apiGet<BackendDynamic>(API_ENDPOINTS.dynamics.manageById(dynamicId), { notFoundMessage: NOT_FOUND }));
   },
-
-  createDynamic({ standId, ...fields }) {
-    return apiPost<Dynamic>(API_ENDPOINTS.dynamics.byStand(standId), fields, { notFoundMessage: STAND_NOT_FOUND });
+  async createDynamic({ standId, ...fields }) {
+    const row = await apiPost<BackendDynamic>(API_ENDPOINTS.dynamics.byStand(standId), toDynamic(fields), { notFoundMessage: STAND_NOT_FOUND });
+    return fromDynamic(row);
   },
-
-  updateDynamic(dynamicId, data) {
-    return apiPut<Dynamic>(API_ENDPOINTS.dynamics.byId(dynamicId), data, { notFoundMessage: NOT_FOUND });
+  async updateDynamic(dynamicId, data) {
+    const current = await apiGet<BackendDynamic>(API_ENDPOINTS.dynamics.manageById(dynamicId), { notFoundMessage: NOT_FOUND });
+    const row = await apiPatch<BackendDynamic>(API_ENDPOINTS.dynamics.byStandAndId(current.standId, dynamicId), toDynamic(data), { notFoundMessage: NOT_FOUND });
+    return fromDynamic(row);
   },
-
-  deleteDynamic(dynamicId) {
-    return apiDelete(API_ENDPOINTS.dynamics.byId(dynamicId), { notFoundMessage: NOT_FOUND });
+  async deleteDynamic(dynamicId) {
+    const current = await apiGet<BackendDynamic>(API_ENDPOINTS.dynamics.manageById(dynamicId), { notFoundMessage: NOT_FOUND });
+    await apiDelete(API_ENDPOINTS.dynamics.byStandAndId(current.standId, dynamicId), { notFoundMessage: NOT_FOUND });
   },
-
-  /** Lee el estado vigente y envía el contrario: `PATCH …/status` recibe el estado destino. */
   async toggleDynamicStatus(dynamicId) {
-    const current = await apiGet<Dynamic>(API_ENDPOINTS.dynamics.byId(dynamicId), { notFoundMessage: NOT_FOUND });
-    return apiPatch<Dynamic>(
-      API_ENDPOINTS.dynamics.status(dynamicId),
-      { status: current.status === "active" ? "inactive" : "active" },
-      { notFoundMessage: NOT_FOUND },
-    );
+    const current = await apiGet<BackendDynamic>(API_ENDPOINTS.dynamics.manageById(dynamicId), { notFoundMessage: NOT_FOUND });
+    const row = await apiPatch<BackendDynamic>(API_ENDPOINTS.dynamics.byStandAndId(current.standId, dynamicId), { isActive: !current.isActive }, { notFoundMessage: NOT_FOUND });
+    return fromDynamic(row);
   },
 };

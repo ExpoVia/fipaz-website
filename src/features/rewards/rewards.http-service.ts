@@ -1,48 +1,48 @@
+import { fromReward, toReward, type BackendReward } from "@/features/admin/backend-adapters";
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
-import { apiDelete, apiGet, apiGetAll, apiPatch, apiPost, apiPut } from "@/lib/api/http-client";
-import type { RewardsService, RewardWithStock } from "./types";
-
-/**
- * Servicio de premios contra el backend (`NEXT_PUBLIC_API_MODE=http`).
- *
- * `GET /events/:eventId/rewards` debe traer cada premio con su resumen de stock (`stock`), y
- * `POST` acepta `initialStock` y crea el inventario junto con el premio (ver
- * `features/admin/README.md`). `eventId` va en la URL, no en el cuerpo (`forbidNonWhitelisted`).
- */
+import { apiDelete, apiGet, apiGetAll, apiPatch, apiPost } from "@/lib/api/http-client";
+import { ServiceError } from "@/lib/api/service-error";
+import type { RewardsService } from "./types";
 
 const NOT_FOUND = "No encontramos el premio solicitado.";
 const EVENT_NOT_FOUND = "No encontramos el evento solicitado.";
+const eventByReward = new Map<string, string>();
+
+function eventFor(rewardId: string): string {
+  const eventId = eventByReward.get(rewardId);
+  if (!eventId) throw new ServiceError("NOT_FOUND", "Abre primero el catálogo del evento para consultar este premio.");
+  return eventId;
+}
 
 export const rewardsHttpService: RewardsService = {
-  getRewardsByEvent(eventId) {
-    return apiGetAll<RewardWithStock>(API_ENDPOINTS.rewards.byEvent(eventId), { notFoundMessage: EVENT_NOT_FOUND });
+  async getRewardsByEvent(eventId) {
+    const rows = await apiGetAll<BackendReward>(API_ENDPOINTS.rewards.byEvent(eventId), { notFoundMessage: EVENT_NOT_FOUND });
+    for (const row of rows) eventByReward.set(row.id, eventId);
+    return rows.map(fromReward);
   },
-
-  getRewardById(rewardId) {
-    return apiGet<RewardWithStock>(API_ENDPOINTS.rewards.byId(rewardId), { notFoundMessage: NOT_FOUND });
+  async getRewardById(rewardId) {
+    const eventId = eventFor(rewardId);
+    return fromReward(await apiGet<BackendReward>(API_ENDPOINTS.rewards.byId(eventId, rewardId), { notFoundMessage: NOT_FOUND }));
   },
-
-  createReward({ eventId, ...fields }) {
-    return apiPost<RewardWithStock>(API_ENDPOINTS.rewards.byEvent(eventId), fields, {
-      notFoundMessage: EVENT_NOT_FOUND,
-    });
+  async createReward({ eventId, initialStock, ...fields }) {
+    const raw = await apiPost<BackendReward>(API_ENDPOINTS.rewards.byEvent(eventId), { ...toReward(fields), initialStock: initialStock ?? 0 }, { notFoundMessage: EVENT_NOT_FOUND });
+    eventByReward.set(raw.id, eventId);
+    return fromReward(raw);
   },
-
-  updateReward(rewardId, data) {
-    return apiPut<RewardWithStock>(API_ENDPOINTS.rewards.byId(rewardId), data, { notFoundMessage: NOT_FOUND });
+  async updateReward(rewardId, data) {
+    const eventId = eventFor(rewardId);
+    await apiPatch<BackendReward>(API_ENDPOINTS.rewards.byId(eventId, rewardId), toReward(data), { notFoundMessage: NOT_FOUND });
+    return this.getRewardById(rewardId);
   },
-
-  deleteReward(rewardId) {
-    return apiDelete(API_ENDPOINTS.rewards.byId(rewardId), { notFoundMessage: NOT_FOUND });
+  async deleteReward(rewardId) {
+    const eventId = eventFor(rewardId);
+    await apiDelete(API_ENDPOINTS.rewards.byId(eventId, rewardId), { notFoundMessage: NOT_FOUND });
+    eventByReward.delete(rewardId);
   },
-
-  /** Lee el estado vigente y envía el contrario: `PATCH …/status` recibe el estado destino. */
   async toggleRewardStatus(rewardId) {
-    const current = await apiGet<RewardWithStock>(API_ENDPOINTS.rewards.byId(rewardId), { notFoundMessage: NOT_FOUND });
-    return apiPatch<RewardWithStock>(
-      API_ENDPOINTS.rewards.status(rewardId),
-      { status: current.status === "active" ? "inactive" : "active" },
-      { notFoundMessage: NOT_FOUND },
-    );
+    const eventId = eventFor(rewardId);
+    const current = await apiGet<BackendReward>(API_ENDPOINTS.rewards.byId(eventId, rewardId), { notFoundMessage: NOT_FOUND });
+    await apiPatch<BackendReward>(API_ENDPOINTS.rewards.byId(eventId, rewardId), { isActive: !current.isActive }, { notFoundMessage: NOT_FOUND });
+    return this.getRewardById(rewardId);
   },
 };

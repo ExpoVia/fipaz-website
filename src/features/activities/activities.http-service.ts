@@ -1,63 +1,49 @@
+import { fromActivity, fromAttendance, toActivity, type BackendActivity, type BackendAttendance } from "@/features/admin/backend-adapters";
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
-import { apiGet, apiGetAll, apiPost, apiPut } from "@/lib/api/http-client";
-import type { ActivitiesService, Activity, AttendanceRecord, AttendanceStatus, AttendanceUpdate } from "./types";
-
-/**
- * Servicio de actividades y asistencia contra el backend (`NEXT_PUBLIC_API_MODE=http`).
- *
- * Estos endpoints son una propuesta (no estaban definidos): ver `features/admin/README.md`.
- * `standId` va en la URL, no en el cuerpo (el backend usa `forbidNonWhitelisted`). Cambiar la
- * asistencia responde `{ record, activity }` con los contadores de la actividad al día.
- */
+import { apiGet, apiGetAll, apiPatch, apiPost } from "@/lib/api/http-client";
+import { ServiceError } from "@/lib/api/service-error";
+import type { ActivitiesService, AttendanceUpdate } from "./types";
 
 const NOT_FOUND = "No encontramos la actividad solicitada.";
 const STAND_NOT_FOUND = "No encontramos el stand solicitado.";
-const PARTICIPANT_NOT_FOUND = "No encontramos al participante en esta actividad.";
-
-function setAttendance(activityId: string, participantId: string, status: AttendanceStatus) {
-  return apiPut<AttendanceUpdate>(
-    API_ENDPOINTS.activities.participantAttendance(activityId, participantId),
-    { status },
-    { notFoundMessage: PARTICIPANT_NOT_FOUND },
-  );
-}
 
 export const activitiesHttpService: ActivitiesService = {
-  getActivitiesByStand(standId) {
-    return apiGetAll<Activity>(API_ENDPOINTS.activities.byStand(standId), { notFoundMessage: STAND_NOT_FOUND });
+  async getActivitiesByStand(standId) {
+    const rows = await apiGetAll<BackendActivity>(API_ENDPOINTS.activities.manageByStand(standId), { notFoundMessage: STAND_NOT_FOUND });
+    return rows.map(fromActivity);
   },
-
-  getActivityById(activityId) {
-    return apiGet<Activity>(API_ENDPOINTS.activities.byId(activityId), { notFoundMessage: NOT_FOUND });
+  async getActivityById(activityId) {
+    return fromActivity(await apiGet<BackendActivity>(API_ENDPOINTS.activities.manageById(activityId), { notFoundMessage: NOT_FOUND }));
   },
-
-  createActivity({ standId, ...fields }) {
-    return apiPost<Activity>(API_ENDPOINTS.activities.byStand(standId), fields, { notFoundMessage: STAND_NOT_FOUND });
+  async createActivity({ standId, ...fields }) {
+    const row = await apiPost<BackendActivity>(API_ENDPOINTS.activities.byStand(standId), toActivity(fields), { notFoundMessage: STAND_NOT_FOUND });
+    return fromActivity(row);
   },
-
-  updateActivity(activityId, data) {
-    return apiPut<Activity>(API_ENDPOINTS.activities.byId(activityId), data, { notFoundMessage: NOT_FOUND });
+  async updateActivity(activityId, data) {
+    const current = await apiGet<BackendActivity>(API_ENDPOINTS.activities.manageById(activityId), { notFoundMessage: NOT_FOUND });
+    if (!current.standId) throw new ServiceError("VALIDATION", "Esta actividad no pertenece a un stand.");
+    const row = await apiPatch<BackendActivity>(API_ENDPOINTS.activities.byStandAndId(current.standId, activityId), toActivity(data), { notFoundMessage: NOT_FOUND });
+    return fromActivity(row);
   },
-
-  cancelActivity(activityId) {
-    return apiPost<Activity>(API_ENDPOINTS.activities.cancel(activityId), undefined, { notFoundMessage: NOT_FOUND });
+  async cancelActivity(activityId) {
+    const current = await apiGet<BackendActivity>(API_ENDPOINTS.activities.manageById(activityId), { notFoundMessage: NOT_FOUND });
+    if (!current.standId) throw new ServiceError("VALIDATION", "Esta actividad no pertenece a un stand.");
+    const row = await apiPatch<BackendActivity>(API_ENDPOINTS.activities.byStandAndId(current.standId, activityId), { status: "cancelled" }, { notFoundMessage: NOT_FOUND });
+    return fromActivity(row);
   },
-
-  getAttendance(activityId) {
-    return apiGetAll<AttendanceRecord>(API_ENDPOINTS.activities.attendance(activityId), {
-      notFoundMessage: NOT_FOUND,
-    });
+  async getAttendance(activityId) {
+    const rows = await apiGetAll<BackendAttendance>(API_ENDPOINTS.activities.attendance(activityId), { notFoundMessage: NOT_FOUND });
+    return rows.map(fromAttendance);
   },
-
-  markAttendance(activityId, participantId) {
-    return setAttendance(activityId, participantId, "present");
+  async markAttendance(activityId, participantId): Promise<AttendanceUpdate> {
+    const row = await apiPost<BackendAttendance>(API_ENDPOINTS.activities.attendance(activityId), { userId: participantId, method: "manual" }, { notFoundMessage: NOT_FOUND });
+    const activity = await this.getActivityById(activityId);
+    return { record: fromAttendance(row), activity };
   },
-
-  markAbsent(activityId, participantId) {
-    return setAttendance(activityId, participantId, "absent");
+  markAbsent() {
+    throw new ServiceError("VALIDATION", "El backend todavía no registra ausencias.");
   },
-
-  revertAttendance(activityId, participantId) {
-    return setAttendance(activityId, participantId, "pending");
+  revertAttendance() {
+    throw new ServiceError("VALIDATION", "El backend todavía no permite revertir asistencias.");
   },
 };

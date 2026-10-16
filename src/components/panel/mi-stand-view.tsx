@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Building2, Pencil, QrCode } from "lucide-react";
 
 import { zones } from "@/data/demo-data";
+import { canEditCompany } from "@/lib/panel-access";
+import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { usePanelStore } from "@/store/panel-store";
 import { StandCategoryBadge } from "@/components/pixel/StandCategoryBadge";
 import { PointsPill } from "@/components/pixel/PointsPill";
@@ -13,6 +15,7 @@ export function MiStandView() {
   const hasHydrated = usePanelStore((state) => state.hasHydrated);
   const activeCompanyId = usePanelStore((state) => state.activeCompanyId);
   const companies = usePanelStore((state) => state.companies);
+  const editable = useCompanyAuthStore((state) => canEditCompany(state.session));
 
   if (!hasHydrated) return null;
 
@@ -99,13 +102,15 @@ export function MiStandView() {
         )}
 
         <div className="mt-2 flex flex-wrap gap-3">
-          <Link
-            href="/panel/mi-stand/editar"
-            className="inline-flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-blue)] px-4 py-2 text-sm font-black text-white shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5"
-          >
-            <Pencil className="h-4 w-4" />
-            Editar perfil
-          </Link>
+          {editable && (
+            <Link
+              href="/panel/mi-stand/editar"
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-blue)] px-4 py-2 text-sm font-black text-white shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5"
+            >
+              <Pencil className="h-4 w-4" />
+              Editar perfil
+            </Link>
+          )}
           <Link
             href="/panel/mi-stand/qr"
             className="inline-flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-white px-4 py-2 text-sm font-black text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] transition-all hover:-translate-y-0.5"

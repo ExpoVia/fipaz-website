@@ -98,6 +98,18 @@ function authErrorMessage(payload: unknown, status: number, fallback: string): s
   if (code === "INVALID_REFRESH_TOKEN" || code === "SESSION_REVOKED") {
     return "Tu sesión expiró. Inicia sesión nuevamente.";
   }
+  if (code === "INVALID_CREDENTIALS") {
+    return "Correo o contraseña incorrectos.";
+  }
+  if (code === "EMAIL_IN_USE") {
+    return "Ese correo ya tiene una cuenta. Inicia sesión con el método que usaste al crearla.";
+  }
+  if (code === "TOO_MANY_REQUESTS" || status === 429) {
+    return "Demasiados intentos. Espera un minuto y vuelve a intentarlo.";
+  }
+  if (code === "PASSWORD_AUTH_DISABLED") {
+    return "El acceso con correo y contraseña no está habilitado en este entorno.";
+  }
   return readApiErrorMessage(payload, fallback);
 }
 
@@ -157,6 +169,61 @@ export async function authenticateWithGoogle(idToken: string, deviceId: string) 
   );
   const me = await fetchAuthMe(tokens.accessToken);
   return { tokens, me };
+}
+
+/** `POST /auth/login`: misma sesión que con Google, para cuentas creadas con correo y contraseña. */
+export async function authenticateWithPassword(email: string, password: string, deviceId: string) {
+  let tokens: CompanyAuthTokens;
+  try {
+    tokens = await postForTokens(
+      "/auth/login",
+      { email: email.trim(), password, device: { id: deviceId, platform: "web" } },
+      "No se pudo iniciar sesión.",
+    );
+  } catch (error) {
+    // El backend también valida la longitud al iniciar sesión (400, con el detalle en inglés):
+    // para quien entra, una contraseña corta es simplemente incorrecta.
+    if (error instanceof CompanyAuthError && error.status === 400) {
+      throw new CompanyAuthError("Correo o contraseña incorrectos.", 400);
+    }
+    throw error;
+  }
+  const me = await fetchAuthMe(tokens.accessToken);
+  return { tokens, me };
+}
+
+/** `POST /auth/register`: crea la cuenta (sin roles) y devuelve su sesión. */
+export async function registerWithPassword(
+  input: { email: string; password: string; displayName: string },
+  deviceId: string,
+) {
+  const tokens = await postForTokens(
+    "/auth/register",
+    {
+      email: input.email.trim(),
+      password: input.password,
+      displayName: input.displayName.trim(),
+      device: { id: deviceId, platform: "web" },
+    },
+    "No se pudo crear la cuenta.",
+  );
+  const me = await fetchAuthMe(tokens.accessToken);
+  return { tokens, me };
+}
+
+/** Reglas del backend para la contraseña: se validan antes de enviar para dar el error en el formulario. */
+export const PASSWORD_MIN_LENGTH = 8;
+export const PASSWORD_MAX_LENGTH = 128;
+
+export function passwordProblem(password: string): string | null {
+  if (password.length < PASSWORD_MIN_LENGTH) return `La contraseña debe tener al menos ${PASSWORD_MIN_LENGTH} caracteres.`;
+  if (password.length > PASSWORD_MAX_LENGTH) return `La contraseña no puede superar los ${PASSWORD_MAX_LENGTH} caracteres.`;
+  return null;
+}
+
+/** El acceso con correo y contraseña se muestra solo cuando el entorno lo habilita. */
+export function isPasswordLoginEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_PASSWORD_LOGIN_ENABLED === "true";
 }
 
 export function refreshCompanyTokens(refreshToken: string): Promise<CompanyAuthTokens> {

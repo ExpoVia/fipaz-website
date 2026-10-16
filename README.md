@@ -15,6 +15,10 @@ La demo pública `/demo` refleja la aplicación visitante Expo, con temas claro 
 oscuro, mapa integrado y recorridos de demostración. Ver las rutas y las
 instrucciones de prueba en [Demo mobile](Doc/demo-mobile-parity.md).
 
+Los paneles de expositor y organizador (`/acceso`, `/panel`, `/admin`) usan sesión real con el
+backend: roles, formas de entrar, desarrollo local y pruebas (`pnpm test`, `pnpm test:e2e`) en
+[Acceso a los paneles](docs/acceso-panel.md).
+
 ## Equipo
 
 | Responsable | Entrega | Documento |

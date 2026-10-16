@@ -6,6 +6,7 @@ import { persist } from "zustand/middleware";
 import { stands } from "@/data/demo-data";
 import { MOCK_EXHIBITOR_STAND_ID } from "@/data/panel-mock";
 import { assignZoneForCategory, createCompanyId, generateBoothCode } from "@/lib/panel-forms";
+import { useCompanyAuthStore } from "@/store/company-auth-store";
 import type { CompanyProfileInput, CompanyRegistrationInput, ExhibitorProfile, QrToken } from "@/types/panel";
 
 function seedCompanies(): ExhibitorProfile[] {
@@ -139,3 +140,14 @@ export const usePanelStore = create<PanelStore>()(
     },
   ),
 );
+
+/** Estado del panel sin datos de ninguna cuenta: el que se usa al cerrar sesión. */
+export function resetPanelState(): void {
+  usePanelStore.persist.clearStorage();
+  usePanelStore.setState({ activeCompanyId: MOCK_EXHIBITOR_STAND_ID, companies: seedCompanies(), qrTokens: [] });
+}
+
+// Cerrar sesión, o que el refresh falle, deja la sesión en null: se vacía lo que el panel guardó de esa cuenta.
+useCompanyAuthStore.subscribe((state, previous) => {
+  if (previous.session && !state.session) resetPanelState();
+});

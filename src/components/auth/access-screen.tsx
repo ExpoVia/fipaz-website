@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Building2, Loader2, ShieldAlert, Store } from "lucide-react";
 
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+import { PasswordAuthForm, type PasswordAuthValues } from "@/components/auth/password-auth-form";
 import { BrandMark } from "@/components/shared/brand-mark";
 import type { PanelRole } from "@/config/panel-navigation";
+import { isPasswordLoginEnabled } from "@/lib/api/company-auth";
 import {
   describeRole,
   getAvailablePanels,
@@ -16,6 +18,8 @@ import {
   PANEL_LABELS,
 } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
+// Registra el vaciado del estado del panel al terminar la sesión (logout o refresh fallido).
+import "@/store/panel-store";
 
 const COPY: Record<PanelRole | "any", { title: string; description: string }> = {
   expositor: {
@@ -49,6 +53,8 @@ export function AccessScreen({ panel }: AccessScreenProps) {
   const session = useCompanyAuthStore((state) => state.session);
   const verifySession = useCompanyAuthStore((state) => state.verifySession);
   const loginWithGoogle = useCompanyAuthStore((state) => state.loginWithGoogle);
+  const loginWithPassword = useCompanyAuthStore((state) => state.loginWithPassword);
+  const passwordLogin = isPasswordLoginEnabled();
   const setActiveRole = useCompanyAuthStore((state) => state.setActiveRole);
   const logout = useCompanyAuthStore((state) => state.logout);
 
@@ -91,6 +97,13 @@ export function AccessScreen({ panel }: AccessScreenProps) {
     } finally {
       setBusy(false);
     }
+  }
+
+  /** El formulario muestra el error si falla; con sesión nueva, los efectos llevan al panel. */
+  async function handlePasswordLogin({ email, password }: PasswordAuthValues) {
+    setError("");
+    await loginWithPassword(email, password);
+    setVerification("verified"); // La sesión recién creada ya viene confirmada por el backend.
   }
 
   function enter(destination: PanelRole) {
@@ -163,6 +176,17 @@ export function AccessScreen({ panel }: AccessScreenProps) {
                 <p role="alert" className="mt-4 rounded-xl border-2 border-rose-500 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
                   {error}
                 </p>
+              )}
+
+              {passwordLogin && (
+                <>
+                  <div className="my-5 flex items-center gap-3 text-xs font-extrabold uppercase tracking-wide text-slate-400">
+                    <span className="h-px flex-1 bg-[var(--expo-line)]" aria-hidden="true" />
+                    o con tu correo
+                    <span className="h-px flex-1 bg-[var(--expo-line)]" aria-hidden="true" />
+                  </div>
+                  <PasswordAuthForm onSubmit={handlePasswordLogin} />
+                </>
               )}
 
               {panel !== "organizador" && (

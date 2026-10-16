@@ -16,6 +16,8 @@ import {
   requiredPanelForPath,
 } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
+// Registra el vaciado del estado del panel al terminar la sesión (logout o refresh fallido).
+import "@/store/panel-store";
 
 interface PanelShellProps {
   children: ReactNode;

@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Save } from "lucide-react";
 
 import { categories } from "@/data/demo-data";
+import { canEditCompany } from "@/lib/panel-access";
+import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { usePanelStore } from "@/store/panel-store";
 import type { StandCategory } from "@/types/demo";
 import type { ExhibitorProfile } from "@/types/panel";
@@ -16,8 +19,18 @@ export function CompanyProfileForm() {
   const hasHydrated = usePanelStore((state) => state.hasHydrated);
   const activeCompanyId = usePanelStore((state) => state.activeCompanyId);
   const companies = usePanelStore((state) => state.companies);
+  const editable = useCompanyAuthStore((state) => canEditCompany(state.session));
 
   if (!hasHydrated) return null;
+
+  if (!editable) {
+    return (
+      <p role="note" className="max-w-2xl rounded-xl border-2 border-[var(--expo-blue)] bg-white px-4 py-3 text-sm font-bold text-[var(--expo-navy)]">
+        Tu rol de personal de la empresa no permite editar su perfil. Pídele los cambios a quien la administra.{" "}
+        <Link href="/panel/mi-stand" className="text-[var(--expo-blue)] hover:underline">Volver a mi stand</Link>
+      </p>
+    );
+  }
 
   const stand = companies.find((company) => company.id === activeCompanyId);
   if (!stand) {

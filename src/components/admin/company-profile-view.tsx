@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, Camera, CheckCircle2, ExternalLink, Globe, ImageOff, Loader2, Mail, Save, X } from "lucide-react";
+import { Building2, Camera, CheckCircle2, ExternalLink, Globe, ImageOff, Loader2, Lock, Mail, Save, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 import { categories } from "@/data/demo-data";
 import { usePanelStore } from "@/store/panel-store";
-import { getActiveCompany } from "@/lib/panel-access";
+import { canEditCompany, getActiveCompany } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { StandCategoryBadge } from "@/components/pixel/StandCategoryBadge";
 import { AdminPageHeader } from "@/components/admin/page-header";
@@ -206,6 +206,7 @@ function ProfileForm() {
   const updateCompany = usePanelStore((s) => s.updateCompany);
 
   const company = companies.find((c) => c.id === getActiveCompany(session)?.id);
+  const editable = canEditCompany(session);
 
   const [displayName, setDisplayName] = useState(company?.name ?? "");
   const [description, setDescription] = useState(company?.description ?? "");
@@ -246,6 +247,7 @@ function ProfileForm() {
   }
 
   function handleSave() {
+    if (!editable) return;
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setErrors({});
@@ -282,7 +284,7 @@ function ProfileForm() {
         ]}
         title="Perfil de empresa"
         description="Esta información es visible para los visitantes en la app ExpoVia."
-        actions={
+        actions={editable ? (
           <button
             type="button"
             onClick={handleSave}
@@ -292,7 +294,7 @@ function ProfileForm() {
             {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
             Guardar cambios
           </button>
-        }
+        ) : undefined}
       />
 
       {/* Toast de guardado */}
@@ -312,7 +314,15 @@ function ProfileForm() {
         )}
       </AnimatePresence>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      {!editable && (
+        <p role="note" className="mb-5 flex items-start gap-2 rounded-xl border-2 border-[var(--expo-blue)] bg-white px-4 py-3 text-sm font-bold text-[var(--expo-navy)]">
+          <Lock size={16} className="mt-0.5 shrink-0 text-[var(--expo-blue)]" aria-hidden="true" />
+          Solo lectura: tu rol de personal de la empresa no permite editar estos datos. Pídele los cambios a quien la administra.
+        </p>
+      )}
+
+      {/* disabled: con rol de personal, ningún campo se puede modificar. */}
+      <fieldset disabled={!editable} className="m-0 grid min-w-0 gap-6 border-0 p-0 lg:grid-cols-[1fr_380px]">
         {/* Formulario */}
         <div className="space-y-6">
           {/* Logo */}
@@ -458,7 +468,7 @@ function ProfileForm() {
             </a>
           </div>
         </div>
-      </div>
+      </fieldset>
     </>
   );
 }

@@ -5,8 +5,10 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 import {
   authenticateWithGoogle,
+  authenticateWithPassword,
   fetchAuthMe,
   refreshCompanyTokens,
+  registerWithPassword,
   revokeAllServerSessions,
   revokeServerSession,
   type AuthMe,
@@ -35,6 +37,8 @@ interface CompanyAuthStore {
   hasHydrated: boolean;
   setHasHydrated: () => void;
   loginWithGoogle: (idToken: string) => Promise<AuthMe>;
+  loginWithPassword: (email: string, password: string) => Promise<AuthMe>;
+  registerWithPassword: (input: { email: string; password: string; displayName: string }) => Promise<AuthMe>;
   setActiveRole: (roleId: string) => void;
   refreshAccessToken: () => Promise<boolean>;
   /** Actualiza los roles; conserva la sesión si el servicio está temporalmente caído. */
@@ -128,9 +132,24 @@ export const useCompanyAuthStore = create<CompanyAuthStore>()(
           return me;
         },
 
+        loginWithPassword: async (email, password) => {
+          const { tokens, me } = await authenticateWithPassword(email, password, getDeviceId());
+          set({ session: sessionFrom(me, tokens) });
+          return me;
+        },
+
+        registerWithPassword: async (input) => {
+          const { tokens, me } = await registerWithPassword(input, getDeviceId());
+          set({ session: sessionFrom(me, tokens) });
+          return me;
+        },
+
         setActiveRole: (roleId) => {
           const current = get().session;
-          if (current?.roles.some((role) => role.id === roleId)) {
+          // Sin cambio no se crea una sesión nueva: los efectos que dependen de `session` (AccessScreen,
+          // PanelShell) llaman a esto en cada render y entrarían en un bucle de actualizaciones.
+          if (!current || current.activeRoleId === roleId) return;
+          if (current.roles.some((role) => role.id === roleId)) {
             set({ session: { ...current, activeRoleId: roleId } });
           }
         },

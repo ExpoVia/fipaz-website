@@ -19,6 +19,8 @@ import type { AdminScope } from "@/features/admin/admin-scope";
 import { ToastProvider } from "./toast";
 import { accessRoute, hasPanelAccess } from "@/lib/panel-access";
 import { isSessionValid, useCompanyAuthStore } from "@/store/company-auth-store";
+// Registra el vaciado del estado del panel al terminar la sesión (logout o refresh fallido).
+import "@/store/panel-store";
 
 /** Stand y evento de la URL actual; fuera de una ruta con contexto, los de la cuenta por defecto. */
 function useAdminScope(): AdminScope {

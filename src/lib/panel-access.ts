@@ -55,6 +55,15 @@ export function getActiveCompany(session: SessionRoles | null | undefined): { id
   return role?.companyId ? { id: role.companyId, name: role.companyName ?? "Mi empresa" } : null;
 }
 
+/**
+ * Si el rol activo puede editar los datos de la empresa. `company_staff` opera el stand pero no
+ * la empresa: el backend le responde 403 en `PATCH /companies/:id`, así que no se le ofrece.
+ */
+export function canEditCompany(session: SessionRoles | null | undefined): boolean {
+  const role = getActiveRole(session)?.role;
+  return role === "company_admin" || role === "super_admin";
+}
+
 /** Texto corto para identificar un rol en menús: "Mi Empresa" o "FIPAZ 2026". */
 export function describeRole(role: RoleAssignment): string {
   if (role.role === "super_admin") return "Plataforma";

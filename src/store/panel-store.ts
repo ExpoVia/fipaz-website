@@ -3,10 +3,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { DEFAULT_PANEL_ROLE, isPanelRole, type PanelRole } from "@/config/panel-navigation";
 import { stands } from "@/data/demo-data";
 import { MOCK_EXHIBITOR_STAND_ID } from "@/data/panel-mock";
 import { assignZoneForCategory, createCompanyId, generateBoothCode } from "@/lib/panel-forms";
+import { useCompanyAuthStore } from "@/store/company-auth-store";
 import type { CompanyProfileInput, CompanyRegistrationInput, ExhibitorProfile, QrToken } from "@/types/panel";
 
 function seedCompanies(): ExhibitorProfile[] {
@@ -18,13 +18,11 @@ function generateQrId(): string {
 }
 
 interface PanelStore {
-  activeRole: PanelRole;
   activeCompanyId: string;
   companies: ExhibitorProfile[];
   hasHydrated: boolean;
   /** Tokens QR activos/históricos — no se persisten (efímeros por diseño) */
   qrTokens: QrToken[];
-  setActiveRole: (role: PanelRole) => void;
   setHasHydrated: () => void;
   registerCompany: (input: CompanyRegistrationInput, serverId?: string) => string;
   updateCompany: (id: string, patch: CompanyProfileInput) => void;
@@ -36,13 +34,11 @@ interface PanelStore {
 export const usePanelStore = create<PanelStore>()(
   persist(
     (set, get) => ({
-      activeRole: DEFAULT_PANEL_ROLE,
       activeCompanyId: MOCK_EXHIBITOR_STAND_ID,
       companies: seedCompanies(),
       hasHydrated: false,
       qrTokens: [],
 
-      setActiveRole: (role) => set({ activeRole: role }),
       setHasHydrated: () => set({ hasHydrated: true }),
 
       registerCompany: (input, serverId) => {
@@ -64,7 +60,6 @@ export const usePanelStore = create<PanelStore>()(
         };
         set({
           companies: [...companies, newCompany],
-          activeRole: "expositor",
           activeCompanyId: newCompany.id,
         });
         return newCompany.id;
@@ -128,7 +123,6 @@ export const usePanelStore = create<PanelStore>()(
     {
       name: "expovia-panel:v1",
       partialize: (state) => ({
-        activeRole: state.activeRole,
         activeCompanyId: state.activeCompanyId,
         companies: state.companies,
         // qrTokens excluido — son efímeros
@@ -137,7 +131,6 @@ export const usePanelStore = create<PanelStore>()(
         const data = persisted as Partial<PanelStore> | undefined;
         return {
           ...current,
-          activeRole: isPanelRole(data?.activeRole) ? data!.activeRole : current.activeRole,
           activeCompanyId:
             typeof data?.activeCompanyId === "string" ? data.activeCompanyId : current.activeCompanyId,
           companies: Array.isArray(data?.companies) ? data.companies : current.companies,
@@ -147,3 +140,14 @@ export const usePanelStore = create<PanelStore>()(
     },
   ),
 );
+
+/** Estado del panel sin datos de ninguna cuenta: el que se usa al cerrar sesión. */
+export function resetPanelState(): void {
+  usePanelStore.persist.clearStorage();
+  usePanelStore.setState({ activeCompanyId: MOCK_EXHIBITOR_STAND_ID, companies: seedCompanies(), qrTokens: [] });
+}
+
+// Cerrar sesión, o que el refresh falle, deja la sesión en null: se vacía lo que el panel guardó de esa cuenta.
+useCompanyAuthStore.subscribe((state, previous) => {
+  if (previous.session && !state.session) resetPanelState();
+});

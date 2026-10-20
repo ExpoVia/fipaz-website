@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { Loader2, Lock } from "lucide-react";
 
+import { accessRoute, hasPanelAccess } from "@/lib/panel-access";
 import { isSessionValid, useCompanyAuthStore } from "@/store/company-auth-store";
 import { usePanelStore } from "@/store/panel-store";
 
@@ -14,26 +15,24 @@ interface CompanyAuthGuardProps {
 }
 
 /** Guard visual del área de empresa; AdminShell aplica el guard a todo /admin/*. */
-export function CompanyAuthGuard({ children, redirectTo = "/registro-empresa" }: CompanyAuthGuardProps) {
+export function CompanyAuthGuard({ children, redirectTo = accessRoute("expositor") }: CompanyAuthGuardProps) {
   const router = useRouter();
   const hasHydrated = useCompanyAuthStore((state) => state.hasHydrated);
   const panelHydrated = usePanelStore((state) => state.hasHydrated);
   const session = useCompanyAuthStore((state) => state.session);
   const verifySession = useCompanyAuthStore((state) => state.verifySession);
-  const logout = useCompanyAuthStore((state) => state.logout);
   const hasSession = Boolean(session);
-  const valid = isSessionValid(session);
+  const valid = isSessionValid(session) && hasPanelAccess(session, "expositor");
   const [verification, setVerification] = useState<"checking" | "verified" | "unavailable">("checking");
 
   async function checkSession() {
     setVerification("checking");
     const result = await verifySession();
-    if (result === "valid") setVerification("verified");
-    else if (result === "unavailable") setVerification("unavailable");
-    else {
-      logout();
-      router.replace(redirectTo);
+    if (result === "valid" && hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) {
+      setVerification("verified");
     }
+    else if (result === "unavailable") setVerification("unavailable");
+    else router.replace(redirectTo);
   }
 
   useEffect(() => {
@@ -45,17 +44,16 @@ export function CompanyAuthGuard({ children, redirectTo = "/registro-empresa" }:
     let cancelled = false;
     void verifySession().then((result) => {
       if (cancelled) return;
-      if (result === "valid") setVerification("verified");
-      else if (result === "unavailable") setVerification("unavailable");
-      else {
-        logout();
-        router.replace(redirectTo);
+      if (result === "valid" && hasPanelAccess(useCompanyAuthStore.getState().session, "expositor")) {
+        setVerification("verified");
       }
+      else if (result === "unavailable") setVerification("unavailable");
+      else router.replace(redirectTo);
     });
     return () => { cancelled = true; };
-  }, [hasHydrated, hasSession, session?.accessToken, verifySession, logout, router, redirectTo]);
+  }, [hasHydrated, hasSession, session?.accessToken, verifySession, router, redirectTo]);
 
-  if (!hasHydrated || !panelHydrated || verification === "checking" || (session && !valid && verification !== "unavailable")) {
+  if (!hasHydrated || !panelHydrated || verification === "checking" || (verification === "verified" && !valid)) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center gap-3 text-slate-400">
         <Loader2 className="h-5 w-5 animate-spin" />

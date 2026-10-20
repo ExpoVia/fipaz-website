@@ -12,11 +12,15 @@ import { BrandMark } from "@/components/shared/brand-mark";
 import { DemoBadge } from "@/components/shared/demo-badge";
 import { getAdminNavigation } from "@/config/admin-navigation";
 import type { AdminNavigationItem } from "@/config/admin-navigation";
+import type { PanelRole } from "@/config/panel-navigation";
 import { API_MODE } from "@/lib/api/config";
 import { ADMIN_DEFAULT_EVENT_ID, ADMIN_DEFAULT_STAND_ID } from "@/features/admin/admin-scope";
 import type { AdminScope } from "@/features/admin/admin-scope";
 import { ToastProvider } from "./toast";
+import { accessRoute, hasPanelAccess } from "@/lib/panel-access";
 import { isSessionValid, useCompanyAuthStore } from "@/store/company-auth-store";
+// Registra el vaciado del estado del panel al terminar la sesión (logout o refresh fallido).
+import "@/store/panel-store";
 
 /** Stand y evento de la URL actual; fuera de una ruta con contexto, los de la cuenta por defecto. */
 function useAdminScope(): AdminScope {
@@ -36,6 +40,15 @@ function isDemoModulesRoute(pathname: string): boolean {
   return API_MODE === "mock" && !pathname.startsWith("/admin/company");
 }
 
+/**
+ * Panel (rol) que exige una ruta de `/admin` con sesión real: premios e inventario son del evento
+ * y los gestiona el organizador; dinámicas, actividades, escáner y empresa son del expositor.
+ * El backend vuelve a validar el alcance (empresa/evento) en cada petición.
+ */
+function requiredAdminPanel(pathname: string): PanelRole {
+  return pathname.startsWith("/admin/events/") ? "organizador" : "expositor";
+}
+
 function isItemActive(pathname: string, item: AdminNavigationItem): boolean {
   // Resumen es la raíz del módulo: solo está activo en la ruta exacta.
   if (item.id === "resumen") return pathname === item.href;
@@ -45,15 +58,25 @@ function isItemActive(pathname: string, item: AdminNavigationItem): boolean {
 function AdminNavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const session = useCompanyAuthStore((state) => state.session);
+  const params = useParams<{ standId?: string; eventId?: string }>();
   const allItems = getAdminNavigation(useAdminScope());
   const isCompanyItem = (item: AdminNavigationItem) => item.id === "company-profile" || item.id === "company-stands";
   const demoModules = isDemoModulesRoute(pathname);
   // Modo demostración: los módulos simulados se ven sin sesión; el perfil de empresa sigue pidiéndola.
+  const isExhibitor = isSessionValid(session) && hasPanelAccess(session, "expositor");
+  const isOrganizer = isSessionValid(session) && hasPanelAccess(session, "organizador");
+  // Con backend real los ids por defecto son de la demo (no UUID): un módulo solo se enlaza
+  // cuando la URL ya trae el stand o el evento reales.
+  const hasStand = typeof params.standId === "string";
+  const hasEvent = typeof params.eventId === "string";
   const items = demoModules
-    ? allItems.filter((item) => !isCompanyItem(item) || isSessionValid(session))
-    : isSessionValid(session)
-      ? allItems.filter(isCompanyItem)
-      : [];
+    ? allItems.filter((item) => !isCompanyItem(item) || isExhibitor)
+    : allItems.filter((item) => {
+        if (isCompanyItem(item)) return isExhibitor;
+        if (item.id === "resumen") return false;
+        if (item.id === "premios" || item.id === "inventario") return isOrganizer && hasEvent;
+        return isExhibitor && hasStand;
+      });
 
   return (
     <ul className="flex flex-col gap-1">
@@ -156,46 +179,37 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const verifySession = useCompanyAuthStore((state) => state.verifySession);
   const logout = useCompanyAuthStore((state) => state.logout);
   const [sessionVerification, setSessionVerification] = useState<"checking" | "verified" | "unavailable">("checking");
-  const companyAdmin = isSessionValid(session) && sessionVerification === "verified";
+  const requiredPanel = requiredAdminPanel(pathname);
+  const companyAdmin = isSessionValid(session) && hasPanelAccess(session, requiredPanel) && sessionVerification === "verified";
 
   const demoModules = isDemoModulesRoute(pathname);
 
   useEffect(() => {
     if (demoModules || !authHydrated) return;
     if (!hasSession) {
-      router.replace("/registro-empresa");
+      router.replace(accessRoute(requiredPanel));
       return;
     }
     let cancelled = false;
     void verifySession().then((result) => {
       if (cancelled) return;
-      if (result === "valid") setSessionVerification("verified");
-      else if (result === "unavailable") setSessionVerification("unavailable");
-      else {
-        logout();
-        router.replace("/registro-empresa");
+      if (result === "valid" && hasPanelAccess(useCompanyAuthStore.getState().session, requiredPanel)) {
+        setSessionVerification("verified");
       }
+      else if (result === "unavailable") setSessionVerification("unavailable");
+      else router.replace(accessRoute(requiredPanel));
     });
     return () => { cancelled = true; };
-  }, [demoModules, authHydrated, hasSession, session?.accessToken, verifySession, logout, router]);
-
-  useEffect(() => {
-    if (!demoModules && companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands") {
-      router.replace("/admin/company/profile");
-    }
-  }, [demoModules, companyAdmin, pathname, router]);
-
-  const restrictedCompanyRoute = !demoModules && (!authHydrated || (companyAdmin && pathname !== "/admin/company/profile" && pathname !== "/admin/company/stands"));
+  }, [demoModules, authHydrated, hasSession, session?.accessToken, requiredPanel, verifySession, router]);
 
   async function retrySessionVerification() {
     setSessionVerification("checking");
     const result = await verifySession();
-    if (result === "valid") setSessionVerification("verified");
-    else if (result === "unavailable") setSessionVerification("unavailable");
-    else {
-      logout();
-      router.replace("/registro-empresa");
+    if (result === "valid" && hasPanelAccess(useCompanyAuthStore.getState().session, requiredPanel)) {
+      setSessionVerification("verified");
     }
+    else if (result === "unavailable") setSessionVerification("unavailable");
+    else router.replace(accessRoute(requiredPanel));
   }
 
   if (!demoModules && authHydrated && session && sessionVerification === "unavailable") {
@@ -232,7 +246,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         >
           Saltar al contenido
         </a>
-        <AdminNavbar onMenuClick={() => setDrawerOpen(true)} onLogout={logout} demoModules={demoModules} />
+        <AdminNavbar onMenuClick={() => setDrawerOpen(true)} onLogout={() => void logout()} demoModules={demoModules} />
         <div className="flex min-h-0 flex-1">
           <AdminSidebar />
           <AdminMobileDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
@@ -244,7 +258,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                   Gestión del stand con datos simulados: no se guarda nada fuera de este navegador.
                 </p>
               )}
-              {restrictedCompanyRoute ? null : children}
+              {children}
             </div>
           </main>
         </div>

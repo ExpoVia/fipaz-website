@@ -23,6 +23,7 @@ import type { DataColumn } from "@/components/admin";
 import { MetricCard } from "@/components/panel/metric-card";
 import { adminRoutes } from "@/config/admin-routes";
 import { RewardThumbnail } from "@/features/rewards/components/reward-thumbnail";
+import { API_MODE } from "@/lib/api/config";
 import { getErrorMessage } from "@/lib/api/service-error";
 import { formatDateTime, formatNumber } from "@/lib/format";
 import { matchesQuery } from "@/lib/text";
@@ -34,6 +35,9 @@ import { AdjustmentFormModal } from "./adjustment-form-modal";
 import { InventoryDetailModal } from "./inventory-detail-modal";
 
 type Dialog = { kind: "detail"; item: InventoryItem } | { kind: "adjust"; item: InventoryItem };
+
+/** Con backend real (`http`) las cifras no son de ejemplo, así que no se rotulan como demostración. */
+const isDemoData = API_MODE === "mock";
 
 interface InventoryAdminPageProps {
   eventId: string;
@@ -198,10 +202,10 @@ export function InventoryAdminPage({ eventId, eventName, initialRewardId }: Inve
       {status === "success" && inventory.length > 0 && (
         <>
           <section aria-label="Resumen de existencias" className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <MetricCard label="Stock físico" value={formatNumber(totals.onHand)} icon={Boxes} hint="On hand" />
-            <MetricCard label="Reservado" value={formatNumber(totals.reserved)} icon={Lock} hint="Reserved" />
-            <MetricCard label="Disponible" value={formatNumber(totals.available)} icon={PackageCheck} hint="Available = físico − reservado" />
-            <MetricCard label="Entregado" value={formatNumber(totals.delivered)} icon={Truck} hint="Delivered (acumulado)" />
+            <MetricCard label="Stock físico" value={formatNumber(totals.onHand)} icon={Boxes} hint="On hand" demo={isDemoData} />
+            <MetricCard label="Reservado" value={formatNumber(totals.reserved)} icon={Lock} hint="Reserved" demo={isDemoData} />
+            <MetricCard label="Disponible" value={formatNumber(totals.available)} icon={PackageCheck} hint="Available = físico − reservado" demo={isDemoData} />
+            <MetricCard label="Entregado" value={formatNumber(totals.delivered)} icon={Truck} hint="Delivered (acumulado)" demo={isDemoData} />
           </section>
 
           <ListToolbar summary={`${filtered.length} de ${inventory.length} premios`}>

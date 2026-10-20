@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test \"src/**/tests/*.test.cjs\"",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.20",

@@ -18,9 +18,9 @@ export async function companyFetch(path: string, init: RequestInit = {}): Promis
   if (!await auth.refreshAccessToken()) return firstResponse;
 
   const refreshedSession = useCompanyAuthStore.getState().session;
-  if (!refreshedSession?.accessToken) {
-    return firstResponse;
-  }
+  if (!refreshedSession?.accessToken) return firstResponse;
+
   const retryResponse = await send(refreshedSession.accessToken);
+  if (retryResponse.status === 401) void useCompanyAuthStore.getState().logout();
   return retryResponse;
 }

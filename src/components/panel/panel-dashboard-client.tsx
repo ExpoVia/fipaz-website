@@ -1,67 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, Building2, Eye, ScanLine, Store, UsersRound, Zap } from "lucide-react";
+import { Activity, Building2, ScanLine, Store, UsersRound, Zap } from "lucide-react";
 
 import { categories, missions, zones } from "@/data/demo-data";
 import { DEMO_FIXTURE } from "@/data/demo-fixture";
-import { MOCK_PROFILE_VIEWS, panelCheckIns, panelLeads, panelPromotions } from "@/data/panel-mock";
 import { usePanelStore } from "@/store/panel-store";
 import { getActivePanel } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
 import { StandCategoryBadge } from "@/components/pixel/StandCategoryBadge";
 import { MetricCard } from "./metric-card";
 import { PanelPageHeader } from "./panel-page-header";
+import { useExhibitor } from "./exhibitor-context";
+import { ExhibitorState } from "./exhibitor-state";
 
 function ExpositorOverview() {
-  const activeCompanyId = usePanelStore((state) => state.activeCompanyId);
-  const companies = usePanelStore((state) => state.companies);
-  const stand = companies.find((company) => company.id === activeCompanyId);
-  const checkIns = panelCheckIns.filter((c) => c.standId === activeCompanyId);
-  const leads = panelLeads.filter((l) => l.standId === activeCompanyId);
-  const activePromotion = panelPromotions.find(
-    (promo) => promo.standId === activeCompanyId && promo.status === "activa",
-  );
+  const { company, stand, kpis, kpisError } = useExhibitor();
 
   return (
-    <>
+    <ExhibitorState requireStand={false}>
       <PanelPageHeader
         eyebrow="Resumen"
-        title={`Hola, ${stand?.name ?? "expositor"}`}
-        description="Así va tu participación en el evento hasta el momento."
+        title={`Hola, ${company?.displayName ?? "expositor"}`}
+        description="Datos registrados para tu empresa en el evento."
+        demo={false}
       />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <MetricCard
-          label="Visitas verificadas"
-          value={String(checkIns.length)}
-          icon={ScanLine}
-          hint="Check-ins confirmados con NFC o QR en el stand"
-        />
-        <MetricCard
-          label="Vistas del perfil"
-          value={String(MOCK_PROFILE_VIEWS)}
-          icon={Eye}
-          hint="Aperturas del perfil en la app; no son visitas al stand"
-        />
-        <MetricCard
-          label="Prospectos"
-          value={String(leads.length)}
-          icon={UsersRound}
-          hint="Contactos que dejaron sus datos"
-        />
-        <MetricCard
-          label="Promoción activa"
-          value={activePromotion ? activePromotion.discountLabel : "Ninguna"}
-          icon={Zap}
-          hint={activePromotion?.title}
-        />
-        <MetricCard label="Puntos por visita" value={String(stand?.points ?? 0)} icon={Store} />
-      </div>
+      {kpis ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <MetricCard label="Check-ins" value={String(kpis.totalCheckins)} icon={ScanLine} demo={false} />
+          <MetricCard label="Visitantes únicos" value={String(kpis.uniqueVisitors)} icon={UsersRound} demo={false} />
+          <MetricCard label="Primeras visitas" value={String(kpis.firstVisits)} icon={Store} demo={false} />
+          <MetricCard label="Asistentes a actividades" value={String(kpis.activityAttendees)} icon={Activity} demo={false} />
+          <MetricCard label="Canjes validados" value={String(kpis.redemptionsValidated)} icon={Zap} demo={false} />
+        </div>
+      ) : <p role="status" className="text-sm text-slate-600">{kpisError ?? "Las métricas aparecerán cuando tu empresa tenga un stand asignado."}</p>}
       {stand && (
         <div className="pixel-card mt-6 flex flex-col gap-2 p-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-black text-[var(--expo-navy)]">{stand.name}</h2>
-            <StandCategoryBadge category={stand.category} customCategory={stand.customCategory} />
+            <h2 className="text-lg font-black text-[var(--expo-navy)]">{stand.displayName}</h2>
+            <span className="font-mono text-xs text-slate-500">{stand.boothCode}</span>
           </div>
           <p className="text-sm text-slate-600">{stand.description}</p>
           <Link href="/panel/mi-stand" className="mt-2 text-sm font-bold text-[var(--expo-blue)] hover:underline">
@@ -69,7 +46,8 @@ function ExpositorOverview() {
           </Link>
         </div>
       )}
-    </>
+      {!stand && <p className="pixel-card mt-6 p-5 text-sm text-slate-600">Tu empresa todavía no tiene un stand asignado en el evento.</p>}
+    </ExhibitorState>
   );
 }
 
@@ -141,6 +119,7 @@ export function PanelDashboardClient() {
   const hasHydrated = usePanelStore((state) => state.hasHydrated);
   const authHydrated = useCompanyAuthStore((state) => state.hasHydrated);
   const activePanel = useCompanyAuthStore((state) => getActivePanel(state.session));
-  if (!hasHydrated || !authHydrated || !activePanel) return null;
+  if (!authHydrated || !activePanel) return null;
+  if (activePanel === "organizador" && !hasHydrated) return null;
   return activePanel === "expositor" ? <ExpositorOverview /> : <OrganizadorOverview />;
 }

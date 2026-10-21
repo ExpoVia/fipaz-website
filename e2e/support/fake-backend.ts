@@ -51,10 +51,27 @@ export class FakeBackend {
   private readonly users: FakeUser[] = [];
   private readonly accessTokens = new Map<string, string>();
   private readonly refreshTokens = new Map<string, string>();
+  private readonly companies = new Map<string, Record<string, unknown>>();
+  private readonly stands = new Map<string, Record<string, unknown>>();
 
   addUser(user: Omit<FakeUser, "id" | "roles"> & { roles?: FakeRole[] }): FakeUser {
     const created: FakeUser = { id: nextId("user"), roles: [], ...user };
     this.users.push(created);
+    for (const role of created.roles) {
+      if (!role.companyId || this.companies.has(role.companyId)) continue;
+      this.companies.set(role.companyId, {
+        id: role.companyId, displayName: role.companyName, description: "Empresa de prueba",
+        logoPath: null, website: null, contactEmail: "contacto@fexpo.test",
+      });
+      const standId = "5a000000-0000-4000-8000-000000000001";
+      this.stands.set(standId, {
+        id: standId, companyId: role.companyId,
+        eventId: "e0000000-0000-4000-8000-000000000001", eventName: "FIPAZ 2026",
+        boothCode: "A-01", displayName: role.companyName, description: "Stand de prueba",
+        tags: ["tecnología"], activityHighlight: null, promotionHighlight: null,
+        visitPoints: 50, status: "active",
+      });
+    }
     return created;
   }
 
@@ -154,14 +171,51 @@ export class FakeBackend {
     if (method === "POST" && path === "/companies") {
       const user = this.userFromBearer(authorization);
       if (!user) return reply(401, fail("AUTH_REQUIRED"));
-      const company = { id: nextId("company"), displayName: input.displayName };
+      const company = { id: crypto.randomUUID(), displayName: input.displayName };
       user.roles.push(companyRole("company_admin", company.id, company.displayName));
+      this.companies.set(company.id, { ...company, description: input.description ?? null, logoPath: null, website: null, contactEmail: null });
       return reply(201, ok(company));
     }
 
-    if (method === "PATCH" && path.startsWith("/companies/")) return reply(200, ok({}));
+    const user = this.userFromBearer(authorization);
+    const companyMatch = path.match(/^\/companies\/([^/]+)(?:\/(stands|kpis))?$/);
+    if (companyMatch && user) {
+      const [, companyId, resource] = companyMatch;
+      if (!user.roles.some((role) => role.companyId === companyId)) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
+      const company = this.companies.get(companyId);
+      if (!company) return reply(404, fail("COMPANY_NOT_FOUND"));
+      if (method === "GET" && resource === "stands") return reply(200, ok([...this.stands.values()].filter((stand) => stand.companyId === companyId)));
+      if (method === "GET" && resource === "kpis") return reply(200, ok({ activeStands: 1, uniqueVisitors: 2, totalCheckins: 3, firstVisits: 2, activityAttendees: 0, redemptionsValidated: 0, unitsDelivered: 0 }));
+      if (method === "GET" && !resource) return reply(200, ok(company));
+      if (method === "PATCH" && !resource) {
+        if (!user.roles.some((role) => role.companyId === companyId && role.role === "company_admin")) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
+        Object.assign(company, input);
+        for (const account of this.users) {
+          for (const role of account.roles) {
+            if (role.companyId === companyId) role.companyName = String(company.displayName);
+          }
+        }
+        return reply(200, ok(company));
+      }
+    }
 
-    // El resto del panel (stands, métricas…) no es parte de estas pruebas: listas vacías.
+    const standMatch = path.match(/^\/stands\/([^/]+)(?:\/(check-ins|qr))?$/);
+    if (standMatch && user) {
+      const [, standId, resource] = standMatch;
+      const stand = this.stands.get(standId);
+      if (!stand) return reply(404, fail("STAND_NOT_FOUND"));
+      if (!user.roles.some((role) => role.companyId === stand.companyId)) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
+      if (method === "PATCH" && !resource) {
+        if (!user.roles.some((role) => role.companyId === stand.companyId && role.role === "company_admin")) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
+        Object.assign(stand, input);
+        return reply(200, ok(stand));
+      }
+      if (method === "GET" && resource === "check-ins") return reply(200, ok([]));
+      if (method === "POST" && resource === "qr") return reply(201, ok({ qrId: crypto.randomUUID(), token: nextId("stand-qr"), expiresAt: new Date(Date.now() + Number(input.ttlSeconds ?? 60) * 1000).toISOString() }));
+    }
+    if (method === "DELETE" && /^\/qr\/[0-9a-f-]+$/.test(path) && user) return reply(204);
+
+    // El resto de módulos no forma parte de estas pruebas.
     if (method === "GET") return reply(200, ok([]));
     return reply(404, fail("NOT_FOUND"));
   }

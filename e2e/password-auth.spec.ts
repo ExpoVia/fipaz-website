@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { companyRole, eventAdminRole, FakeBackend } from "./support/fake-backend";
 
 const PASSWORD = "Prueba1234!";
-const SEED_COMPANY_ID = "stand-altura-labs"; // Empresa del estado de demostración del panel.
+const SEED_COMPANY_ID = "c0000000-0000-4000-8000-000000000001";
 
 function createBackend() {
   const backend = new FakeBackend();
@@ -44,6 +44,8 @@ test.describe("acceso con correo y contraseña", () => {
 
     await expect(page).toHaveURL(/\/panel$/);
     await expect(page.getByRole("button", { name: /Expositor · Altura Labs/ })).toBeVisible();
+    await expect(page.getByText("Datos de demostración.")).toHaveCount(0);
+    await expect(page.getByText("Check-ins", { exact: true })).toBeVisible();
     await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Mi stand", exact: true })).toBeVisible();
 
     const login = backend.calls.find((call) => call.path === "/auth/login");
@@ -162,6 +164,59 @@ test.describe("paneles separados por rol", () => {
     await expect(page.getByRole("link", { name: "Editar perfil" })).toBeVisible();
     await page.goto("/admin/company/profile");
     await expect(page.getByRole("button", { name: "Guardar cambios" })).toBeVisible();
+  });
+});
+
+test.describe("panel real de expositor", () => {
+  test("el stand se guarda en el backend y persiste tras recargar", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(/\/panel$/);
+
+    await page.goto("/panel/mi-stand/editar");
+    await page.getByLabel("Nombre visible").fill("Altura Labs Renovado");
+    await page.getByLabel("Descripción").fill("Nuevo texto del stand");
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+
+    await expect(page).toHaveURL(/\/panel\/mi-stand$/);
+    await expect(page.getByRole("heading", { name: "Altura Labs Renovado" })).toBeVisible();
+    await expect(page.getByText("Nuevo texto del stand")).toBeVisible();
+    expect(backend.calls.find((call) => call.method === "PATCH" && call.path === "/stands/5a000000-0000-4000-8000-000000000001")?.body)
+      .toMatchObject({ displayName: "Altura Labs Renovado", description: "Nuevo texto del stand" });
+
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "Altura Labs Renovado" })).toBeVisible();
+  });
+
+  test("la empresa se guarda en el backend y persiste tras recargar", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(/\/panel$/);
+
+    await page.goto("/panel/empresa");
+    await page.getByLabel("Nombre de la empresa").fill("Altura Labs Bolivia");
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+    await expect(page.getByRole("status")).toContainText("Cambios guardados en el servidor.");
+    await expect(page.getByRole("button", { name: /Expositor · Altura Labs Bolivia/ })).toBeVisible();
+    expect(backend.calls.find((call) => call.method === "PATCH" && call.path === `/companies/${SEED_COMPANY_ID}`)?.body)
+      .toMatchObject({ displayName: "Altura Labs Bolivia" });
+
+    await page.reload();
+    await expect(page.getByLabel("Nombre de la empresa")).toHaveValue("Altura Labs Bolivia");
+  });
+
+  test("el QR se emite y revoca usando el backend", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(/\/panel$/);
+
+    await page.goto("/panel/mi-stand/qr");
+    await page.getByRole("button", { name: "Generar QR" }).click();
+    await expect(page.getByRole("button", { name: "Revocar QR" })).toBeVisible();
+    const issue = backend.calls.find((call) => call.method === "POST" && call.path === "/stands/5a000000-0000-4000-8000-000000000001/qr");
+    expect(issue?.body).toMatchObject({ ttlSeconds: 60, maxScans: 10 });
+    expect(issue?.authorization).toMatch(/^Bearer /);
+
+    await page.getByRole("button", { name: "Revocar QR" }).click();
+    await expect(page.getByRole("button", { name: "Revocar QR" })).toHaveCount(0);
+    expect(backend.calls.some((call) => call.method === "DELETE" && /^\/qr\/[0-9a-f-]+$/.test(call.path))).toBe(true);
   });
 });
 

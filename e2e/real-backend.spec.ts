@@ -37,12 +37,13 @@ test("expositor real: entra con contraseña y al cerrar sesión su refresh token
   await expect.poll(async () => (await page.request.post("/api/v1/auth/refresh", { data: { refreshToken } })).status()).toBe(401);
 });
 
-test("organizador real: entra a su panel y no puede abrir rutas del expositor", async ({ page }) => {
+test("organizador real: entra a su panel y vuelve a él desde rutas del expositor", async ({ page }) => {
   await login(page, "organizador@fexpo.test", "organizador");
   await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Expositores" })).toBeVisible();
 
   await page.goto("/panel/mi-stand");
-  await expect(page.getByRole("heading", { name: "Sin acceso al panel" })).toBeVisible();
+  await expect(page).toHaveURL(/\/panel$/);
+  await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Expositores" })).toBeVisible();
 });
 
 test("cuenta real sin rol: ve 'Sin acceso' con la opción de registrar su empresa", async ({ page }) => {

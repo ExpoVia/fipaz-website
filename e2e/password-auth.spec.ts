@@ -97,22 +97,34 @@ test.describe("paneles separados por rol", () => {
     await expect(nav.getByRole("link", { name: "Mi stand", exact: true })).toHaveCount(0);
   });
 
-  test("el organizador no puede abrir rutas del expositor", async ({ page }) => {
+  test("el organizador vuelve a su panel al abrir una ruta del expositor", async ({ page }) => {
     await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "organizador");
     await expect(page).toHaveURL(/\/panel$/);
 
     await page.goto("/panel/mi-stand");
-    await expect(page).toHaveURL(/\/acceso\?panel=expositor/);
-    await expect(page.getByRole("heading", { name: "Sin acceso al panel" })).toBeVisible();
+    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Expositores" })).toBeVisible();
   });
 
-  test("el expositor no puede abrir rutas del organizador", async ({ page }) => {
+  test("el expositor vuelve a su panel al abrir una ruta del organizador", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
     await expect(page).toHaveURL(/\/panel$/);
 
     await page.goto("/panel/expositores");
-    await expect(page).toHaveURL(/\/acceso\?panel=organizador/);
-    await expect(page.getByRole("heading", { name: "Sin acceso al panel" })).toBeVisible();
+    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Mi stand", exact: true })).toBeVisible();
+  });
+
+  test("al iniciar sesión desde el enlace del otro panel entra al suyo", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test", PASSWORD, "organizador");
+    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page.getByRole("button", { name: /Expositor · Altura Labs/ })).toBeVisible();
+  });
+
+  test("el organizador también entra al suyo desde el enlace de expositor", async ({ page }) => {
+    await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "expositor");
+    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Expositores" })).toBeVisible();
   });
 
   test("una cuenta sin rol no ve ningún panel y se le ofrece registrar su empresa", async ({ page }) => {

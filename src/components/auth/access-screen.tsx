@@ -12,6 +12,7 @@ import type { PanelRole } from "@/config/panel-navigation";
 import { isPasswordLoginEnabled } from "@/lib/api/company-auth";
 import {
   describeRole,
+  getActivePanel,
   getAvailablePanels,
   getRolesForPanel,
   hasPanelAccess,
@@ -76,9 +77,13 @@ export function AccessScreen({ panel }: AccessScreenProps) {
   const checked = hydrated && (verification === "verified" || !session);
 
   const available = getAvailablePanels(session);
-  const target = panel && hasPanelAccess(session, panel) ? panel : panel ? null : available[0] ?? null;
+  // El enlace de entrada puede apuntar al otro panel. Tras autenticar, abrir siempre
+  // uno de los paneles que el backend asignó a esta cuenta.
+  const target = panel && hasPanelAccess(session, panel)
+    ? panel
+    : getActivePanel(session) ?? available[0] ?? null;
 
-  // Con acceso al panel pedido (o a alguno, si no se pidió uno) se entra directo.
+  // Con un rol válido se entra al panel solicitado o al propio de la cuenta.
   useEffect(() => {
     if (!checked || !session || !target) return;
     const role = getRolesForPanel(session, target)[0];

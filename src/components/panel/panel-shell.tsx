@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Info, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { PanelMobileDrawer } from "./panel-mobile-drawer";
 import { PanelNavbar } from "./panel-navbar";
 import { PanelSidebar } from "./panel-sidebar";
 import {
   accessRoute,
+  getActiveCompany,
   getActivePanel,
   getAvailablePanels,
   getRolesForPanel,
@@ -16,6 +17,7 @@ import {
   requiredPanelForPath,
 } from "@/lib/panel-access";
 import { useCompanyAuthStore } from "@/store/company-auth-store";
+import { ExhibitorProvider } from "./exhibitor-context";
 // Registra el vaciado del estado del panel al terminar la sesión (logout o refresh fallido).
 import "@/store/panel-store";
 
@@ -85,7 +87,8 @@ export function PanelShell({ children }: PanelShellProps) {
     }
   }, [hydrated, session, verification, allowed, required, activePanel, router, setActiveRole]);
 
-  const ready = hydrated && !!session && verification === "verified" && allowed;
+  const ready = hydrated && !!session && verification === "verified" && allowed && (!required || activePanel === required);
+  const exhibitorCompanyId = ready && activePanel === "expositor" ? getActiveCompany(session)?.id ?? null : null;
 
   return (
     <div className="flex min-h-dvh flex-col bg-[var(--expo-bg)]">
@@ -109,13 +112,9 @@ export function PanelShell({ children }: PanelShellProps) {
                 Preparando tu panel…
               </div>
             ) : (
-              <>
-                <p className="mb-5 flex items-start gap-2 rounded-xl border-2 border-[var(--expo-blue)] bg-white px-3 py-2.5 text-xs font-medium leading-5 text-[var(--expo-navy)]">
-                  <Info size={16} className="mt-0.5 shrink-0 text-[var(--expo-blue)]" aria-hidden="true" />
-                  <span><strong>Datos de demostración.</strong> Perfiles, stands, promociones, premios, visitas, prospectos, puntos y métricas son ejemplos; las fechas y el recinto de FIPAZ están sujetos a confirmación.</span>
-                </p>
+              <ExhibitorProvider key={exhibitorCompanyId ?? "organizador"} companyId={exhibitorCompanyId}>
                 {children}
-              </>
+              </ExhibitorProvider>
             )}
           </div>
         </main>

@@ -51,10 +51,27 @@ export class FakeBackend {
   private readonly users: FakeUser[] = [];
   private readonly accessTokens = new Map<string, string>();
   private readonly refreshTokens = new Map<string, string>();
+  private readonly companies = new Map<string, Record<string, unknown>>();
+  private readonly stands = new Map<string, Record<string, unknown>>();
 
   addUser(user: Omit<FakeUser, "id" | "roles"> & { roles?: FakeRole[] }): FakeUser {
     const created: FakeUser = { id: nextId("user"), roles: [], ...user };
     this.users.push(created);
+    for (const role of created.roles) {
+      if (!role.companyId || this.companies.has(role.companyId)) continue;
+      this.companies.set(role.companyId, {
+        id: role.companyId, displayName: role.companyName, description: "Empresa de prueba",
+        logoPath: null, website: null, contactEmail: "contacto@fexpo.test",
+      });
+      const standId = "5a000000-0000-4000-8000-000000000001";
+      this.stands.set(standId, {
+        id: standId, companyId: role.companyId,
+        eventId: "e0000000-0000-4000-8000-000000000001", eventName: "FIPAZ 2026",
+        boothCode: "A-01", displayName: role.companyName, description: "Stand de prueba",
+        tags: ["tecnología"], activityHighlight: null, promotionHighlight: null,
+        visitPoints: 50, status: "active",
+      });
+    }
     return created;
   }
 
@@ -154,15 +171,144 @@ export class FakeBackend {
     if (method === "POST" && path === "/companies") {
       const user = this.userFromBearer(authorization);
       if (!user) return reply(401, fail("AUTH_REQUIRED"));
-      const company = { id: nextId("company"), displayName: input.displayName };
+      const company = { id: crypto.randomUUID(), displayName: input.displayName };
       user.roles.push(companyRole("company_admin", company.id, company.displayName));
+      this.companies.set(company.id, { ...company, description: input.description ?? null, logoPath: null, website: null, contactEmail: null });
       return reply(201, ok(company));
     }
 
-    if (method === "PATCH" && path.startsWith("/companies/")) return reply(200, ok({}));
+    const user = this.userFromBearer(authorization);
+    const companyMatch = path.match(/^\/companies\/([^/]+)(?:\/(stands|kpis))?$/);
+    if (companyMatch && user) {
+      const [, companyId, resource] = companyMatch;
+      if (!user.roles.some((role) => role.companyId === companyId)) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
+      const company = this.companies.get(companyId);
+      if (!company) return reply(404, fail("COMPANY_NOT_FOUND"));
+      if (method === "GET" && resource === "stands") return reply(200, ok([...this.stands.values()].filter((stand) => stand.companyId === companyId)));
+      if (method === "GET" && resource === "kpis") return reply(200, ok({ activeStands: 1, uniqueVisitors: 2, totalCheckins: 3, firstVisits: 2, activityAttendees: 0, redemptionsValidated: 0, unitsDelivered: 0 }));
+      if (method === "GET" && !resource) return reply(200, ok(company));
+      if (method === "PATCH" && !resource) {
+        if (!user.roles.some((role) => role.companyId === companyId && role.role === "company_admin")) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
+        Object.assign(company, input);
+        for (const account of this.users) {
+          for (const role of account.roles) {
+            if (role.companyId === companyId) role.companyName = String(company.displayName);
+          }
+        }
+        return reply(200, ok(company));
+      }
+    }
 
-    // El resto del panel (stands, métricas…) no es parte de estas pruebas: listas vacías.
+    const standMatch = path.match(/^\/stands\/([^/]+)(?:\/(check-ins|qr))?$/);
+    if (standMatch && user) {
+      const [, standId, resource] = standMatch;
+      const stand = this.stands.get(standId);
+      if (!stand) return reply(404, fail("STAND_NOT_FOUND"));
+      if (!user.roles.some((role) => role.companyId === stand.companyId)) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
+      if (method === "PATCH" && !resource) {
+        if (!user.roles.some((role) => role.companyId === stand.companyId && role.role === "company_admin")) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
+        Object.assign(stand, input);
+        return reply(200, ok(stand));
+      }
+      if (method === "GET" && resource === "check-ins") return reply(200, ok([]));
+      if (method === "POST" && resource === "qr") return reply(201, ok({ qrId: crypto.randomUUID(), token: nextId("stand-qr"), expiresAt: new Date(Date.now() + Number(input.ttlSeconds ?? 60) * 1000).toISOString() }));
+    }
+    if (method === "DELETE" && /^\/qr\/[0-9a-f-]+$/.test(path) && user) return reply(204);
+
+    const eventMatch = path.match(/^\/events\/([^/]+)(\/.*)$/);
+    if (eventMatch && user) {
+      const [, eventId, rest] = eventMatch;
+      if (!user.roles.some((role) => role.eventId === eventId)) return reply(403, fail("INSUFFICIENT_PERMISSIONS"));
+      const result = this.handleEvent(method, rest, body as Record<string, unknown> | undefined);
+      if (result) return reply(result[0], result[1]);
+    }
+
+    // El resto de módulos no forma parte de estas pruebas.
     if (method === "GET") return reply(200, ok([]));
     return reply(404, fail("NOT_FOUND"));
+  }
+
+  /** Datos del evento del organizador: KPIs, empresas, mapa, categorías, misiones y premios. */
+  readonly event = {
+    kpis: { activeStands: 2, pointsIssued: 520, uniqueVisits: 8, totalCheckins: 9, activityAttendees: 1, totalParticipants: 4, redemptionsValidated: 0 },
+    companies: [
+      { id: "ec000000-0000-4000-8000-000000000001", companyId: "c0000000-0000-4000-8000-000000000001", displayName: "Altura Labs", description: null, status: "active", standCount: 1 },
+      { id: "ec000000-0000-4000-8000-000000000002", companyId: "c0000000-0000-4000-8000-000000000002", displayName: "Cafe Altiplano", description: null, status: "active", standCount: 1 },
+    ],
+    categories: [
+      { id: "ca000000-0000-4000-8000-000000000001", slug: "gastronomia", label: "Gastronomía", colorToken: null, sortOrder: 1 },
+    ] as Record<string, unknown>[],
+    zones: [
+      { id: "b0000000-0000-4000-8000-000000000001", floorId: "f0000000-0000-4000-8000-000000000001", name: "Bloque Rojo", shortCode: "R", description: "Pabellón I", colorToken: "red" },
+    ] as Record<string, unknown>[],
+    missions: [] as Record<string, unknown>[],
+    rewards: [
+      { id: "fe000000-0000-4000-8000-000000000001", name: "Taza FIPAZ", type: "merch", costPoints: 100, isActive: true },
+    ],
+  };
+
+  private handleEvent(method: string, rest: string, input: Record<string, unknown> = {}): [number, unknown] | null {
+    const event = this.event;
+    const version = { id: "d0000000-0000-4000-8000-000000000001", version: 1, status: "published", notes: "Plano local", publishedAt: GRANTED_AT };
+    const floor = { id: "f0000000-0000-4000-8000-000000000001", code: "PB", name: "Planta Baja", sortOrder: 1 };
+    const byId = (list: Record<string, unknown>[], id: string) => list.find((item) => item.id === id);
+
+    if (method === "GET") {
+      switch (rest) {
+        case "/kpis": return [200, ok(event.kpis)];
+        case "/companies": return [200, ok(event.companies)];
+        case "/categories": return [200, ok(event.categories)];
+        case "/missions": return [200, ok(event.missions)];
+        case "/rewards": return [200, ok(event.rewards)];
+        case "/leaderboard": return [200, ok([{ position: 1, userId: "u-1", displayName: "Saúl Prueba", avatarUrl: null, rankingScore: 130, level: 2 }])];
+        case "/map/versions": return [200, ok([version])];
+        case `/map/versions/${version.id}/floors`: return [200, ok([floor])];
+        case `/map/floors/${floor.id}/zones`: return [200, ok(event.zones)];
+        case "/map": return [200, ok({
+          version: 1,
+          floors: [{
+            ...floor, viewBox: "0 0 800 600", outline: "M0 0H800V600H0Z",
+            zones: event.zones.map((zone) => ({ ...zone, path: "M20 20H400V300H20Z" })),
+            stands: [{ standId: "5a000000-0000-4000-8000-000000000001", boothCode: "A-01", displayName: "Altura Labs", zoneId: event.zones[0]?.id ?? null, x: 0.25, y: 0.3 }],
+          }],
+        })];
+      }
+    }
+
+    if (method === "POST" && rest === "/categories") {
+      const category = { id: crypto.randomUUID(), slug: input.slug, label: input.label, colorToken: input.colorToken ?? null, sortOrder: 0 };
+      event.categories.push(category);
+      return [201, ok(category)];
+    }
+    const categoryMatch = rest.match(/^\/categories\/([^/]+)$/);
+    if (categoryMatch) {
+      const category = byId(event.categories, categoryMatch[1]);
+      if (!category) return [404, fail("CATEGORY_NOT_FOUND")];
+      if (method === "PATCH") return [200, ok(Object.assign(category, input))];
+      if (method === "DELETE") { event.categories.splice(event.categories.indexOf(category), 1); return [204, undefined]; }
+    }
+    const zoneMatch = rest.match(/^\/map\/zones\/([^/]+)$/);
+    if (zoneMatch && method === "PATCH") {
+      const zone = byId(event.zones, zoneMatch[1]);
+      return zone ? [200, ok(Object.assign(zone, input))] : [404, fail("ZONE_NOT_FOUND")];
+    }
+
+    if (method === "POST" && rest === "/missions") {
+      if (input.mode === "categories" && !(input.categoryIds as unknown[] | undefined)?.length) return [400, fail("VALIDATION_ERROR")];
+      const mission = {
+        id: crypto.randomUUID(), title: input.title, description: input.description ?? null, mode: input.mode,
+        targetCount: input.targetCount ?? 1, pointsReward: input.pointsReward ?? 0, isActive: true, featured: false,
+      };
+      event.missions.push(mission);
+      return [201, ok(mission)];
+    }
+    const missionMatch = rest.match(/^\/missions\/([^/]+)$/);
+    if (missionMatch) {
+      const mission = byId(event.missions, missionMatch[1]);
+      if (!mission) return [404, fail("MISSION_NOT_FOUND")];
+      if (method === "PATCH") return [200, ok(Object.assign(mission, input))];
+      if (method === "DELETE") { event.missions.splice(event.missions.indexOf(mission), 1); return [204, undefined]; }
+    }
+    return null;
   }
 }

@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { companyRole, eventAdminRole, FakeBackend } from "./support/fake-backend";
 
 const PASSWORD = "Prueba1234!";
-const SEED_COMPANY_ID = "stand-altura-labs"; // Empresa del estado de demostración del panel.
+const SEED_COMPANY_ID = "c0000000-0000-4000-8000-000000000001";
 
 function createBackend() {
   const backend = new FakeBackend();
@@ -44,6 +44,8 @@ test.describe("acceso con correo y contraseña", () => {
 
     await expect(page).toHaveURL(/\/panel$/);
     await expect(page.getByRole("button", { name: /Expositor · Altura Labs/ })).toBeVisible();
+    await expect(page.getByText("Datos de demostración.")).toHaveCount(0);
+    await expect(page.getByText("Check-ins", { exact: true })).toBeVisible();
     await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Mi stand", exact: true })).toBeVisible();
 
     const login = backend.calls.find((call) => call.path === "/auth/login");
@@ -97,22 +99,34 @@ test.describe("paneles separados por rol", () => {
     await expect(nav.getByRole("link", { name: "Mi stand", exact: true })).toHaveCount(0);
   });
 
-  test("el organizador no puede abrir rutas del expositor", async ({ page }) => {
+  test("el organizador vuelve a su panel al abrir una ruta del expositor", async ({ page }) => {
     await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "organizador");
     await expect(page).toHaveURL(/\/panel$/);
 
     await page.goto("/panel/mi-stand");
-    await expect(page).toHaveURL(/\/acceso\?panel=expositor/);
-    await expect(page.getByRole("heading", { name: "Sin acceso al panel" })).toBeVisible();
+    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Expositores" })).toBeVisible();
   });
 
-  test("el expositor no puede abrir rutas del organizador", async ({ page }) => {
+  test("el expositor vuelve a su panel al abrir una ruta del organizador", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");
     await expect(page).toHaveURL(/\/panel$/);
 
     await page.goto("/panel/expositores");
-    await expect(page).toHaveURL(/\/acceso\?panel=organizador/);
-    await expect(page.getByRole("heading", { name: "Sin acceso al panel" })).toBeVisible();
+    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Mi stand", exact: true })).toBeVisible();
+  });
+
+  test("al iniciar sesión desde el enlace del otro panel entra al suyo", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test", PASSWORD, "organizador");
+    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page.getByRole("button", { name: /Expositor · Altura Labs/ })).toBeVisible();
+  });
+
+  test("el organizador también entra al suyo desde el enlace de expositor", async ({ page }) => {
+    await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "expositor");
+    await expect(page).toHaveURL(/\/panel$/);
+    await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Expositores" })).toBeVisible();
   });
 
   test("una cuenta sin rol no ve ningún panel y se le ofrece registrar su empresa", async ({ page }) => {
@@ -150,6 +164,149 @@ test.describe("paneles separados por rol", () => {
     await expect(page.getByRole("link", { name: "Editar perfil" })).toBeVisible();
     await page.goto("/admin/company/profile");
     await expect(page.getByRole("button", { name: "Guardar cambios" })).toBeVisible();
+  });
+});
+
+test.describe("panel real de expositor", () => {
+  test("el stand se guarda en el backend y persiste tras recargar", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(/\/panel$/);
+
+    await page.goto("/panel/mi-stand/editar");
+    await page.getByLabel("Nombre visible").fill("Altura Labs Renovado");
+    await page.getByLabel("Descripción").fill("Nuevo texto del stand");
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+
+    await expect(page).toHaveURL(/\/panel\/mi-stand$/);
+    await expect(page.getByRole("heading", { name: "Altura Labs Renovado" })).toBeVisible();
+    await expect(page.getByText("Nuevo texto del stand")).toBeVisible();
+    expect(backend.calls.find((call) => call.method === "PATCH" && call.path === "/stands/5a000000-0000-4000-8000-000000000001")?.body)
+      .toMatchObject({ displayName: "Altura Labs Renovado", description: "Nuevo texto del stand" });
+
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "Altura Labs Renovado" })).toBeVisible();
+  });
+
+  test("la empresa se guarda en el backend y persiste tras recargar", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(/\/panel$/);
+
+    await page.goto("/panel/empresa");
+    await page.getByLabel("Nombre de la empresa").fill("Altura Labs Bolivia");
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+    await expect(page.getByRole("status")).toContainText("Cambios guardados en el servidor.");
+    await expect(page.getByRole("button", { name: /Expositor · Altura Labs Bolivia/ })).toBeVisible();
+    expect(backend.calls.find((call) => call.method === "PATCH" && call.path === `/companies/${SEED_COMPANY_ID}`)?.body)
+      .toMatchObject({ displayName: "Altura Labs Bolivia" });
+
+    await page.reload();
+    await expect(page.getByLabel("Nombre de la empresa")).toHaveValue("Altura Labs Bolivia");
+  });
+
+  test("el QR se emite y revoca usando el backend", async ({ page }) => {
+    await loginWithPassword(page, "expositor@fexpo.test");
+    await expect(page).toHaveURL(/\/panel$/);
+
+    await page.goto("/panel/mi-stand/qr");
+    await page.getByRole("button", { name: "Generar QR" }).click();
+    await expect(page.getByRole("button", { name: "Revocar QR" })).toBeVisible();
+    const issue = backend.calls.find((call) => call.method === "POST" && call.path === "/stands/5a000000-0000-4000-8000-000000000001/qr");
+    expect(issue?.body).toMatchObject({ ttlSeconds: 60, maxScans: 10 });
+    expect(issue?.authorization).toMatch(/^Bearer /);
+
+    await page.getByRole("button", { name: "Revocar QR" }).click();
+    await expect(page.getByRole("button", { name: "Revocar QR" })).toHaveCount(0);
+    expect(backend.calls.some((call) => call.method === "DELETE" && /^\/qr\/[0-9a-f-]+$/.test(call.path))).toBe(true);
+  });
+});
+
+test.describe("panel real de organizador", () => {
+  const EVENT_PATH = "/events/e0000000-0000-4000-8000-000000000001";
+
+  async function enterAsOrganizer(page: Page) {
+    await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "organizador");
+    await expect(page).toHaveURL(/\/panel$/);
+  }
+
+  test("el resumen muestra KPIs y empresas del backend, sin aviso de demostración", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await expect(page.getByRole("heading", { name: "Panorama del evento" })).toBeVisible();
+    await expect(page.getByText("Participantes", { exact: true })).toBeVisible();
+    await expect(page.getByText("Cafe Altiplano")).toBeVisible();
+    await expect(page.getByText("Datos de demostración.")).toHaveCount(0);
+    expect(backend.calls.some((call) => call.path === `${EVENT_PATH}/kpis` && call.authorization?.startsWith("Bearer "))).toBe(true);
+  });
+
+  test("las métricas muestran stands por zona y el ranking", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/metricas-evento");
+    await expect(page.getByText("Bloque Rojo")).toBeVisible();
+    await expect(page.getByText("Saúl Prueba")).toBeVisible();
+  });
+
+  test("el mapa lista las versiones y dibuja el piso publicado", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/mapa-evento");
+    await expect(page.getByRole("cell", { name: "Publicada" })).toBeVisible();
+    await expect(page.getByRole("img", { name: "Plano de Planta Baja" })).toBeVisible();
+  });
+
+  test("se crea, renombra y elimina una categoría, y se edita una zona", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/zonas-categorias");
+
+    await page.getByLabel("Nueva categoría").fill("Tecnología Verde");
+    await page.getByRole("button", { name: "Agregar categoría" }).click();
+    const input = page.getByLabel("Nombre de la categoría Tecnología Verde");
+    await expect(input).toBeVisible();
+    expect(backend.calls.find((call) => call.method === "POST" && call.path === `${EVENT_PATH}/categories`)?.body)
+      .toMatchObject({ label: "Tecnología Verde", slug: "tecnologia-verde" });
+
+    await input.fill("Tecnología Limpia");
+    await page.getByRole("button", { name: "Guardar", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Guardar", exact: true })).toHaveCount(0);
+    expect(backend.event.categories.some((category) => category.label === "Tecnología Limpia")).toBe(true);
+
+    await page.getByRole("button", { name: "Eliminar categoría Tecnología Limpia" }).click();
+    await page.getByRole("button", { name: "Confirmar eliminación" }).click();
+    await expect(page.getByLabel("Nombre de la categoría Tecnología Limpia")).toHaveCount(0);
+    expect(backend.event.categories).toHaveLength(1);
+
+    await page.getByRole("button", { name: "Editar zona Bloque Rojo" }).click();
+    await page.getByLabel("Nombre", { exact: true }).fill("Pabellón Rojo");
+    await page.getByRole("button", { name: "Guardar zona" }).click();
+    await expect(page.getByText("Pabellón Rojo")).toBeVisible();
+    expect(backend.calls.find((call) => call.method === "PATCH" && call.path.endsWith("/map/zones/b0000000-0000-4000-8000-000000000001"))?.body)
+      .toMatchObject({ name: "Pabellón Rojo", shortCode: "R" });
+  });
+
+  test("se crea, pausa y elimina una misión, y se ven los premios", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/gamificacion");
+    await expect(page.getByText("Taza FIPAZ")).toBeVisible();
+
+    await page.getByLabel("Título").fill("Ruta del café");
+    await page.getByLabel("Visitas requeridas").fill("2");
+    await page.getByLabel("Gastronomía").check();
+    await page.getByRole("button", { name: "Crear misión" }).click();
+    const card = page.getByRole("article", { name: "Misión Ruta del café" });
+    await expect(card).toContainText("Por categorías · 2 visitas");
+    expect(backend.calls.find((call) => call.method === "POST" && call.path === `${EVENT_PATH}/missions`)?.body)
+      .toMatchObject({ title: "Ruta del café", mode: "categories", targetCount: 2, categoryIds: ["ca000000-0000-4000-8000-000000000001"] });
+
+    await card.getByRole("button", { name: "Pausar" }).click();
+    await expect(card).toContainText("Pausada");
+    await card.getByRole("button", { name: "Eliminar" }).click();
+    await card.getByRole("button", { name: "Confirmar eliminación" }).click();
+    await expect(card).toHaveCount(0);
+    expect(backend.event.missions).toHaveLength(0);
+  });
+
+  test("eventos muestra el evento activo con sus cifras", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/eventos");
+    await expect(page.getByText("Evento activo")).toBeVisible();
+    await expect(page.getByText("4 participantes · 9 check-ins · 2 stands activos")).toBeVisible();
   });
 });
 

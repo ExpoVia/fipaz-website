@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-
-import { CompanyStandsView } from "@/components/admin/company-stands-view";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "Mis stands" };
 
 export default function CompanyStandsPage() {
-  return <CompanyStandsView />;
+  redirect("/panel/mi-stand");
 }

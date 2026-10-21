@@ -1,49 +1,25 @@
 "use client";
 
-import { Clock, TrendingUp, Users } from "lucide-react";
+import { Activity, ScanLine, UsersRound } from "lucide-react";
 
-import { panelCheckIns } from "@/data/panel-mock";
-import { usePanelStore } from "@/store/panel-store";
-import { DemoBadge } from "@/components/shared/demo-badge";
+import { ExhibitorState } from "./exhibitor-state";
+import { useExhibitor } from "./exhibitor-context";
 import { MetricCard } from "./metric-card";
 import { PanelPageHeader } from "./panel-page-header";
-import { ProgressBar } from "@/components/pixel/ProgressBar";
-
-const DAILY_VISIT_GOAL = 15;
 
 export function MetricasStandView() {
-  const hasHydrated = usePanelStore((state) => state.hasHydrated);
-  const activeCompanyId = usePanelStore((state) => state.activeCompanyId);
-  if (!hasHydrated) return null;
-
-  const checkInCount = panelCheckIns.filter((c) => c.standId === activeCompanyId).length;
-
+  const { stand, kpis, kpisError } = useExhibitor();
   return (
-    <>
-      <PanelPageHeader
-        eyebrow="Métricas"
-        title="Desempeño de mi stand"
-        description="Indicadores de ejemplo de tráfico e impacto; no provienen de un evento real."
-      />
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <MetricCard label="Hora pico" value="11:00 – 12:00" icon={Clock} />
-        <MetricCard label="Permanencia promedio" value="4.2 min" icon={Users} />
-        <MetricCard label="Impacto vs. promedio" value="+18%" icon={TrendingUp} hint="Comparado con stands de tu categoría" />
-      </div>
-
-      <div className="pixel-card mt-6 p-5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="pixel-label text-slate-500">Objetivo de visitas verificadas del día</p>
-          <DemoBadge />
+    <ExhibitorState>
+      <PanelPageHeader eyebrow="Métricas" title="Resultados de la empresa" description={`Indicadores reales de ${stand?.eventName ?? "este evento"}, agregados para todos los stands de tu empresa.`} demo={false} />
+      {kpis ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <MetricCard label="Check-ins" value={String(kpis.totalCheckins)} icon={ScanLine} demo={false} />
+          <MetricCard label="Visitantes únicos" value={String(kpis.uniqueVisitors)} icon={UsersRound} demo={false} />
+          <MetricCard label="Asistentes a actividades" value={String(kpis.activityAttendees)} icon={Activity} demo={false} />
         </div>
-        <ProgressBar
-          value={checkInCount}
-          max={DAILY_VISIT_GOAL}
-          className="mt-3"
-          colorClass="bg-[var(--expo-green)]"
-        />
-      </div>
-    </>
+      ) : <p role="alert" className="rounded-lg bg-rose-50 p-4 text-sm text-rose-700">{kpisError ?? "No hay métricas disponibles para este evento."}</p>}
+      <p className="mt-5 text-sm text-slate-500">Hora pico, permanencia e impacto comparativo todavía no se miden en el backend.</p>
+    </ExhibitorState>
   );
 }

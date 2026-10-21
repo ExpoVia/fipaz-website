@@ -114,7 +114,7 @@ export const PANEL_NAVIGATION: readonly PanelNavigationItem[] = [
     role: "organizador",
     href: "/panel/mapa-evento",
     label: "Mapa del evento",
-    description: "Gestión centralizada del mapa",
+    description: "Versiones del plano y mapa publicado",
     icon: Map,
   },
   {
@@ -138,7 +138,7 @@ export const PANEL_NAVIGATION: readonly PanelNavigationItem[] = [
     role: "organizador",
     href: "/panel/metricas-evento",
     label: "Métricas del evento",
-    description: "Afluencia de ejemplo, agregada y sin datos personales",
+    description: "Check-ins, puntos y ranking medidos por el servidor",
     icon: Activity,
   },
   {
@@ -146,7 +146,7 @@ export const PANEL_NAVIGATION: readonly PanelNavigationItem[] = [
     role: "organizador",
     href: "/panel/eventos",
     label: "Eventos",
-    description: "Visión multi-evento del ecosistema ExpoVia",
+    description: "Eventos que administra tu cuenta",
     icon: Globe,
   },
 ] as const;

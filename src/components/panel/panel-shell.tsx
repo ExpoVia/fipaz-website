@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Info, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { PanelMobileDrawer } from "./panel-mobile-drawer";
 import { PanelNavbar } from "./panel-navbar";
@@ -113,12 +113,6 @@ export function PanelShell({ children }: PanelShellProps) {
               </div>
             ) : (
               <ExhibitorProvider key={exhibitorCompanyId ?? "organizador"} companyId={exhibitorCompanyId}>
-                {activePanel === "organizador" && (
-                  <p className="mb-5 flex items-start gap-2 rounded-xl border-2 border-[var(--expo-blue)] bg-white px-3 py-2.5 text-xs font-medium leading-5 text-[var(--expo-navy)]">
-                    <Info size={16} className="mt-0.5 shrink-0 text-[var(--expo-blue)]" aria-hidden="true" />
-                    <span><strong>Datos de demostración.</strong> Algunas vistas del organizador aún usan ejemplos; las fechas y el recinto de FIPAZ están sujetos a confirmación.</span>
-                  </p>
-                )}
                 {children}
               </ExhibitorProvider>
             )}

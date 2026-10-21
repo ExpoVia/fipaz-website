@@ -220,6 +220,96 @@ test.describe("panel real de expositor", () => {
   });
 });
 
+test.describe("panel real de organizador", () => {
+  const EVENT_PATH = "/events/e0000000-0000-4000-8000-000000000001";
+
+  async function enterAsOrganizer(page: Page) {
+    await loginWithPassword(page, "organizador@fexpo.test", PASSWORD, "organizador");
+    await expect(page).toHaveURL(/\/panel$/);
+  }
+
+  test("el resumen muestra KPIs y empresas del backend, sin aviso de demostración", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await expect(page.getByRole("heading", { name: "Panorama del evento" })).toBeVisible();
+    await expect(page.getByText("Participantes", { exact: true })).toBeVisible();
+    await expect(page.getByText("Cafe Altiplano")).toBeVisible();
+    await expect(page.getByText("Datos de demostración.")).toHaveCount(0);
+    expect(backend.calls.some((call) => call.path === `${EVENT_PATH}/kpis` && call.authorization?.startsWith("Bearer "))).toBe(true);
+  });
+
+  test("las métricas muestran stands por zona y el ranking", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/metricas-evento");
+    await expect(page.getByText("Bloque Rojo")).toBeVisible();
+    await expect(page.getByText("Saúl Prueba")).toBeVisible();
+  });
+
+  test("el mapa lista las versiones y dibuja el piso publicado", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/mapa-evento");
+    await expect(page.getByRole("cell", { name: "Publicada" })).toBeVisible();
+    await expect(page.getByRole("img", { name: "Plano de Planta Baja" })).toBeVisible();
+  });
+
+  test("se crea, renombra y elimina una categoría, y se edita una zona", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/zonas-categorias");
+
+    await page.getByLabel("Nueva categoría").fill("Tecnología Verde");
+    await page.getByRole("button", { name: "Agregar categoría" }).click();
+    const input = page.getByLabel("Nombre de la categoría Tecnología Verde");
+    await expect(input).toBeVisible();
+    expect(backend.calls.find((call) => call.method === "POST" && call.path === `${EVENT_PATH}/categories`)?.body)
+      .toMatchObject({ label: "Tecnología Verde", slug: "tecnologia-verde" });
+
+    await input.fill("Tecnología Limpia");
+    await page.getByRole("button", { name: "Guardar", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Guardar", exact: true })).toHaveCount(0);
+    expect(backend.event.categories.some((category) => category.label === "Tecnología Limpia")).toBe(true);
+
+    await page.getByRole("button", { name: "Eliminar categoría Tecnología Limpia" }).click();
+    await page.getByRole("button", { name: "Confirmar eliminación" }).click();
+    await expect(page.getByLabel("Nombre de la categoría Tecnología Limpia")).toHaveCount(0);
+    expect(backend.event.categories).toHaveLength(1);
+
+    await page.getByRole("button", { name: "Editar zona Bloque Rojo" }).click();
+    await page.getByLabel("Nombre", { exact: true }).fill("Pabellón Rojo");
+    await page.getByRole("button", { name: "Guardar zona" }).click();
+    await expect(page.getByText("Pabellón Rojo")).toBeVisible();
+    expect(backend.calls.find((call) => call.method === "PATCH" && call.path.endsWith("/map/zones/b0000000-0000-4000-8000-000000000001"))?.body)
+      .toMatchObject({ name: "Pabellón Rojo", shortCode: "R" });
+  });
+
+  test("se crea, pausa y elimina una misión, y se ven los premios", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/gamificacion");
+    await expect(page.getByText("Taza FIPAZ")).toBeVisible();
+
+    await page.getByLabel("Título").fill("Ruta del café");
+    await page.getByLabel("Visitas requeridas").fill("2");
+    await page.getByLabel("Gastronomía").check();
+    await page.getByRole("button", { name: "Crear misión" }).click();
+    const card = page.getByRole("article", { name: "Misión Ruta del café" });
+    await expect(card).toContainText("Por categorías · 2 visitas");
+    expect(backend.calls.find((call) => call.method === "POST" && call.path === `${EVENT_PATH}/missions`)?.body)
+      .toMatchObject({ title: "Ruta del café", mode: "categories", targetCount: 2, categoryIds: ["ca000000-0000-4000-8000-000000000001"] });
+
+    await card.getByRole("button", { name: "Pausar" }).click();
+    await expect(card).toContainText("Pausada");
+    await card.getByRole("button", { name: "Eliminar" }).click();
+    await card.getByRole("button", { name: "Confirmar eliminación" }).click();
+    await expect(card).toHaveCount(0);
+    expect(backend.event.missions).toHaveLength(0);
+  });
+
+  test("eventos muestra el evento activo con sus cifras", async ({ page }) => {
+    await enterAsOrganizer(page);
+    await page.goto("/panel/eventos");
+    await expect(page.getByText("Evento activo")).toBeVisible();
+    await expect(page.getByText("4 participantes · 9 check-ins · 2 stands activos")).toBeVisible();
+  });
+});
+
 test.describe("cierre de sesión", () => {
   test("cerrar sesión invalida el refresh token en el servidor y vacía el estado guardado", async ({ page }) => {
     await loginWithPassword(page, "expositor@fexpo.test");

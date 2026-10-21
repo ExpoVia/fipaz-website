@@ -46,6 +46,25 @@ test("organizador real: entra a su panel y vuelve a él desde rutas del exposito
   await expect(page.getByRole("complementary", { name: "Navegación del panel" }).getByRole("link", { name: "Expositores" })).toBeVisible();
 });
 
+test("organizador real: cada pantalla de su panel carga datos del backend sin errores", async ({ page }) => {
+  await login(page, "organizador@fexpo.test", "organizador");
+  const main = page.getByRole("main");
+  const screens: [string, RegExp | string][] = [
+    ["/panel", "Cafe Altiplano"],
+    ["/panel/metricas-evento", "Bloque Rojo"],
+    ["/panel/mapa-evento", "Publicada"],
+    ["/panel/zonas-categorias", "Bloque Rojo"],
+    ["/panel/gamificacion", "Nueva misión"],
+    ["/panel/eventos", "Evento activo"],
+  ];
+  for (const [path, text] of screens) {
+    await page.goto(path);
+    await expect(main.getByText(text).first(), path).toBeVisible();
+    await expect(main.getByRole("alert"), path).toHaveCount(0);
+  }
+  await expect(page.getByText("Datos de demostración.")).toHaveCount(0);
+});
+
 test("cuenta real sin rol: ve 'Sin acceso' con la opción de registrar su empresa", async ({ page }) => {
   await page.route("https://accounts.google.com/**", (route) => route.abort());
   await page.goto("/acceso?panel=expositor");

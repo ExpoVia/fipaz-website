@@ -18,8 +18,8 @@ const COLOR_OPTIONS = [
   { value: "pink", label: "Rosado" },
 ] as const;
 
-const field = "rounded-lg border-2 border-slate-300 bg-white px-2 py-1.5 text-sm focus:border-[var(--expo-blue)] focus:outline-none";
-const primaryButton = "inline-flex items-center gap-1.5 rounded-lg border-2 border-[var(--expo-navy)] bg-[var(--expo-blue)] px-3 py-1.5 text-xs font-black text-white disabled:opacity-60";
+const field = "min-h-10 rounded-lg border border-[#d7e3f3] bg-[#fbfdff] px-3 py-2 text-sm text-[#172344] focus:border-[#0878f9] focus:outline-none focus:ring-2 focus:ring-[#0878f9]/15";
+const primaryButton = "inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-[#0878f9] px-3.5 py-2 text-xs font-bold text-white transition-colors hover:bg-[#0067d9] disabled:opacity-50";
 
 export function ZonasCategoriasView() {
   const { eventId, eventName } = useOrganizerEvent();
@@ -167,13 +167,13 @@ function CategoriesSection({ eventId }: { eventId: string }) {
               </ul>
             )}
             <form onSubmit={(event) => void create(event)} className="mt-4 flex flex-wrap items-end gap-2 border-t border-[var(--expo-line)] pt-4 text-xs font-bold">
-              <label className="flex flex-1 flex-col gap-1">Nueva categoría<input value={label} onChange={(event) => setLabel(event.target.value)} maxLength={80} placeholder="Ej. Tecnología" className={field} /></label>
+              <label className="flex min-w-[12rem] flex-1 flex-col gap-1">Nueva categoría<input value={label} onChange={(event) => setLabel(event.target.value)} maxLength={80} placeholder="Ej. Tecnología" className={field} /></label>
               <label className="flex flex-col gap-1">Color
                 <select value={color} onChange={(event) => setColor(event.target.value)} className={field}>
                   {COLOR_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                 </select>
               </label>
-              <button type="submit" disabled={creating || !label.trim()} className={primaryButton}>{creating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}Agregar categoría</button>
+              <button type="submit" disabled={creating || !label.trim()} className={`${primaryButton} w-full sm:w-auto`}>{creating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}Agregar categoría</button>
             </form>
             {error && <p role="alert" className="mt-2 text-sm text-rose-700">{error}</p>}
           </>
@@ -211,9 +211,11 @@ function CategoryRow({ eventId, category, onSaved, onDeleted }: {
   return (
     <li className="py-3">
       <div className="flex flex-wrap items-center gap-2 text-sm">
-        <span aria-hidden="true" className="h-3 w-3 rounded-full" style={{ background: tokenColor(color || null) }} />
-        <label className="sr-only" htmlFor={`category-${category.id}`}>Nombre de la categoría {category.label}</label>
-        <input id={`category-${category.id}`} value={label} onChange={(event) => setLabel(event.target.value)} maxLength={80} className={`${field} min-w-0 flex-1 font-bold`} />
+        <div className="flex min-w-0 basis-full items-center gap-2.5 sm:basis-0 sm:flex-1">
+          <span aria-hidden="true" className="h-3 w-3 shrink-0 rounded-full" style={{ background: tokenColor(color || null) }} />
+          <label className="sr-only" htmlFor={`category-${category.id}`}>Nombre de la categoría {category.label}</label>
+          <input id={`category-${category.id}`} value={label} onChange={(event) => setLabel(event.target.value)} maxLength={80} className={`${field} min-w-0 flex-1 font-bold`} />
+        </div>
         <label className="sr-only" htmlFor={`category-color-${category.id}`}>Color de {category.label}</label>
         <select id={`category-color-${category.id}`} value={color} onChange={(event) => setColor(event.target.value)} className={field}>
           {COLOR_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}

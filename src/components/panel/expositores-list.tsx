@@ -55,10 +55,10 @@ export function ExpositoresList() {
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
           placeholder="Buscar por nombre, empresa o etiqueta"
-          className="min-w-0 flex-1 rounded-xl border-2 border-[var(--expo-line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--expo-blue)]"
+          className="min-h-11 min-w-0 flex-1 rounded-xl border border-[#d7e3f3] bg-white px-4 py-2.5 text-sm text-[#172344] outline-none transition-[border-color,box-shadow] placeholder:text-slate-500 focus:border-[#0878f9] focus:ring-2 focus:ring-[#0878f9]/15"
         />
-        <button type="submit" className="inline-flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-blue)] px-4 py-2 text-sm font-black text-white shadow-[2px_2px_0_var(--expo-navy)]">
-          <Search size={15} /> Buscar
+        <button type="submit" aria-label="Buscar" className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl bg-[#0878f9] px-3.5 text-sm font-bold text-white transition-[background-color,transform] duration-150 hover:bg-[#0067d9] active:scale-[0.97] sm:px-5">
+          <Search size={16} aria-hidden="true" /> <span className="hidden sm:inline">Buscar</span>
         </button>
       </form>
 
@@ -106,8 +106,8 @@ export function ExpositoresList() {
           <div className="mt-4 flex items-center justify-between gap-3 text-sm text-slate-500">
             <span>{stands.total === undefined ? `${stands.items.length} stands en esta página` : `${stands.total} stands`} · Página {stands.page}</span>
             <div className="flex gap-2">
-              <button type="button" disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="rounded-lg border-2 border-[var(--expo-line)] bg-white px-3 py-1.5 font-bold disabled:opacity-40">Anterior</button>
-              <button type="button" disabled={stands.items.length < PAGE_SIZE || (stands.total !== undefined && page * stands.limit >= stands.total)} onClick={() => setPage((current) => current + 1)} className="rounded-lg border-2 border-[var(--expo-line)] bg-white px-3 py-1.5 font-bold disabled:opacity-40">Siguiente</button>
+              <button type="button" disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="min-h-10 rounded-lg border border-[#d7e3f3] bg-white px-3.5 py-1.5 font-bold text-[#24436f] hover:bg-[#f4f8fd] disabled:opacity-40">Anterior</button>
+              <button type="button" disabled={stands.items.length < PAGE_SIZE || (stands.total !== undefined && page * stands.limit >= stands.total)} onClick={() => setPage((current) => current + 1)} className="min-h-10 rounded-lg border border-[#d7e3f3] bg-white px-3.5 py-1.5 font-bold text-[#24436f] hover:bg-[#f4f8fd] disabled:opacity-40">Siguiente</button>
             </div>
           </div>
         </>

@@ -1,0 +1,180 @@
+/* Movimiento ambiental de la ilustración "Registro de empresa": bucles lentos y
+   sutiles para que se sienta viva sin competir con el formulario. El reset global
+   de `prefers-reduced-motion` (globals.css) ya alcanza a estos nodos porque el SVG
+   va inline en el documento, no como `<img>`. */
+
+.floatA {
+  animation: ci-float 4.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.floatB {
+  animation: ci-float 3.6s ease-in-out infinite 0.5s;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+@keyframes ci-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+
+.sway {
+  animation: ci-sway 6.5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+@keyframes ci-sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+.breathe {
+  animation: ci-breathe 5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+@keyframes ci-breathe {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.018); }
+}
+
+.blink {
+  animation: ci-blink 5.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+@keyframes ci-blink {
+  0%, 94%, 100% { transform: scaleY(1); }
+  97% { transform: scaleY(0.12); }
+}
+
+.pulseRing {
+  animation: ci-pulse 2.8s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+@keyframes ci-pulse {
+  0% { transform: scale(0.85); opacity: 0.55; }
+  75%, 100% { transform: scale(1.9); opacity: 0; }
+}
+
+.shimmer {
+  animation: ci-shimmer 3.2s ease-in-out infinite;
+}
+
+@keyframes ci-shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.driftA {
+  animation: ci-drift 8.5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.driftB {
+  animation: ci-drift 10.5s ease-in-out infinite 1.2s reverse;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+@keyframes ci-drift {
+  0%, 100% { transform: translateY(0) rotate(45deg); }
+  50% { transform: translateY(-10px) rotate(54deg); }
+}
+
+.glow {
+  animation: ci-glow 7s ease-in-out infinite;
+}
+
+@keyframes ci-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.85; }
+}
+
+/* Reacción al formulario: las barras de los dos mini-gráficos crecen desde su base
+   conforme se completa el paso 1 (ver `progress` en CompanyIllustration). */
+.reactiveBar {
+  transition: transform 500ms cubic-bezier(0.23, 1, 0.32, 1);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+/* Insignia de verificado: gris mientras falta, "pop" a azul con rebote al completar. */
+.badgeCircle {
+  transition: fill 260ms ease, stroke 260ms ease;
+}
+
+.badgePop {
+  animation: ci-pop 380ms cubic-bezier(0.23, 1, 0.32, 1);
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+@keyframes ci-pop {
+  0% { transform: scale(0.55); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.badgeCheck {
+  transition: stroke 260ms ease;
+}
+
+/* Saludo al entrar al paso 2: un único gesto (no un bucle). El brazo gira desde el
+   hombro y el cuerpo da un pequeño salto, sincronizados, y vuelven a su postura solos. */
+.waveArm {
+  animation: ci-wave 1.9s ease-in-out 1;
+  transform-box: view-box;
+  transform-origin: 418px 214px;
+}
+
+@keyframes ci-wave {
+  0%   { transform: rotate(0deg); }
+  12%  { transform: rotate(-132deg); }
+  28%  { transform: rotate(-110deg); }
+  42%  { transform: rotate(-132deg); }
+  56%  { transform: rotate(-110deg); }
+  70%  { transform: rotate(-126deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.greet {
+  animation: ci-greet 1.9s ease-in-out 1;
+  transform-box: view-box;
+  transform-origin: 390px 305px;
+}
+
+@keyframes ci-greet {
+  0% { transform: translateY(0); }
+  15% { transform: translateY(-6px); }
+  30% { transform: translateY(0); }
+  45% { transform: translateY(-4px); }
+  60%, 100% { transform: translateY(0); }
+}
+
+/* Manitos tapando los ojos: entran/salen con la contraseña enfocada, no es un bucle. */
+.coverEyes {
+  transition: opacity 260ms ease, transform 260ms cubic-bezier(0.23, 1, 0.32, 1);
+  transform-box: view-box;
+  transform-origin: 390px 180px;
+}
+
+/* Burbuja "escribiendo": puntos que rebotan en cascada mientras está visible. */
+.dot {
+  animation: ci-dot 1.1s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+@keyframes ci-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}

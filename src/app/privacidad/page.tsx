@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacidadPage() {
   return (
     <LegalPage
+      current="privacidad"
       title="Política de privacidad"
       updatedAt="22 de octubre de 2026"
       intro="Esta política explica qué datos personales trata Fexpo (fexpo.lat) cuando usas la plataforma, para qué los usamos y qué derechos tienes sobre ellos."

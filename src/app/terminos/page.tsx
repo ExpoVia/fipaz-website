@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 export default function TerminosPage() {
   return (
     <LegalPage
+      current="terminos"
       title="Términos de servicio"
       updatedAt="22 de octubre de 2026"
       intro="Al acceder o usar Fexpo (fexpo.lat) aceptas estos términos. Si no estás de acuerdo con ellos, por favor no uses la plataforma."

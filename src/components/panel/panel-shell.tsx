@@ -91,13 +91,14 @@ export function PanelShell({ children }: PanelShellProps) {
   const exhibitorCompanyId = ready && activePanel === "expositor" ? getActiveCompany(session)?.id ?? null : null;
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[var(--expo-bg)]">
-      <PanelNavbar onMenuClick={() => setDrawerOpen(true)} />
-      <div className="flex flex-1 min-h-0">
+    <ExhibitorProvider key={exhibitorCompanyId ?? "organizador"} companyId={exhibitorCompanyId}>
+      <div className="fexpo-panel flex min-h-dvh">
         <PanelSidebar />
         <PanelMobileDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-[1400px]">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <PanelNavbar onMenuClick={() => setDrawerOpen(true)} />
+          <main className="min-w-0 flex-1 px-4 py-6 sm:px-7 lg:px-9 lg:py-8">
+            <div className="mx-auto w-full max-w-[1500px]">
             {verification === "unavailable" && session ? (
               <div className="flex min-h-[35vh] flex-col items-center justify-center gap-3 text-center">
                 <p className="font-black text-[var(--expo-navy)]">No pudimos validar tu sesión ahora.</p>
@@ -111,14 +112,11 @@ export function PanelShell({ children }: PanelShellProps) {
                 <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
                 Preparando tu panel…
               </div>
-            ) : (
-              <ExhibitorProvider key={exhibitorCompanyId ?? "organizador"} companyId={exhibitorCompanyId}>
-                {children}
-              </ExhibitorProvider>
-            )}
-          </div>
-        </main>
+            ) : children}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </ExhibitorProvider>
   );
 }

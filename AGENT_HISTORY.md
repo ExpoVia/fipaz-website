@@ -33,3 +33,52 @@ modifica los correos de soporte y contacto a soporte@fexpo.lat y contacto@fexpo.
 
 **Salida:**
 LegalPage.tsx (paginas /privacidad y /terminos) ahora usa soporte@fexpo.lat; ContactSection.tsx (landing) usa contacto@fexpo.lat. No se toco docs/contact-form-apps-script.md (NOTIFY_EMAIL, destinatario del Apps Script). Commit y push a main.
+
+### 2026-10-22T05:53:15Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+pero que no sea como una imagen que sea una integracion con el fondo que se vea vivido y que tenga movimientos
+
+**Salida:**
+La ilustracion de /registro-empresa paso de <img src=svg> dentro de una tarjeta blanca con borde y sombra a un <svg> inline (nuevo src/components/registration/CompanyIllustration.tsx), sin caja ni fondo blanco propio, apoyada directo sobre el degradado de la pagina para integrarse con el fondo. Se agrego src/components/registration/company-illustration.module.css con animaciones CSS en bucle (tarjetas flotantes, planta con balanceo, personaje que respira y parpadea, anillo de pulso en la insignia verificada, confeti geometrico a la deriva, resplandor ambiental); todas quedan alcanzadas por el reset global de prefers-reduced-motion de globals.css por ir inline en el documento. Se elimino public/assets/registration/company-registration.svg (el SVG estatico anterior). tsc sin errores, detector de Impeccable sin hallazgos, 4/4 tests e2e de registro de empresa en verde. Capturas en xl, desktop y mobile sin scroll horizontal. Sin commits.
+
+### 2026-10-22T06:00:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5.5)
+**Prompt:**
+estate mejorando lo que es este apartado http://localhost:3000/privacidad con /emil-design-eng y con /impeccable  que se vea de la mejor manera con los logotipos corectos y de la mejor manara manteniendo una buena linea visual
+
+**Salida:**
+Rediseño de /privacidad (y /terminos, que comparten LegalPage) con Impeccable y emil-design-eng. Se reemplazó el PixelLogo antiguo por el logotipo oficial /img/landing/fexpo-logo.png (cabecera y pie). LegalPage.tsx reescrito: cabecera sticky como el landing, banda con retícula de puntos y rombos del logotipo, selector Privacidad/Términos, píldora de fecha, índice lateral sticky con sección activa (nuevo LegalToc.tsx, desplegable en móvil), secciones con viñetas pixel, tarjeta de contacto y pie de marca. Nuevo legal.module.css (entrada escalonada de 520ms con ease-out del sistema, reduced-motion, hover solo con puntero fino, :active scale .97). Se añadió la prop current en ambas páginas. tsc y eslint sin errores, detector de Impeccable sin hallazgos, sin scroll horizontal en 1440 y 390px. Sin commits.
+
+### 2026-10-22T06:04:20Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+Crea tu perfil empresarial / Gestiona tus stands asignados / Consulta tus visitas verificadas -- quitale esa parte pero que mi svg cuando estemos llenado el formulaio este racionando
+
+**Salida:**
+Se quito la lista de 3 beneficios (Crea tu perfil empresarial / Gestiona tus stands asignados / Consulta tus visitas verificadas) de la columna izquierda de /registro-empresa; se elimino el const BENEFITS y el icono Store (quedo sin otros usos). La ilustracion (CompanyIllustration.tsx) ahora recibe progress (0 a 1, calculado en vivo con nombre/correo/categoria/descripcion validos del paso 1) y typing (true mientras hay tecleo reciente, se apaga solo tras 900ms de pausa via setTimeout en RegistrationForm). Reacciones: las barras del mini-grafico de la laptop y de la tarjeta flotante de visitas crecen con progress (CSS transition sobre transform:scaleY); la insignia de verificado pasa de gris a azul con un pop (keyframe propio, sin easing elastico) y un anillo de pulso solo al llegar a progress=1; aparece una burbuja de "escribiendo" (3 puntos) junto a la laptop mientras typing=true. Se agregaron las clases .reactiveBar/.badgeCircle/.badgePop/.badgeCheck/.dot a company-illustration.module.css. Iteracion: el detector de Impeccable marco bounce-easing (cubic-bezier con overshoot) en el pop de la insignia; se corrigio a un keyframe con overshoot propio sobre la curva ease-out ya usada en el resto del archivo. tsc sin errores, detector final sin hallazgos, 4/4 tests e2e de registro en verde. Capturas confirmando: barras minimas con el formulario vacio, burbuja de tecleo visible al escribir el nombre, barras crecidas a medio llenar, barras completas + insignia azul con check al completar los 4 campos. Sin commits.
+
+### 2026-10-22T05:51:57Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5.5)
+**Prompt:**
+de lo que hicimos has commit de los cambios que tenemos
+
+**Salida:**
+Commit d57f708 "feat(panel): mejorar responsividad y pulir formulario de registro": responsividad del panel (tabla de versiones del mapa como lista en movil, grids de KPIs apilables, metric-card, navbar, zonas-categorias-view) y el primer ajuste de /registro-empresa (layout propio sin RegistrationHeader, boton "Continuar", e2e actualizado). Sin push (regla: solo rama de feature, sin push salvo pedido explicito). Sin trailer de co-autoria (regla del usuario).
+
+### 2026-10-22T06:10:21Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5.5)
+**Prompt:**
+has los commit respectivos de cada cambio que se hizo de la mejor manera
+
+**Salida:**
+Tras el commit anterior aparecio en el arbol de trabajo un merge no solicitado (42da715, `git pull origin main`, trajo paginas legales y cambio de correos de otra sesion) mas cambios sin commitear de sesiones previas (ilustracion reactiva del registro, rediseno de /privacidad y /terminos); se pregunto al usuario como tratarlos y pidio incluirlos en la reorganizacion. Se separaron en dos commits ademas de este: 56a3fd5 "feat(registro): ilustracion animada y reactiva en el registro de empresa" (CompanyIllustration.tsx, company-illustration.module.css, borrado de company-registration.svg, RegistrationForm.tsx) y c513263 "feat(legal): redisenar las paginas de privacidad y terminos" (LegalPage.tsx, LegalToc.tsx, legal.module.css, privacidad/page.tsx, terminos/page.tsx). El commit d57f708 ya mergeado no se reescribio (habria requerido rehacer el merge de main). Sin push.
+
+### 2026-10-22T06:19:22Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+que el personaje tambien haga algo del svg que cuando entremos al 2 aparatado se ponga hacer algo interesante con lo que es el moviemiento de svg
+
+**Salida:**
+RegistrationForm.tsx ahora pasa step a CompanyIllustration (progress, typing, step). En CompanyIllustration.tsx: nuevo prop step y greeting=step===1; el brazo derecho del personaje quedo en su propio <g> y, junto con el grupo completo de la persona, gana una clase condicional (.waveArm / .greet) solo mientras greeting es true. Se agregaron a company-illustration.module.css las animaciones ci-wave (el brazo gira desde el hombro con transform-box:view-box y transform-origin absoluto en el pivote, tres vaivenes) y ci-greet (un salto leve de todo el cuerpo), ambas de un solo disparo (1.9s, sin loop, sin easing elastico) que terminan devolviendo el brazo y el cuerpo a su postura de reposo. Al no haber bucle, no compite con las animaciones ambientales existentes (flotar, respirar, parpadear) que siguen corriendo igual. Probado en el flujo real: se lleno el paso 1 y se hizo clic en Continuar, con capturas a 120/300/550/900/1300/1950ms tras el cambio de paso que muestran el brazo subiendo hacia la tarjeta de perfil verificado (lee como saludo y com senalar la insignia a la vez) y volviendo solo a la postura de reposo. tsc sin errores, detector de Impeccable sin hallazgos, 4/4 tests e2e de registro en verde. Sin commits.
+
+### 2026-10-22T06:30:46Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+que el personaje al scribir la contrasena se tape los ojito con sus manitos solo cuando estemos en el paso 2 al escibir la contrasena
+
+**Salida:**
+src/components/auth/password-auth-form.tsx (compartido con /acceso) gano el prop opcional onPasswordFocusChange, invocado en los onFocus/onBlur del input de contrasena; sin consumirlo, el comportamiento existente no cambia (verificado corriendo toda la suite de /acceso). RegistrationForm.tsx agrego el estado passwordFocused (mas un useEffect que lo resetea si step deja de ser 1, red de seguridad ademas del onBlur normal), lo pasa a Step2 -> PasswordAuthForm como onPasswordFocusChange, y a CompanyIllustration como coverEyes. En CompanyIllustration.tsx: los brazos de reposo (incluido el que saluda) ahora vive en un sub-grupo que se desvanece con coverEyes, y se agrego un segundo par de brazos+manos (paths nuevos, mismo grosor/paleta que los existentes) que sube desde el menton y cubre los ojos (las sonrisa queda visible debajo) con una transicion de opacity+translateY de entrada/salida (sin loop, clase .coverEyes en company-illustration.module.css), nada de esto interfiere con las animaciones ambientales. Probado en el flujo real completando el paso 1, pasando al paso 2 y haciendo foco/tecleo/blur real en el campo de contrasena del formulario con contrasena (variant fexpo, tone blue): las manos aparecen al enfocar, se quedan mientras se escribe y bajan solas al desenfocar. tsc sin errores, detector de Impeccable sin hallazgos en los 4 archivos tocados, suite completa de e2e: 30/31 en verde (la unica caida, resumen del organizador esperando el titulo Panorama del evento, es preexistente y no relacionada: el panel real ya mostraba Panorama de FIPAZ 2026 antes de esta sesion). Sin commits.

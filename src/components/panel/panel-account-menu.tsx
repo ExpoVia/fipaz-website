@@ -68,9 +68,9 @@ export function PanelAccountMenu() {
         onClick={() => setOpen((value) => !value)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="inline-flex max-w-[230px] items-center gap-2 rounded-xl border border-[#e3ebf7] bg-white px-2.5 py-2 text-xs font-extrabold text-[#17254a] shadow-[0_3px_12px_rgb(34_85_155_/_5%)] hover:bg-[#f7faff] sm:max-w-[290px]"
+        className="inline-flex max-w-[230px] items-center gap-2 rounded-xl border border-[#e3ebf7] bg-white px-2.5 py-2 text-xs font-extrabold text-[#17254a] shadow-[0_3px_12px_rgb(34_85_155_/_5%)] hover:bg-[#f7faff] sm:max-w-[290px] dark:border-[#223354] dark:bg-[#16233D] dark:text-[#F5F9FF] dark:hover:bg-[#1f3152]"
       >
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#eaf3ff] text-[#0878f9]"><UserRound aria-hidden="true" className="h-4 w-4" /></span>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#eaf3ff] text-[#0878f9] dark:bg-[#101A2E] dark:text-[#1479F5]"><UserRound aria-hidden="true" className="h-4 w-4" /></span>
         <span className="hidden max-w-44 truncate sm:inline">
           {activePanel ? PANEL_LABELS[activePanel] : session.displayName}
           {activeRole ? ` · ${describeRole(activeRole)}` : ""}
@@ -81,16 +81,16 @@ export function PanelAccountMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-40 mt-2 w-72 rounded-2xl border border-[#e3ebf7] bg-white p-2 shadow-[0_20px_55px_rgb(24_57_104_/_16%)]"
+          className="absolute right-0 z-40 mt-2 w-72 rounded-2xl border border-[#e3ebf7] bg-white p-2 shadow-[0_20px_55px_rgb(24_57_104_/_16%)] dark:border-[#223354] dark:bg-[#101A2E] dark:shadow-[0_20px_55px_rgb(0_0_0_/_50%)]"
         >
           <div className="px-2 py-1.5">
-            <p className="truncate text-sm font-black text-[var(--expo-navy)]">{session.displayName}</p>
-            <p className="truncate text-xs font-medium text-slate-500">{session.email}</p>
+            <p className="truncate text-sm font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">{session.displayName}</p>
+            <p className="truncate text-xs font-medium text-slate-500 dark:text-[#B8C7E6]">{session.email}</p>
           </div>
 
           {session.roles.length > 1 && (
-            <div className="border-t border-[var(--expo-line)] py-1">
-              <p className="px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-slate-400">Operar como</p>
+            <div className="border-t border-[var(--expo-line)] py-1 dark:border-[#223354]">
+              <p className="px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-slate-400 dark:text-[#B8C7E6]">Operar como</p>
               {session.roles.map((role) => {
                 const rolePanel = panelForRole(role.role);
                 const selected = role.id === activeRole?.id;
@@ -101,22 +101,22 @@ export function PanelAccountMenu() {
                     role="menuitemradio"
                     aria-checked={selected}
                     onClick={() => selectRole(role.id, rolePanel)}
-                    className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left text-xs font-bold text-[var(--expo-navy)] hover:bg-[var(--expo-bg)]"
+                    className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left text-xs font-bold text-[var(--expo-navy)] hover:bg-[var(--expo-bg)] dark:text-[#F5F9FF] dark:hover:bg-[#16233D]"
                   >
                     <span className="truncate">{PANEL_LABELS[rolePanel]} · {describeRole(role)}</span>
-                    {selected && <Check aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-[var(--expo-blue)]" />}
+                    {selected && <Check aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-[var(--expo-blue)] dark:text-[#1479F5]" />}
                   </button>
                 );
               })}
             </div>
           )}
 
-          <div className="border-t border-[var(--expo-line)] pt-1">
+          <div className="border-t border-[var(--expo-line)] pt-1 dark:border-[#223354]">
             <button
               type="button"
               role="menuitem"
               onClick={() => endSession(false)}
-              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs font-bold text-[var(--expo-navy)] hover:bg-[var(--expo-bg)]"
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs font-bold text-[var(--expo-navy)] hover:bg-[var(--expo-bg)] dark:text-[#F5F9FF] dark:hover:bg-[#16233D]"
             >
               <LogOut aria-hidden="true" className="h-3.5 w-3.5" />
               Cerrar sesión
@@ -125,7 +125,7 @@ export function PanelAccountMenu() {
               type="button"
               role="menuitem"
               onClick={() => endSession(true)}
-              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs font-bold text-slate-500 hover:bg-[var(--expo-bg)]"
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs font-bold text-slate-500 hover:bg-[var(--expo-bg)] dark:text-[#B8C7E6] dark:hover:bg-[#16233D]"
             >
               <LogOut aria-hidden="true" className="h-3.5 w-3.5" />
               Cerrar sesión en todos los dispositivos

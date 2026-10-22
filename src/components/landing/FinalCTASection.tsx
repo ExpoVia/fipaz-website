@@ -46,7 +46,7 @@ export function FinalCTASection() {
     <section
       ref={root}
       id="contacto"
-      className="relative scroll-mt-24 overflow-hidden bg-gradient-to-br from-[var(--expo-navy)] via-[#3D2D5B] to-[var(--expo-blue)] py-24 text-white md:py-32"
+      className="relative scroll-mt-24 overflow-hidden bg-gradient-to-br from-[var(--expo-navy)] via-[#3D2D5B] to-[var(--expo-blue)] py-24 text-white md:py-32 dark:from-[#0B1220] dark:via-[#16233D] dark:to-[#101A2E] dark:border-t dark:border-[#223354]"
     >
       {/* Pixel grid and confetti drift at their own speeds */}
       <div
@@ -79,7 +79,7 @@ export function FinalCTASection() {
       <div className="relative mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
         <div
           data-fx-eyebrow
-          className="mb-7 inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-white/10 px-4 py-1.5 text-xs font-bold tracking-wide text-sky-200"
+          className="mb-7 inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-white/10 px-4 py-1.5 text-xs font-bold tracking-wide text-sky-200 dark:border-[#223354] dark:bg-[#16233D]/60 dark:text-[#A9D0FF]"
         >
           <Sparkles className="h-3.5 w-3.5 text-amber-300" />
           Validación y mejora continua
@@ -94,14 +94,14 @@ export function FinalCTASection() {
           <span className="-mb-[0.12em] block overflow-hidden pb-[0.12em]">
             <span
               data-fx-line
-              className="block text-[var(--expo-yellow)]"
+              className="block text-[var(--expo-yellow)] dark:text-[#FFCA35]"
             >
               Fexpo para ti?
             </span>
           </span>
         </h2>
 
-        <p data-fx-copy className="mx-auto mt-8 max-w-2xl text-base leading-relaxed font-medium text-slate-200 sm:text-xl">
+        <p data-fx-copy className="mx-auto mt-8 max-w-2xl text-base leading-relaxed font-medium text-slate-200 sm:text-xl dark:text-[#B8C7E6]">
           Estamos validando una experiencia temprana y queremos aprender de visitantes, expositores y organizadores para construir la versión ideal.
         </p>
 
@@ -110,7 +110,7 @@ export function FinalCTASection() {
             <span data-fx-magnet className="inline-block">
               <Link
                 href="/demo"
-                className={`${fx.slab} ${fx.press} group inline-flex items-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-8 py-4 text-[var(--expo-navy)] [--slab-color:rgba(0,0,0,0.45)] [--slab-offset:10px] hover:bg-[#FFE066]`}
+                className={`${fx.slab} ${fx.press} group inline-flex items-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-8 py-4 text-[var(--expo-navy)] [--slab-color:rgba(0,0,0,0.45)] [--slab-offset:10px] hover:bg-[#FFE066] dark:bg-[#FFCA35] dark:text-[#0B1220] dark:hover:bg-[#ffe066]`}
               >
                 <span className="text-lg font-black">Probar demo</span>
                 <ArrowRight className="h-5 w-5 stroke-[3] transition-transform duration-200 ease-[var(--ease-out)] group-hover:translate-x-1 motion-reduce:group-hover:translate-x-0" />
@@ -122,7 +122,7 @@ export function FinalCTASection() {
             <span data-fx-magnet className="inline-block">
               <Link
                 href="/feedback"
-                className={`${fx.slab} ${fx.press} inline-flex items-center gap-2.5 rounded-xl border border-white/25 bg-white/15 px-7 py-4 text-white [--slab-color:rgba(0,0,0,0.3)] [--slab-offset:10px] hover:bg-white/25`}
+                className={`${fx.slab} ${fx.press} inline-flex items-center gap-2.5 rounded-xl border border-white/25 bg-white/15 px-7 py-4 text-white [--slab-color:rgba(0,0,0,0.3)] [--slab-offset:10px] hover:bg-white/25 dark:border-[#223354] dark:bg-[#16233D] dark:text-[#F5F9FF] dark:hover:bg-[#223354]`}
               >
                 <MessageSquareCheck className="h-5 w-5" />
                 <span className="text-lg font-bold">Dejar feedback</span>

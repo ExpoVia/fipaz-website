@@ -5,7 +5,7 @@ import styles from "./legal.module.css";
 
 export type TocItem = { id: string; title: string };
 
-const linkClass = `${styles.tocLink} block rounded-lg px-3 py-2 text-sm font-bold leading-snug text-slate-600 hover:bg-white hover:text-[var(--expo-blue)]`;
+const linkClass = `${styles.tocLink} block rounded-lg px-3 py-2 text-sm font-bold leading-snug text-slate-600 hover:bg-white hover:text-[var(--expo-blue)] dark:text-[#B8C7E6] dark:hover:bg-[#16233D] dark:hover:text-[#A9D0FF]`;
 
 export function LegalToc({ items }: { items: TocItem[] }) {
   const [active, setActive] = useState<string | null>(null);
@@ -46,8 +46,8 @@ export function LegalToc({ items }: { items: TocItem[] }) {
 
   return (
     <>
-      <details className="group rounded-xl border-2 border-[var(--expo-line)] bg-white lg:hidden">
-        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 text-sm font-extrabold text-[var(--expo-navy)] [&::-webkit-details-marker]:hidden">
+      <details className="group rounded-xl border-2 border-[var(--expo-line)] bg-white lg:hidden dark:border-[#223354] dark:bg-[#101A2E]">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 text-sm font-extrabold text-[var(--expo-navy)] dark:text-[#F5F9FF] [&::-webkit-details-marker]:hidden">
           En esta página
           <svg
             aria-hidden="true"
@@ -60,13 +60,13 @@ export function LegalToc({ items }: { items: TocItem[] }) {
             <path d="M2 4l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </summary>
-        <nav aria-label="Secciones" className="border-t-2 border-[var(--expo-line)] p-2">
+        <nav aria-label="Secciones" className="border-t-2 border-[var(--expo-line)] p-2 dark:border-[#223354]">
           {list}
         </nav>
       </details>
 
       <nav aria-label="Secciones" className="hidden lg:block">
-        <p className="px-3 pb-2 text-sm font-extrabold text-[var(--expo-navy)]">En esta página</p>
+        <p className="px-3 pb-2 text-sm font-extrabold text-[var(--expo-navy)] dark:text-[#F5F9FF]">En esta página</p>
         {list}
       </nav>
     </>

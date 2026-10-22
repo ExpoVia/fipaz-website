@@ -9,6 +9,7 @@ import { Drawer } from "vaul";
 import { ArrowLeft, Loader2, Lock, Menu } from "lucide-react";
 
 import { DemoBadge } from "@/components/shared/demo-badge";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { getAdminNavigation } from "@/config/admin-navigation";
 import type { AdminNavigationItem } from "@/config/admin-navigation";
 import type { PanelRole } from "@/config/panel-navigation";
@@ -103,29 +104,37 @@ function AdminNavList({ onNavigate }: { onNavigate?: () => void }) {
 
 function AdminNavbar({ onMenuClick, onLogout, demoModules }: { onMenuClick: () => void; onLogout: () => void; demoModules: boolean }) {
   return (
-    <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between gap-3 border-b border-[#e5edf8] bg-white/95 px-4 backdrop-blur-md sm:px-7 lg:px-9">
+    <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between gap-3 border-b border-[#e5edf8] bg-white/95 px-4 backdrop-blur-md sm:px-7 lg:px-9 dark:border-[#223354] dark:bg-[#101A2E]/95">
       <div className="flex min-w-0 items-center gap-3">
         <button
           type="button"
           onClick={onMenuClick}
           aria-label="Abrir navegación de administración"
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#dfe8f5] text-[#314b78] hover:bg-[#f1f6fd] lg:hidden"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#dfe8f5] text-[#314b78] hover:bg-[#f1f6fd] lg:hidden dark:border-[#223354] dark:text-[#B8C7E6] dark:hover:bg-[#16233D]"
         >
           <Menu aria-hidden="true" className="h-5 w-5" />
         </button>
-        <Link href="/panel" aria-label="Fexpo, volver al panel" className="lg:hidden"><Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={104} height={32} priority className="h-auto w-[104px]" /></Link>
+        <Link href="/panel" aria-label="Fexpo, volver al panel" className="lg:hidden">
+          <Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={104} height={32} priority className="h-auto w-[104px]" />
+        </Link>
         <div className="panel-surface hidden items-center gap-3 px-4 py-2.5 sm:flex">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eaf3ff] text-[#0878f9]"><Lock aria-hidden="true" className="h-5 w-5" /></span>
-          <span><span className="block text-sm font-extrabold text-[#17254a]">Administración</span><span className="block text-xs font-medium text-[#7185aa]">Gestión de stands y eventos</span></span>
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eaf3ff] text-[#0878f9] dark:bg-[#16233D] dark:text-[#1479F5]">
+            <Lock aria-hidden="true" className="h-5 w-5" />
+          </span>
+          <span>
+            <span className="block text-sm font-extrabold text-[#17254a] dark:text-[#F5F9FF]">Administración</span>
+            <span className="block text-xs font-medium text-[#7185aa] dark:text-[#B8C7E6]">Gestión de stands y eventos</span>
+          </span>
         </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-4">
-        <Link href="/panel" className="inline-flex items-center gap-1 text-xs font-bold text-[#0878f9] hover:underline">
+        <ThemeToggle variant="icon" />
+        <Link href="/panel" className="inline-flex items-center gap-1 text-xs font-bold text-[#0878f9] hover:underline dark:text-[#1479F5]">
           <ArrowLeft aria-hidden="true" className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Volver al panel</span><span className="sm:hidden">Panel</span>
         </Link>
         {!demoModules && (
-          <button type="button" onClick={onLogout} className="hidden text-xs font-bold text-[#667da3] hover:text-[#0878f9] sm:inline">
+          <button type="button" onClick={onLogout} className="hidden text-xs font-bold text-[#667da3] hover:text-[#0878f9] sm:inline dark:text-[#B8C7E6] dark:hover:text-[#1479F5]">
             Cerrar sesión
           </button>
         )}
@@ -138,14 +147,18 @@ function AdminSidebar() {
   return (
     <aside
       aria-label="Navegación de administración"
-      className="panel-sidebar sticky top-0 hidden h-dvh w-[268px] shrink-0 flex-col border-r border-[#e5edf8] bg-white px-5 pb-6 pt-7 lg:flex"
+      className="panel-sidebar sticky top-0 hidden h-dvh w-[268px] shrink-0 flex-col border-r border-[#e5edf8] bg-white px-5 pb-6 pt-7 lg:flex dark:border-[#223354] dark:bg-[#101A2E]"
     >
-      <Link href="/panel" aria-label="Fexpo, volver al panel" className="mb-11 inline-flex w-fit items-center px-2"><Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={160} height={48} priority className="h-auto w-[148px]" /></Link>
-      <p className="mb-3 px-4 text-[10px] font-extrabold uppercase tracking-[0.17em] text-[#96a6c1]">Administración</p>
+      <Link href="/panel" aria-label="Fexpo, volver al panel" className="mb-11 inline-flex w-fit items-center px-2">
+        <Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={160} height={48} priority className="h-auto w-[148px]" />
+      </Link>
+      <p className="mb-3 px-4 text-[10px] font-extrabold uppercase tracking-[0.17em] text-[#96a6c1] dark:text-[#B8C7E6]">Administración</p>
       <nav aria-label="Módulos de administración" className="min-h-0 flex-1 overflow-y-auto pr-1">
         <AdminNavList />
       </nav>
-      <Link href="/panel" className="panel-nav-link mt-5 border-t border-[#e8eef7] pt-4"><ArrowLeft aria-hidden="true" className="h-[18px] w-[18px]" />Volver al panel</Link>
+      <Link href="/panel" className="panel-nav-link mt-5 border-t border-[#e8eef7] pt-4 dark:border-[#223354]">
+        <ArrowLeft aria-hidden="true" className="h-[18px] w-[18px]" />Volver al panel
+      </Link>
     </aside>
   );
 }
@@ -155,11 +168,13 @@ function AdminMobileDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
     <Drawer.Root direction="left" open={open} onOpenChange={onOpenChange}>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-40 bg-black/40 lg:hidden" />
-        <Drawer.Content className="fixed inset-y-0 left-0 z-50 flex w-[85vw] max-w-xs flex-col gap-6 overflow-y-auto border-r border-[#e5edf8] bg-white p-5 outline-none lg:hidden">
+        <Drawer.Content className="fixed inset-y-0 left-0 z-50 flex w-[85vw] max-w-xs flex-col gap-6 overflow-y-auto border-r border-[#e5edf8] bg-white p-5 outline-none lg:hidden dark:border-[#223354] dark:bg-[#101A2E]">
           <Drawer.Title className="sr-only">Navegación de administración</Drawer.Title>
           <Drawer.Description className="sr-only">Módulos del panel de administración</Drawer.Description>
-          <Link href="/panel" onClick={() => onOpenChange(false)} aria-label="Fexpo, volver al panel"><Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={140} height={42} className="h-auto w-[140px]" /></Link>
-          <p className="-mb-4 px-3 text-[10px] font-extrabold uppercase tracking-[0.17em] text-[#96a6c1]">Administración</p>
+          <Link href="/panel" onClick={() => onOpenChange(false)} aria-label="Fexpo, volver al panel">
+            <Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={140} height={42} className="h-auto w-[140px]" />
+          </Link>
+          <p className="-mb-4 px-3 text-[10px] font-extrabold uppercase tracking-[0.17em] text-[#96a6c1] dark:text-[#B8C7E6]">Administración</p>
           <nav aria-label="Módulos de administración">
             <AdminNavList onNavigate={() => onOpenChange(false)} />
           </nav>
@@ -214,13 +229,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   if (!demoModules && authHydrated && session && sessionVerification === "unavailable") {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-[var(--expo-bg)] px-5 text-center">
-        <p className="font-black text-[var(--expo-navy)]">No se pudo validar la sesión de empresa.</p>
-        <p className="max-w-md text-sm text-slate-500">La sesión se conserva. El servicio de autenticación no responde ahora; inténtalo de nuevo cuando la conexión esté disponible.</p>
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-[var(--expo-bg)] px-5 text-center dark:bg-[#0B1220]">
+        <p className="font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">No se pudo validar la sesión de empresa.</p>
+        <p className="max-w-md text-sm text-slate-500 dark:text-[#B8C7E6]">La sesión se conserva. El servicio de autenticación no responde ahora; inténtalo de nuevo cuando la conexión esté disponible.</p>
         <button
           type="button"
           onClick={() => void retrySessionVerification()}
-          className="rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-4 py-2 text-sm font-black text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)]"
+          className="rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-4 py-2 text-sm font-black text-[var(--expo-navy)] shadow-[3px_3px_0_var(--expo-navy)] dark:border-[#223354] dark:bg-[#FFCA35] dark:text-[#0B1220] dark:shadow-none"
         >
           Reintentar
         </button>
@@ -230,7 +245,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   if (!demoModules && (!authHydrated || !companyAdmin)) {
     return (
-      <div className="flex min-h-dvh items-center justify-center gap-3 bg-[var(--expo-bg)] text-sm font-bold text-slate-400">
+      <div className="flex min-h-dvh items-center justify-center gap-3 bg-[var(--expo-bg)] text-sm font-bold text-slate-400 dark:bg-[#0B1220] dark:text-[#B8C7E6]">
         {authHydrated && !session ? <Lock aria-hidden="true" size={18} /> : <Loader2 aria-hidden="true" className="animate-spin" size={18} />}
         <span>{authHydrated && !session ? "Necesitas una sesión de empresa para entrar." : "Verificando sesión de empresa…"}</span>
       </div>
@@ -253,7 +268,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <main id="admin-content" className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-9 lg:py-8">
             <div className="mx-auto w-full max-w-[1440px]">
               {demoModules && (
-                <p className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border-2 border-[var(--expo-blue)] bg-white px-3 py-2.5 text-xs font-medium leading-5 text-[var(--expo-navy)]">
+                <p className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border-2 border-[var(--expo-blue)] bg-white px-3 py-2.5 text-xs font-medium leading-5 text-[var(--expo-navy)] dark:border-[#223354] dark:bg-[#16233D] dark:text-[#F5F9FF]">
                   <DemoBadge label="Prototipo · datos de demostración" />
                   Gestión del stand con datos simulados: no se guarda nada fuera de este navegador.
                 </p>

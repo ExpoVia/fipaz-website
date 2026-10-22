@@ -1,9 +1,20 @@
 @import "lenis/dist/lenis.css";
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f4fafc;
   --foreground: #2f2d4c;
+  --surface: #ffffff;
+  --surface-2: #f1f6fd;
+  --primary: #1677b8;
+  --primary-soft: #82b5e3;
+  --text-main: #17254a;
+  --text-secondary: #62749b;
+  --border: #d8e5ec;
+  --accent: #ffc21a;
+
   --expo-blue: #1677b8;
   --expo-navy: #2f2d4c;
   --expo-lilac: #b984b6;
@@ -23,9 +34,46 @@
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
+.dark {
+  color-scheme: dark;
+  --background: #0B1220;
+  --foreground: #F5F9FF;
+  --surface: #101A2E;
+  --surface-2: #16233D;
+  --primary: #1479F5;
+  --primary-soft: #A9D0FF;
+  --text-main: #F5F9FF;
+  --text-secondary: #B8C7E6;
+  --border: #223354;
+  --accent: #FFCA35;
+
+  --expo-blue: #1479F5;
+  --expo-navy: #0B1220;
+  --expo-lilac: #A9D0FF;
+  --expo-pink: #f4a2c0;
+  --expo-yellow: #FFCA35;
+  --expo-green: #48bb78;
+  --expo-mint: #68d391;
+  --expo-sky: #63b3ed;
+  --expo-purple: #9f7aea;
+  --expo-coral: #f56565;
+  --expo-bg: #0B1220;
+  --expo-card: #101A2E;
+  --expo-line: #223354;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-primary: var(--primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-text-main: var(--text-main);
+  --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+
   --color-expo-blue: var(--expo-blue);
   --color-expo-navy: var(--expo-navy);
   --color-expo-lilac: var(--expo-lilac);

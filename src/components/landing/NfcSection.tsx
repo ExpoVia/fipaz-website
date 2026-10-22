@@ -103,46 +103,61 @@ export function NfcSection() {
   useScrollFx(root, playNfc);
 
   const nfcSequence = [
-    { step: "01", text: "Acerca tu teléfono", desc: "Paso ilustrativo; no activa el NFC del dispositivo.", color: "bg-sky-50 border-sky-200" },
-    { step: "02", text: "NFC detectado (simulado)", desc: "La demo ilustra cómo podría validarse la presencia en un stand.", color: "bg-indigo-50 border-indigo-200" },
-    { step: "03", text: "Visita de ejemplo", desc: "El check-in se muestra en el historial de demostración.", color: "bg-emerald-50 border-emerald-200" },
+    {
+      step: "01",
+      text: "Acerca tu teléfono",
+      desc: "Paso ilustrativo; no activa el NFC del dispositivo.",
+      color: "bg-sky-50 border-sky-200 dark:bg-[#16233D] dark:border-[#223354]",
+    },
+    {
+      step: "02",
+      text: "NFC detectado (simulado)",
+      desc: "La demo ilustra cómo podría validarse la presencia en un stand.",
+      color: "bg-indigo-50 border-indigo-200 dark:bg-[#16233D] dark:border-[#223354]",
+    },
+    {
+      step: "03",
+      text: "Visita de ejemplo",
+      desc: "El check-in se muestra en el historial de demostración.",
+      color: "bg-emerald-50 border-emerald-200 dark:bg-[#16233D] dark:border-[#223354]",
+    },
     {
       step: "04",
       text: `+${DEMO_FIXTURE.points.perNewVisit} puntos de ejemplo`,
       desc: `Regla ilustrativa: una visita nueva suma ${DEMO_FIXTURE.points.perNewVisit}; repetirla suma ${DEMO_FIXTURE.points.duplicateVisit}.`,
-      color: "bg-amber-50 border-amber-200",
+      color: "bg-amber-50 border-amber-200 dark:bg-[#16233D] dark:border-[#223354]",
     },
   ];
 
   return (
-    <section ref={root} className="relative overflow-hidden border-t border-[var(--expo-line)] bg-[var(--expo-bg)] py-20 md:py-28">
-      <div aria-hidden="true" data-fx-depth="30" className={`${fx.dots} pointer-events-none absolute inset-x-0 -top-24 -bottom-24`} />
+    <section ref={root} className="relative overflow-hidden border-t border-[var(--expo-line)] bg-[var(--expo-bg)] py-20 md:py-28 dark:border-[#223354]">
+      <div aria-hidden="true" data-fx-depth="30" className={`${fx.dots} pointer-events-none absolute inset-x-0 -top-24 -bottom-24 dark:opacity-20`} />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-4xl text-center">
           <div
             data-fx-intro
-            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-[var(--expo-mint)]/40 px-3.5 py-1 text-xs font-black tracking-wider text-emerald-900 uppercase"
+            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-[var(--expo-mint)]/40 px-3.5 py-1 text-xs font-black tracking-wider text-emerald-900 uppercase dark:border-emerald-500/40 dark:bg-emerald-950/40 dark:text-emerald-300"
           >
-            <Zap className="h-3.5 w-3.5 text-emerald-700" />
+            <Zap className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-400" />
             INTERACCIÓN SIMULADA
           </div>
 
           <h2
             data-fx-heading
-            className={`${headingFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl lg:text-6xl`}
+            className={`${headingFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl lg:text-6xl dark:text-[#F5F9FF]`}
           >
             Check-in y puntos de ejemplo.
           </h2>
 
-          <p data-fx-intro className="mx-auto mt-6 max-w-2xl text-base font-medium text-slate-700 sm:text-lg">
+          <p data-fx-intro className="mx-auto mt-6 max-w-2xl text-base font-medium text-slate-700 sm:text-lg dark:text-[#B8C7E6]">
             Una demostración del recorrido que podría ofrecer Fexpo durante una feria.
           </p>
 
           {/* Mandatory tag label */}
           <div data-fx-intro className="mt-5 inline-block">
-            <span className="rounded-full border border-[var(--expo-blue)]/15 bg-white px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-navy)] shadow-sm">
+            <span className="rounded-full border border-[var(--expo-blue)]/15 bg-white px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-navy)] shadow-sm dark:border-[#223354] dark:bg-[#16233D] dark:text-[#F5F9FF]">
               Datos de demostración
             </span>
           </div>
@@ -152,23 +167,23 @@ export function NfcSection() {
         <div data-fx-columns className="mt-16 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
           {/* Left: NFC sequence */}
           <div data-fx-in="left" className="lg:col-span-6">
-            <div className={`${fx.slab} rounded-2xl border border-black/5 bg-white p-6 [--slab-offset:14px]`}>
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className={`${fx.slab} rounded-2xl border border-black/5 bg-white p-6 [--slab-offset:14px] dark:border-[#223354] dark:bg-[#101A2E]`}>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-[#223354]">
                 <div className="flex items-center gap-3">
                   <PixelNfcPlaque className="h-10 w-10" />
                   <div>
-                    <h3 className="text-lg font-black text-[var(--expo-navy)]">Secuencia de Check-in NFC</h3>
-                    <p className="font-mono text-xs text-slate-500">PLACA ILUSTRATIVA · SIN NFC ACTIVO</p>
+                    <h3 className="text-lg font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">Secuencia de Check-in NFC</h3>
+                    <p className="font-mono text-xs text-slate-500 dark:text-[#B8C7E6]">PLACA ILUSTRATIVA · SIN NFC ACTIVO</p>
                   </div>
                 </div>
-                <span className="rounded border border-emerald-300 bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-800">
+                <span className="rounded border border-emerald-300 bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-800 dark:border-emerald-500/40 dark:bg-emerald-950/40 dark:text-emerald-300">
                   SIMULACIÓN
                 </span>
               </div>
 
               {/* 4 sequence steps, joined by a rail that fills as the check-in advances */}
               <div data-fx-sequence className="relative mt-5">
-                <span aria-hidden="true" className="absolute top-6 bottom-6 left-[27px] w-1 rounded-full bg-slate-200">
+                <span aria-hidden="true" className="absolute top-6 bottom-6 left-[27px] w-1 rounded-full bg-slate-200 dark:bg-[#223354]">
                   <span data-fx-rail className="block h-full origin-top rounded-full bg-[var(--expo-blue)]" />
                 </span>
 
@@ -181,16 +196,16 @@ export function NfcSection() {
                     >
                       <span
                         data-fx-chip
-                        className={`${fx.chip} rounded border border-slate-300 bg-white px-2 py-0.5 font-mono text-sm font-black text-[var(--expo-blue)] shadow-xs`}
+                        className={`${fx.chip} rounded border border-slate-300 bg-white px-2 py-0.5 font-mono text-sm font-black text-[var(--expo-blue)] shadow-xs dark:border-[#223354] dark:bg-[#101A2E] dark:text-[#A9D0FF]`}
                       >
                         {item.step}
                       </span>
                       <div className="flex-1">
-                        <h4 className="flex items-center gap-1.5 text-sm font-black text-[var(--expo-navy)]">
+                        <h4 className="flex items-center gap-1.5 text-sm font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">
                           {item.text}
                           {idx === 3 && <PixelStar className="h-4 w-4" />}
                         </h4>
-                        <p className="mt-0.5 text-xs font-medium text-slate-600">{item.desc}</p>
+                        <p className="mt-0.5 text-xs font-medium text-slate-600 dark:text-[#B8C7E6]">{item.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -202,33 +217,33 @@ export function NfcSection() {
           {/* Right: mission and reward */}
           <div className="space-y-8 lg:col-span-6">
             <div data-fx-in="right">
-              <div className={`${fx.slab} rounded-2xl border border-black/5 bg-white p-6 [--slab-offset:14px]`}>
+              <div className={`${fx.slab} rounded-2xl border border-black/5 bg-white p-6 [--slab-offset:14px] dark:border-[#223354] dark:bg-[#101A2E]`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Award className="h-5 w-5 text-[var(--expo-purple)]" />
-                    <span className="text-xs font-bold tracking-wide text-[var(--expo-purple)] uppercase">Misión de ejemplo</span>
+                    <Award className="h-5 w-5 text-[var(--expo-purple)] dark:text-[#c4a1ff]" />
+                    <span className="text-xs font-bold tracking-wide text-[var(--expo-purple)] uppercase dark:text-[#c4a1ff]">Misión de ejemplo</span>
                   </div>
-                  <span className="rounded-full bg-[var(--expo-yellow)] px-2.5 py-0.5 text-xs font-extrabold text-[var(--expo-navy)]">
+                  <span className="rounded-full bg-[var(--expo-yellow)] px-2.5 py-0.5 text-xs font-extrabold text-[var(--expo-navy)] dark:bg-[#FFCA35] dark:text-[#0B1220]">
                     2 / 3 stands
                   </span>
                 </div>
 
-                <h3 className="mt-3 text-xl font-black text-[var(--expo-navy)]">Ruta FIPAZ</h3>
+                <h3 className="mt-3 text-xl font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">Ruta FIPAZ</h3>
 
-                <p className="mt-1 text-xs font-medium text-slate-600">
+                <p className="mt-1 text-xs font-medium text-slate-600 dark:text-[#B8C7E6]">
                   {DEMO_FIXTURE.mission.description} Cada primera visita suma {DEMO_FIXTURE.points.perNewVisit} puntos; repetirla suma{" "}
                   {DEMO_FIXTURE.points.duplicateVisit}.
                 </p>
 
                 {/* Progress bar: the gradient is revealed, never stretched */}
                 <div className="mt-4">
-                  <div className="mb-1 flex justify-between text-xs font-bold text-slate-700">
+                  <div className="mb-1 flex justify-between text-xs font-bold text-slate-700 dark:text-[#B8C7E6]">
                     <span>Progreso de visitas</span>
                     <span data-fx-progress-label className="tabular-nums">
                       67%
                     </span>
                   </div>
-                  <div className="h-3 w-full overflow-hidden rounded-full border border-slate-300 bg-slate-100">
+                  <div className="h-3 w-full overflow-hidden rounded-full border border-slate-300 bg-slate-100 dark:border-[#223354] dark:bg-[#16233D]">
                     <div
                       data-fx-progress
                       className="h-full w-full rounded-full bg-gradient-to-r from-[var(--expo-blue)] via-[var(--expo-purple)] to-[var(--expo-lilac)]"
@@ -241,18 +256,18 @@ export function NfcSection() {
 
             <div data-fx-in="right">
               <div
-                className={`${fx.slab} ${fx.rewardCard} rounded-2xl border border-black/5 bg-[#fdeef4] p-6 [--slab-offset:14px]`}
+                className={`${fx.slab} ${fx.rewardCard} rounded-2xl border border-black/5 bg-[#fdeef4] p-6 [--slab-offset:14px] dark:border-[#223354] dark:bg-[#16233D]`}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="mb-2 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[10px] font-bold tracking-wide text-[var(--expo-purple)] uppercase shadow-sm">
+                    <div className="mb-2 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[10px] font-bold tracking-wide text-[var(--expo-purple)] uppercase shadow-sm dark:bg-[#101A2E] dark:text-[#FFCA35]">
                       <Sparkles className="h-3 w-3 text-amber-500" />
                       Propuesta de recompensa
                     </div>
-                    <h4 className="text-lg font-black text-[var(--expo-navy)]">
+                    <h4 className="text-lg font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">
                       Propuesta: {DEMO_FIXTURE.stands[0].promotion} en {DEMO_FIXTURE.stands[0].name} · {DEMO_FIXTURE.stands[0].boothCode}
                     </h4>
-                    <p className="mt-1 text-xs font-medium text-slate-700">Premio ilustrativo, sin cupón válido ni canje confirmado.</p>
+                    <p className="mt-1 text-xs font-medium text-slate-700 dark:text-[#B8C7E6]">Premio ilustrativo, sin cupón válido ni canje confirmado.</p>
                   </div>
 
                   <span data-fx-chest className="ml-2 shrink-0">
@@ -265,8 +280,8 @@ export function NfcSection() {
             </div>
 
             <div data-fx-in="right">
-              <div className={`${fx.slab} rounded-xl border border-black/5 bg-white p-4 [--slab-lift:2px] [--slab-offset:7px]`}>
-                <p className="text-sm leading-snug font-bold text-slate-800">
+              <div className={`${fx.slab} rounded-xl border border-black/5 bg-white p-4 [--slab-lift:2px] [--slab-offset:7px] dark:border-[#223354] dark:bg-[#101A2E]`}>
+                <p className="text-sm leading-snug font-bold text-slate-800 dark:text-[#F5F9FF]">
                   “Cada visita puede convertirse en progreso, descubrimiento y una nueva razón para seguir explorando el recinto.”
                 </p>
               </div>

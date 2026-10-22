@@ -645,3 +645,41 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Pantalla de acceso: entrada escalonada, imagen que se asienta y autocompletado sin el fondo amarillo del navegador. */
+@keyframes access-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes access-settle {
+  from {
+    opacity: 0;
+    transform: scale(1.035);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.access-rise {
+  animation: access-rise 460ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  animation-delay: var(--access-delay, 0ms);
+}
+
+.access-settle {
+  animation: access-settle 900ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.access-field:-webkit-autofill,
+.access-field:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0f1b5c;
+  box-shadow: 0 0 0 1000px #fff inset;
+}

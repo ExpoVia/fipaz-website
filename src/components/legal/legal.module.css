@@ -1,0 +1,112 @@
+/* Páginas legales: una sola entrada orquestada en la cabecera, el resto es lectura quieta.
+   Curva y duraciones del sistema (--ease-out en globals.css); la salida nunca se anima. */
+
+.rise {
+  animation: rise 520ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation-name: fade;
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* Retícula de puntos de la banda, la misma que usan las bandas del landing. */
+.dots {
+  background-image: radial-gradient(color-mix(in srgb, var(--expo-blue) 16%, transparent) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+}
+
+/* Rombos del logotipo, sueltos a la derecha de la cabecera. */
+.diamond {
+  position: absolute;
+  border-radius: 22%;
+  rotate: 45deg;
+}
+
+/* Viñeta de lista: un cuadrado pixel en vez del punto del navegador. */
+.prose ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.prose ul > li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.prose ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0.2rem;
+  top: 0.62em;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 2px;
+  background: var(--expo-blue);
+  rotate: 45deg;
+}
+
+.prose a {
+  font-weight: 700;
+  color: var(--expo-blue);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--expo-blue) 35%, transparent);
+  transition: text-decoration-color 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .prose a:hover {
+    text-decoration-color: var(--expo-blue);
+  }
+}
+
+.prose strong {
+  color: var(--expo-navy);
+}
+
+/* Enlaces de lectura y del índice: el color cambia, nada viaja. */
+.tocLink {
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.tocLink[aria-current="location"] {
+  background: white;
+  color: var(--expo-blue);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--expo-navy) 14%, transparent);
+}
+
+/* La flecha de "Volver" da un paso hacia atrás solo con puntero fino. */
+.back svg {
+  transition: translate 180ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .back:hover svg {
+    translate: -3px 0;
+  }
+}
+
+.press {
+  transition: transform 160ms var(--ease-out);
+}
+
+.press:active {
+  transform: scale(0.97);
+}

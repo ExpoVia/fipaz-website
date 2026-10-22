@@ -41,6 +41,13 @@ pero que no sea como una imagen que sea una integracion con el fondo que se vea 
 **Salida:**
 La ilustracion de /registro-empresa paso de <img src=svg> dentro de una tarjeta blanca con borde y sombra a un <svg> inline (nuevo src/components/registration/CompanyIllustration.tsx), sin caja ni fondo blanco propio, apoyada directo sobre el degradado de la pagina para integrarse con el fondo. Se agrego src/components/registration/company-illustration.module.css con animaciones CSS en bucle (tarjetas flotantes, planta con balanceo, personaje que respira y parpadea, anillo de pulso en la insignia verificada, confeti geometrico a la deriva, resplandor ambiental); todas quedan alcanzadas por el reset global de prefers-reduced-motion de globals.css por ir inline en el documento. Se elimino public/assets/registration/company-registration.svg (el SVG estatico anterior). tsc sin errores, detector de Impeccable sin hallazgos, 4/4 tests e2e de registro de empresa en verde. Capturas en xl, desktop y mobile sin scroll horizontal. Sin commits.
 
+### 2026-10-22T06:00:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5.5)
+**Prompt:**
+estate mejorando lo que es este apartado http://localhost:3000/privacidad con /emil-design-eng y con /impeccable  que se vea de la mejor manera con los logotipos corectos y de la mejor manara manteniendo una buena linea visual
+
+**Salida:**
+Rediseño de /privacidad (y /terminos, que comparten LegalPage) con Impeccable y emil-design-eng. Se reemplazó el PixelLogo antiguo por el logotipo oficial /img/landing/fexpo-logo.png (cabecera y pie). LegalPage.tsx reescrito: cabecera sticky como el landing, banda con retícula de puntos y rombos del logotipo, selector Privacidad/Términos, píldora de fecha, índice lateral sticky con sección activa (nuevo LegalToc.tsx, desplegable en móvil), secciones con viñetas pixel, tarjeta de contacto y pie de marca. Nuevo legal.module.css (entrada escalonada de 520ms con ease-out del sistema, reduced-motion, hover solo con puntero fino, :active scale .97). Se añadió la prop current en ambas páginas. tsc y eslint sin errores, detector de Impeccable sin hallazgos, sin scroll horizontal en 1440 y 390px. Sin commits.
+
 ### 2026-10-22T06:04:20Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
 **Prompt:**
 Crea tu perfil empresarial / Gestiona tus stands asignados / Consulta tus visitas verificadas -- quitale esa parte pero que mi svg cuando estemos llenado el formulaio este racionando

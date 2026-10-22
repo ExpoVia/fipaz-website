@@ -35,6 +35,12 @@ export function LandingFooter() {
             <Link href="/feedback" className={linkClass}>
               Feedback
             </Link>
+            <Link href="/privacidad" className={linkClass}>
+              Privacidad
+            </Link>
+            <Link href="/terminos" className={linkClass}>
+              Términos
+            </Link>
           </div>
 
           {/* Mandatory badge tag */}

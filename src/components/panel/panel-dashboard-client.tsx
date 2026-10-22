@@ -19,7 +19,7 @@ function DashboardHero({ title, description, label, detail, href }: { title: str
     <section className="panel-hero mb-5 flex flex-col justify-between gap-6 px-6 py-7 sm:px-8 lg:flex-row lg:items-end lg:px-9">
       <div className="max-w-2xl">
         <p className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#0878f9]">Tu espacio de trabajo</p>
-        <h1 className="text-[clamp(2rem,3.2vw,3rem)] font-extrabold leading-[1.1] tracking-tight text-[#111b39]">{title}</h1>
+        <h1 className="text-balance text-[clamp(2rem,3.2vw,3rem)] font-extrabold leading-[1.1] tracking-tight text-[#111b39]">{title}</h1>
         <p className="mt-3 max-w-xl text-sm font-medium leading-6 text-[#536991] sm:text-base">{description}</p>
       </div>
       <Link href={href} className="flex min-w-[190px] shrink-0 items-center justify-between gap-4 rounded-2xl border border-[#deebfa] bg-white/90 px-4 py-3 shadow-[0_10px_30px_rgb(38_88_145_/_8%)] transition-transform hover:-translate-y-0.5">
@@ -62,18 +62,18 @@ function ExpositorOverview() {
   return (
     <ExhibitorState requireStand={false}>
       <DashboardHero
-        title={`Hola, ${company?.displayName ?? "expositor"} 👋`}
+        title={`Hola, ${company?.displayName ?? "expositor"}\u00A0👋`}
         description={`Consulta la actividad verificada de tu empresa${stand ? ` en ${stand.eventName}` : ""} y mantén tu stand al día.`}
         label={stand ? "Tu stand" : "Participación"}
         detail={stand ? `${stand.boothCode} · ${stand.status === "active" ? "Activo" : stand.status}` : "Sin stand asignado"}
         href={stand ? "/panel/mi-stand" : "/panel/empresa"}
       />
-      {kpis ? <div className="grid grid-cols-1 gap-3 min-[370px]:grid-cols-2 xl:grid-cols-5">
-        <MetricCard label="Check-ins" value={String(kpis.totalCheckins)} icon={ScanLine} tone="blue" demo={false} hint="Visitas registradas" />
-        <MetricCard label="Visitantes únicos" value={String(kpis.uniqueVisitors)} icon={UsersRound} tone="violet" demo={false} hint="Personas distintas" />
-        <MetricCard label="Primeras visitas" value={String(kpis.firstVisits)} icon={Star} tone="amber" demo={false} hint="En tu empresa" />
-        <MetricCard label="Canjes validados" value={String(kpis.redemptionsValidated)} icon={Zap} tone="rose" demo={false} hint="Confirmados" />
-        <MetricCard label="Asistentes a actividades" value={String(kpis.activityAttendees)} icon={Activity} tone="mint" demo={false} hint="Participación registrada" className="min-[370px]:col-span-2 xl:col-span-1" />
+      {kpis ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-6 xl:grid-cols-5">
+        <MetricCard label="Check-ins" value={String(kpis.totalCheckins)} icon={ScanLine} tone="blue" demo={false} hint="Visitas registradas" className="sm:col-span-2 xl:col-span-1" />
+        <MetricCard label="Visitantes únicos" value={String(kpis.uniqueVisitors)} icon={UsersRound} tone="violet" demo={false} hint="Personas distintas" className="sm:col-span-2 xl:col-span-1" />
+        <MetricCard label="Primeras visitas" value={String(kpis.firstVisits)} icon={Star} tone="amber" demo={false} hint="En tu empresa" className="sm:col-span-2 xl:col-span-1" />
+        <MetricCard label="Canjes validados" value={String(kpis.redemptionsValidated)} icon={Zap} tone="rose" demo={false} hint="Confirmados" className="sm:col-span-3 xl:col-span-1" />
+        <MetricCard label="Asistentes a actividades" value={String(kpis.activityAttendees)} icon={Activity} tone="mint" demo={false} hint="Participación registrada" className="col-span-2 sm:col-span-3 xl:col-span-1" />
       </div> : <div role="status" className="panel-surface p-5 text-sm text-[#617599]">{kpisError ?? "Las métricas aparecerán cuando tu empresa tenga un stand asignado."}</div>}
 
       {stand && <>
@@ -109,7 +109,7 @@ function OrganizadorOverview() {
   return <>
     <DashboardHero title={`Panorama de ${eventName}`} description="Sigue los datos registrados del evento y accede a las herramientas de organización." label="Evento activo" detail={eventName} href="/panel/eventos" />
     {!eventId ? <NoEventNotice /> : <RemoteState resource={overview} label="el resumen del evento">{({ kpis, companies }) => <>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <MetricCard label="Participantes" value={String(kpis.totalParticipants)} icon={UsersRound} tone="blue" demo={false} hint="Registrados" />
         <MetricCard label="Check-ins" value={String(kpis.totalCheckins)} icon={ScanLine} tone="violet" demo={false} hint="Confirmados" />
         <MetricCard label="Stands activos" value={String(kpis.activeStands)} icon={Store} tone="amber" demo={false} hint="Publicados" />
@@ -119,7 +119,7 @@ function OrganizadorOverview() {
         <section className="panel-surface p-5 sm:p-6" aria-labelledby="event-companies-title"><div className="mb-5 flex items-center justify-between gap-3"><div><h2 id="event-companies-title" className="text-lg font-extrabold text-[#172344]">Empresas participantes</h2><p className="text-xs text-[#7588a9]">{companies.length} registradas en este evento</p></div><Link href="/panel/expositores" className="shrink-0 text-xs font-bold text-[#0878f9] hover:underline">Ver todas</Link></div>{companies.length === 0 ? <p className="py-8 text-sm text-[#7184a6]">Todavía no hay empresas inscritas.</p> : <ul className="divide-y divide-[#edf1f8]">{companies.slice(0, 6).map((company) => <li key={company.id} className="flex items-center gap-3 py-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eaf3ff] text-[#0878f9]"><Building2 aria-hidden="true" className="h-5 w-5" /></span><span className="min-w-0 flex-1 truncate text-sm font-bold text-[#1b2949]">{company.displayName}</span><span className="text-xs text-[#788aab]">{company.standCount} {company.standCount === 1 ? "stand" : "stands"}</span></li>)}</ul>}</section>
         <section className="panel-surface p-5 sm:p-6" aria-labelledby="organizer-tools-title"><h2 id="organizer-tools-title" className="mb-5 text-lg font-extrabold text-[#172344]">Gestionar evento</h2><div className="space-y-2"><Link href="/panel/mapa-evento" className="flex items-center gap-3 rounded-xl bg-[#f4f8fe] p-3.5 text-sm font-bold text-[#284573] hover:bg-[#eaf3ff]"><Map aria-hidden="true" className="h-5 w-5 text-[#0878f9]" />Mapa y zonas <ArrowRight aria-hidden="true" className="ml-auto h-4 w-4" /></Link><Link href="/panel/gamificacion" className="flex items-center gap-3 rounded-xl bg-[#f4f8fe] p-3.5 text-sm font-bold text-[#284573] hover:bg-[#eaf3ff]"><Star aria-hidden="true" className="h-5 w-5 text-[#e6a109]" />Misiones y premios <ArrowRight aria-hidden="true" className="ml-auto h-4 w-4" /></Link><Link href="/panel/metricas-evento" className="flex items-center gap-3 rounded-xl bg-[#f4f8fe] p-3.5 text-sm font-bold text-[#284573] hover:bg-[#eaf3ff]"><CalendarDays aria-hidden="true" className="h-5 w-5 text-[#10a778]" />Métricas del evento <ArrowRight aria-hidden="true" className="ml-auto h-4 w-4" /></Link></div></section>
       </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-3"><MetricCard label="Visitas únicas a stands" value={String(kpis.uniqueVisits)} icon={Activity} tone="blue" demo={false} /><MetricCard label="Asistentes a actividades" value={String(kpis.activityAttendees)} icon={UsersRound} tone="mint" demo={false} /><MetricCard label="Canjes validados" value={String(kpis.redemptionsValidated)} icon={Zap} tone="rose" demo={false} /></div>
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3"><MetricCard label="Visitas únicas a stands" value={String(kpis.uniqueVisits)} icon={Activity} tone="blue" demo={false} /><MetricCard label="Asistentes a actividades" value={String(kpis.activityAttendees)} icon={UsersRound} tone="mint" demo={false} /><MetricCard label="Canjes validados" value={String(kpis.redemptionsValidated)} icon={Zap} tone="rose" demo={false} className="col-span-2 sm:col-span-1" /></div>
     </>}</RemoteState>}
   </>;
 }

@@ -46,8 +46,9 @@ function MissionsSection({ eventId }: { eventId: string }) {
       <RemoteState resource={data} label="las misiones">
         {({ missions, categories }) => (
           <>
-            {missions.length === 0 ? <p className="pixel-card mb-4 p-5 text-sm text-slate-500">El evento aún no tiene misiones. Crea la primera abajo.</p> : (
-              <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
+            {missions.length === 0 ? <p className="pixel-card p-5 text-sm text-slate-500">El evento aún no tiene misiones. Crea la primera con el formulario.</p> : (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                 {missions.map((mission) => (
                   <MissionCard
                     key={mission.id}
@@ -60,6 +61,7 @@ function MissionsSection({ eventId }: { eventId: string }) {
               </div>
             )}
             <MissionForm eventId={eventId} categories={categories} onCreated={(created) => data.setData((current) => ({ ...current, missions: [...current.missions, created] }))} />
+            </div>
           </>
         )}
       </RemoteState>
@@ -151,7 +153,7 @@ function MissionForm({ eventId, categories, onCreated }: { eventId: string; cate
   }
 
   return (
-    <form onSubmit={(event) => void submit(event)} className="pixel-card max-w-2xl space-y-4 p-5" aria-labelledby="new-mission-heading">
+    <form onSubmit={(event) => void submit(event)} className="pixel-card !max-w-none space-y-4 p-5" aria-labelledby="new-mission-heading">
       <h3 id="new-mission-heading" className="font-black text-[var(--expo-navy)]">Nueva misión</h3>
       <label className="block text-sm font-bold">Título<input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} className={field} /></label>
       <label className="block text-sm font-bold">Descripción<textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={2} className={field} /></label>
@@ -188,8 +190,8 @@ function RewardsSection({ eventId }: { eventId: string }) {
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <h2 id="rewards-heading" className="flex items-center gap-2 text-lg font-black text-[var(--expo-navy)]"><Gift aria-hidden="true" className="h-5 w-5 text-[var(--expo-purple)]" />Premios</h2>
         <div className="flex gap-3 text-sm font-bold">
-          <Link href={adminRoutes.rewards(eventId)} className="text-[var(--expo-blue)] underline">Gestionar premios</Link>
-          <Link href={adminRoutes.inventory(eventId)} className="text-[var(--expo-blue)] underline">Inventario</Link>
+          <Link href={adminRoutes.rewards(eventId)} className="text-[#0878f9] underline-offset-4 hover:underline">Gestionar premios</Link>
+          <Link href={adminRoutes.inventory(eventId)} className="text-[#0878f9] underline-offset-4 hover:underline">Inventario</Link>
         </div>
       </div>
       <RemoteState resource={rewards} label="los premios">

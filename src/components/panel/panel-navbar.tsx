@@ -38,8 +38,8 @@ export function PanelNavbar({ onMenuClick }: PanelNavbarProps) {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <Link href="/panel" aria-label="Fexpo, ir al resumen" className="lg:hidden"><Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={104} height={32} priority className="h-auto w-[104px]" /></Link>
-        {multipleEvents ? <Link href="/panel/eventos" className="panel-surface hidden min-w-0 items-center gap-3 px-3 py-2.5 hover:border-[#b9d8ff] sm:flex sm:w-[340px]">{eventContent}</Link> : <div className="panel-surface hidden min-w-0 items-center gap-3 px-3 py-2.5 sm:flex sm:w-[340px]">{eventContent}</div>}
+        <Link href="/panel" aria-label="Fexpo, ir al resumen" className="shrink-0 lg:hidden"><Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={104} height={32} priority className="h-auto w-[104px]" /></Link>
+        {multipleEvents ? <Link href="/panel/eventos" className="panel-surface hidden min-w-0 items-center gap-3 px-3 py-2.5 hover:border-[#b9d8ff] lg:flex lg:w-[340px]">{eventContent}</Link> : <div className="panel-surface hidden min-w-0 items-center gap-3 px-3 py-2.5 lg:flex lg:w-[340px]">{eventContent}</div>}
       </div>
 
       <div className="flex shrink-0 items-center gap-3 sm:gap-5">

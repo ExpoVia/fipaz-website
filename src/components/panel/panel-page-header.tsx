@@ -15,7 +15,7 @@ export function PanelPageHeader({ eyebrow, title, description, demo = true }: Pa
         {eyebrow && <p className="pixel-label text-[#0878f9]">{eyebrow}</p>}
         {demo && <DemoBadge />}
       </div>
-      <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#111c3b] sm:text-[2.2rem]">
+      <h1 className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-[#111c3b] sm:text-[2.2rem]">
         {title}
       </h1>
       {description && (

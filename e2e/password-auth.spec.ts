@@ -375,7 +375,7 @@ test.describe("registro de empresa con correo y contraseña", () => {
     await page.getByRole("button", { name: "Tecnología" }).click();
     await page.locator("#company-email").fill("contacto@miempresa.com");
     await page.locator("#company-description").fill("Empresa de prueba creada desde el registro con contraseña.");
-    await page.getByRole("button", { name: /Siguiente paso/ }).click();
+    await page.getByRole("button", { name: /Continuar/ }).click();
   }
 
   test("crea la cuenta, registra la empresa y entra al panel de expositor", async ({ page }) => {

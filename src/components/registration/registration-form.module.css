@@ -1,0 +1,29 @@
+.compactAuth form {
+  gap: 0.5rem;
+}
+
+.compactAuth form input {
+  min-height: 2.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.compactAuth form > button {
+  min-height: 2.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .compactAuth form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.75rem;
+  }
+
+  .compactAuth form > div:nth-of-type(3),
+  .compactAuth form > p,
+  .compactAuth form > button {
+    grid-column: 1 / -1;
+  }
+}

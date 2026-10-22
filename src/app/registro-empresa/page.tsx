@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { RegistrationHeader } from "@/components/registration/RegistrationHeader";
 import { RegistrationForm } from "@/components/registration/RegistrationForm";
 
 export const metadata: Metadata = {
@@ -9,12 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function RegistroEmpresaPage() {
-  return (
-    <div className="min-h-screen bg-[var(--expo-bg)] text-[var(--expo-navy)] antialiased">
-      <RegistrationHeader />
-      <main className="mx-auto max-w-2xl px-4 pt-8 pb-16 sm:px-6">
-        <RegistrationForm />
-      </main>
-    </div>
-  );
+  return <RegistrationForm />;
 }

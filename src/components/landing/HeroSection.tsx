@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { ArrowRight, ChevronDown, Compass, Gift, Smartphone, Award } from "lucide-react";
-import { pixelifyFont, pressStartFont } from "./fonts";
+import { headingFont, eyebrowFont } from "./fonts";
 import heroImage from "../../../public/img/landing/1ra landing.png";
 
 const benefits = [
@@ -36,9 +36,9 @@ export function HeroSection() {
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-8 px-5 sm:px-10 lg:grid-cols-12 lg:gap-8 lg:px-8">
         <div className="mx-auto max-w-xl text-center sm:max-w-2xl lg:col-span-7 lg:mx-0 lg:text-left">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="mb-4 inline-block max-w-full sm:mb-5">
-            <div className="inline-flex max-w-full items-center gap-2 rounded-full border-2 border-[var(--expo-navy)] bg-white/95 px-3 py-2 shadow-[3px_3px_0_var(--expo-navy)] sm:px-4">
-              <span className="text-xs font-black text-[var(--expo-blue)]">✦</span>
-              <span className={`${pressStartFont.className} text-[8px] leading-relaxed uppercase tracking-wide text-[var(--expo-navy)] sm:text-[10px] sm:tracking-wider`}>
+            <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-[var(--expo-blue)]/15 bg-white/90 px-3 py-2 shadow-[0_2px_10px_-2px_rgba(22,119,184,0.25)] backdrop-blur-sm sm:px-4">
+              <span className="text-xs font-bold text-[var(--expo-blue)]">✦</span>
+              <span className={`${eyebrowFont.className} text-[11px] font-bold leading-relaxed tracking-wide text-[var(--expo-navy)] sm:text-xs`}>
                 La app ya es real · NFC y puntos
               </span>
             </div>
@@ -48,13 +48,13 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.05 }}
-            className={`${pixelifyFont.className} text-center text-[2.65rem] leading-[0.98] font-bold tracking-tight text-[var(--expo-navy)] [text-shadow:0_2px_14px_rgba(255,255,255,0.7)] sm:text-7xl sm:leading-[0.96] lg:text-left lg:text-8xl lg:[text-shadow:none]`}
+            className={`${headingFont.className} text-center text-[2.65rem] leading-[0.98] font-bold tracking-tight text-[var(--expo-navy)] [text-shadow:0_2px_14px_rgba(255,255,255,0.7)] sm:text-7xl sm:leading-[0.96] lg:text-left lg:text-8xl lg:[text-shadow:none]`}
           >
             Explora. <br />
             Conecta. <br />
-            <span className="relative inline-block pb-2 text-[#3a2bd0] [text-shadow:0_2px_12px_rgba(255,255,255,0.95),0_0_2px_rgba(255,255,255,0.9)] lg:bg-gradient-to-r lg:from-[var(--expo-blue)] lg:via-[var(--expo-purple)] lg:to-[var(--expo-lilac)] lg:bg-clip-text lg:text-transparent lg:[text-shadow:none]">
+            <span className="relative inline-block pb-2 text-[#3a2bd0] [text-shadow:0_2px_12px_rgba(255,255,255,0.95),0_0_2px_rgba(255,255,255,0.9)] lg:text-[var(--expo-blue)] lg:[text-shadow:none]">
               Vive Fexpo.
-              <span className="absolute bottom-0 left-0 -z-10 h-2.5 w-full -rotate-1 rounded-sm bg-[var(--expo-yellow)]/85" />
+              <span className="absolute bottom-0 left-0 -z-10 h-2.5 w-full -rotate-1 rounded-full bg-[var(--expo-yellow)]/85" />
             </span>
           </motion.h1>
 
@@ -68,22 +68,22 @@ export function HeroSection() {
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.15 }} className="mx-auto mt-7 grid max-w-md grid-cols-2 gap-3 sm:mt-8 sm:flex sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-4 lg:justify-start">
-            <Link href="/demo" className="group col-span-2 inline-flex w-full items-center justify-center gap-3 border-3 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-7 py-3.5 text-lg font-black text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 hover:bg-[#ffe066] active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
-              <span className="text-lg font-black">Probar demo</span>
-              <ArrowRight className="h-5 w-5 stroke-[3] transition-transform group-hover:translate-x-1" />
+            <Link href="/demo" className="group col-span-2 inline-flex w-full items-center justify-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-7 py-3.5 text-lg font-extrabold text-[var(--expo-navy)] shadow-[0_14px_30px_-12px_rgba(255,194,26,0.75)] transition-[transform,box-shadow,background-color] duration-150 ease-out hover:-translate-y-0.5 hover:bg-[#ffcf3d] active:translate-y-0 active:scale-[0.98] sm:w-auto">
+              <span className="text-lg font-extrabold">Probar demo</span>
+              <ArrowRight className="h-5 w-5 stroke-[2.5] transition-transform duration-150 ease-out group-hover:translate-x-1" />
             </Link>
-            <Link href="/panel" className="inline-flex w-full items-center justify-center gap-2 border-3 border-[var(--expo-navy)] bg-[var(--expo-sky)] px-3 py-3.5 sm:px-6 text-base font-extrabold text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
-              <span className="text-[15px] font-extrabold whitespace-nowrap min-[380px]:text-base">Ver el panel</span>
+            <Link href="/panel" className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--expo-sky)] px-3 py-3.5 sm:px-6 text-base font-bold text-[var(--expo-navy)] shadow-[0_10px_24px_-12px_rgba(47,45,76,0.3)] transition-[transform,box-shadow] duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] sm:w-auto">
+              <span className="text-[15px] font-bold whitespace-nowrap min-[380px]:text-base">Ver el panel</span>
             </Link>
-            <a href="#problema" className="inline-flex w-full items-center justify-center gap-2 border-3 border-[var(--expo-navy)] bg-white px-3 py-3.5 sm:px-6 text-base font-extrabold text-[var(--expo-navy)] shadow-[5px_5px_0_var(--expo-navy)] transition-all hover:-translate-y-1 hover:bg-white active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto">
-              <span className="text-[15px] font-extrabold whitespace-nowrap min-[380px]:text-base">Conoce más</span>
+            <a href="#problema" className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-3.5 sm:px-6 text-base font-bold text-[var(--expo-navy)] shadow-sm transition-[transform,box-shadow,border-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-slate-300 active:translate-y-0 active:scale-[0.98] sm:w-auto">
+              <span className="text-[15px] font-bold whitespace-nowrap min-[380px]:text-base">Conoce más</span>
               <ChevronDown className="h-4 w-4 stroke-[2.5] min-[380px]:h-5 min-[380px]:w-5" />
             </a>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.2 }} className="mx-auto mt-8 grid max-w-md grid-cols-2 gap-2.5 sm:mt-10 sm:max-w-2xl sm:grid-cols-4 sm:gap-3 lg:mx-0">
             {benefits.map((item) => (
-              <div key={item.text} className="flex min-h-14 min-w-0 items-center gap-2 rounded-lg border-2 border-[var(--expo-line)] bg-white p-2.5 shadow-sm">
+              <div key={item.text} className="flex min-h-14 min-w-0 items-center gap-2 rounded-xl border border-[var(--expo-line)] bg-white p-2.5 shadow-sm">
                 {item.icon}
                 <span className="min-w-0 text-[11px] leading-tight font-bold text-[var(--expo-navy)] [overflow-wrap:anywhere] sm:text-xs">{item.text}</span>
               </div>

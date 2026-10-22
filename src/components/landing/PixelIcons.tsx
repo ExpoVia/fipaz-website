@@ -11,10 +11,10 @@ export function PixelLogo({ className = "w-8 h-8" }: { className?: string }) {
         viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="shrink-0 drop-shadow-[2px_2px_0_#2F2D4C]"
+        className="shrink-0 drop-shadow-[0_3px_6px_rgba(47,45,76,0.35)]"
       >
-        {/* Outer pixel border */}
-        <rect x="2" y="2" width="28" height="28" rx="6" fill="#1677B8" stroke="#2F2D4C" strokeWidth="2.5" />
+        {/* Outer rounded mark */}
+        <rect x="2" y="2" width="28" height="28" rx="9" fill="#1677B8" />
         {/* Pixel diagonal route grid */}
         <rect x="6" y="8" width="4" height="4" fill="#FFC21A" />
         <rect x="10" y="12" width="4" height="4" fill="#FFC21A" />
@@ -36,11 +36,11 @@ export function PixelLogo({ className = "w-8 h-8" }: { className?: string }) {
 export function PixelStar({ className = "w-5 h-5", color = "#FFC21A" }: { className?: string; color?: string }) {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className={className}>
+      {/* Chispa de cuatro puntas, suave: antes era un sprite de pasos ortogonales. */}
       <path
-        d="M9 1H11V5H15V7H19V9H15V13H11V17H9V13H5V9H1V7H5V5H9V1Z"
+        d="M10 1C10.3 4.6 11 6.9 12.2 8.1 13.4 9.3 15.5 10 19 10 15.5 10 13.4 10.7 12.2 11.9 11 13.1 10.3 15.4 10 19 9.7 15.4 9 13.1 7.8 11.9 6.6 10.7 4.5 10 1 10 4.5 10 6.6 9.3 7.8 8.1 9 6.9 9.7 4.6 10 1Z"
         fill={color}
-        stroke="#2F2D4C"
-        strokeWidth="1.5"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -61,14 +61,13 @@ export function PixelTrophy({ className = "w-6 h-6" }: { className?: string }) {
 export function PixelRewardChest({ className = "w-8 h-8" }: { className?: string }) {
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className={className}>
-      {/* Chest body */}
-      <rect x="4" y="10" width="24" height="18" rx="2" fill="#B984B6" stroke="#2F2D4C" strokeWidth="2" />
-      <rect x="4" y="10" width="24" height="6" fill="#8357A5" stroke="#2F2D4C" strokeWidth="2" />
-      {/* Gold lock & bands */}
-      <rect x="8" y="10" width="3" height="18" fill="#FFC21A" />
-      <rect x="21" y="10" width="3" height="18" fill="#FFC21A" />
-      <rect x="13" y="14" width="6" height="6" fill="#FFC21A" stroke="#2F2D4C" strokeWidth="1.5" />
-      <rect x="15" y="16" width="2" height="2" fill="#2F2D4C" />
+      {/* Cofre de premio, con esquinas redondeadas y sin el contorno navy duro del sprite original. */}
+      <rect x="4" y="12" width="24" height="16" rx="5" fill="#B984B6" />
+      <path d="M4 16C4 13.8 5.8 12 8 12H24C26.2 12 28 13.8 28 16V18H4V16Z" fill="#8357A5" />
+      <rect x="9" y="12" width="3" height="16" rx="1.5" fill="#FFC21A" opacity="0.9" />
+      <rect x="20" y="12" width="3" height="16" rx="1.5" fill="#FFC21A" opacity="0.9" />
+      <circle cx="16" cy="19" r="4" fill="#FFC21A" />
+      <circle cx="16" cy="19" r="1.4" fill="#8357A5" />
     </svg>
   );
 }
@@ -76,18 +75,18 @@ export function PixelRewardChest({ className = "w-8 h-8" }: { className?: string
 export function PixelNfcPlaque({ className = "w-10 h-10" }: { className?: string }) {
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" className={className}>
-      <rect x="3" y="3" width="34" height="34" rx="6" fill="#1677B8" stroke="#2F2D4C" strokeWidth="2.5" />
-      <rect x="7" y="7" width="26" height="26" rx="4" fill="#FFFFFF" />
-      {/* NFC icon */}
+      {/* Placa NFC: esquinas suaves, sin el borde navy duro ni el trazo en escuadra. */}
+      <rect x="3" y="3" width="34" height="34" rx="12" fill="#1677B8" />
+      <rect x="8" y="8" width="24" height="24" rx="8" fill="#FFFFFF" />
       <path
-        d="M14 26V14L20 26V14"
+        d="M15 26V14L21 26V14"
         stroke="#1677B8"
         strokeWidth="3"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      <rect x="23" y="14" width="3" height="12" fill="#62BE5A" />
-      <rect x="27" y="17" width="2" height="6" fill="#62BE5A" />
+      <path d="M25 13C28 16 28 24 25 27" stroke="#62BE5A" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M28 16C29.5 18 29.5 22 28 24" stroke="#62BE5A" strokeWidth="2.5" strokeLinecap="round" fill="none" />
     </svg>
   );
 }
@@ -118,13 +117,12 @@ export function PixelCharacter({ className = "w-16 h-16" }: { className?: string
 export function PixelMapPin({ className = "w-6 h-6", color = "#F28A72" }: { className?: string; color?: string }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={className}>
+      {/* Pin de mapa clásico: antes era un contorno en escalones, ahora una gota suave. */}
       <path
-        d="M12 2H8V4H6V8H8V12H10V16H12V22H14V16H16V12H18V8H20V4H18V2H12Z"
+        d="M12 22C12 22 19 14.6 19 9.5C19 5.4 15.9 2 12 2C8.1 2 5 5.4 5 9.5C5 14.6 12 22 12 22Z"
         fill={color}
-        stroke="#2F2D4C"
-        strokeWidth="1.5"
       />
-      <rect x="10" y="6" width="4" height="4" fill="#FFFFFF" />
+      <circle cx="12" cy="9.5" r="3" fill="#FFFFFF" />
     </svg>
   );
 }
@@ -132,7 +130,7 @@ export function PixelMapPin({ className = "w-6 h-6", color = "#F28A72" }: { clas
 export function PixelBadge({ text, color = "bg-[var(--expo-yellow)]" }: { text: string; color?: string }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-[var(--expo-navy)] border-2 border-[var(--expo-navy)] ${color} shadow-[2px_2px_0_var(--expo-navy)] font-mono rounded-sm`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-navy)] shadow-sm ${color}`}
     >
       <PixelStar className="w-3.5 h-3.5" />
       {text}

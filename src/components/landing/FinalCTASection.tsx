@@ -5,7 +5,7 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { PixelStar, PixelRewardChest } from "./PixelIcons";
 import { ArrowRight, MessageSquareCheck, Sparkles } from "lucide-react";
-import { pixelifyFont } from "./fonts";
+import { headingFont } from "./fonts";
 import { UI_OUT, depthLayers, disposer, magnetic, useScrollFx } from "./scroll-fx";
 import fx from "./landing-fx.module.css";
 
@@ -79,13 +79,13 @@ export function FinalCTASection() {
       <div className="relative mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
         <div
           data-fx-eyebrow
-          className="mb-7 inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-white/10 px-4 py-1 font-mono text-xs font-black tracking-wider text-sky-200"
+          className="mb-7 inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-white/10 px-4 py-1.5 text-xs font-bold tracking-wide text-sky-200"
         >
           <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-          VALIDACIÓN Y MEJORA CONTINUA
+          Validación y mejora continua
         </div>
 
-        <h2 className={`${pixelifyFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-white sm:text-6xl lg:text-7xl`}>
+        <h2 className={`${headingFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-white sm:text-6xl lg:text-7xl`}>
           <span className="-mb-[0.12em] block overflow-hidden pb-[0.12em]">
             <span data-fx-line className="block">
               ¿Cómo debería funcionar
@@ -94,7 +94,7 @@ export function FinalCTASection() {
           <span className="-mb-[0.12em] block overflow-hidden pb-[0.12em]">
             <span
               data-fx-line
-              className="block bg-gradient-to-r from-[var(--expo-yellow)] to-[var(--expo-pink)] bg-clip-text text-transparent"
+              className="block text-[var(--expo-yellow)]"
             >
               Fexpo para ti?
             </span>
@@ -110,7 +110,7 @@ export function FinalCTASection() {
             <span data-fx-magnet className="inline-block">
               <Link
                 href="/demo"
-                className={`${fx.slab} ${fx.press} group inline-flex items-center gap-3 border-3 border-white bg-[var(--expo-yellow)] px-8 py-4 text-[var(--expo-navy)] [--slab-color:#ffffff] [--slab-offset:6px] hover:bg-[#FFE066]`}
+                className={`${fx.slab} ${fx.press} group inline-flex items-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-8 py-4 text-[var(--expo-navy)] [--slab-color:rgba(0,0,0,0.45)] [--slab-offset:10px] hover:bg-[#FFE066]`}
               >
                 <span className="text-lg font-black">Probar demo</span>
                 <ArrowRight className="h-5 w-5 stroke-[3] transition-transform duration-200 ease-[var(--ease-out)] group-hover:translate-x-1 motion-reduce:group-hover:translate-x-0" />
@@ -122,7 +122,7 @@ export function FinalCTASection() {
             <span data-fx-magnet className="inline-block">
               <Link
                 href="/feedback"
-                className={`${fx.slab} ${fx.press} inline-flex items-center gap-2.5 border-3 border-white bg-white/15 px-7 py-4 text-white [--slab-color:rgba(255,255,255,0.35)] [--slab-offset:6px] hover:bg-white/25`}
+                className={`${fx.slab} ${fx.press} inline-flex items-center gap-2.5 rounded-xl border border-white/25 bg-white/15 px-7 py-4 text-white [--slab-color:rgba(0,0,0,0.3)] [--slab-offset:10px] hover:bg-white/25`}
               >
                 <MessageSquareCheck className="h-5 w-5" />
                 <span className="text-lg font-bold">Dejar feedback</span>

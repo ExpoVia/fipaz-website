@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import { PixelStar } from "./PixelIcons";
 import { Globe, MapPin } from "lucide-react";
 import { DEMO_FIXTURE } from "@/data/demo-fixture";
-import { pixelifyFont } from "./fonts";
+import { headingFont } from "./fonts";
 import { UI_OUT, revealHeading, useScrollFx } from "./scroll-fx";
 import fx from "./landing-fx.module.css";
 
@@ -84,22 +84,22 @@ export function MultiEventSection() {
     <section
       ref={root}
       id="multi-evento"
-      className="relative scroll-mt-24 overflow-hidden border-t-2 border-[var(--expo-line)] bg-white py-20 md:py-28"
+      className="relative scroll-mt-24 overflow-hidden border-t border-[var(--expo-line)] bg-white py-20 md:py-28"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-4xl text-center">
           <div
             data-fx-intro
-            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-sky-300 bg-[var(--expo-sky)]/30 px-3.5 py-1 text-xs font-black tracking-wider text-[var(--expo-blue)] uppercase"
+            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-blue)]"
           >
             <Globe aria-hidden="true" className="h-3.5 w-3.5" />
-            DATOS DE DEMOSTRACIÓN · VISIÓN MULTI-EVENTO
+            Datos de demostración · visión multi-evento
           </div>
 
           <h2
             data-fx-heading
-            className={`${pixelifyFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl lg:text-6xl`}
+            className={`${headingFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl lg:text-6xl`}
           >
             Un perfil. Múltiples eventos. Nuevas conexiones.
           </h2>
@@ -125,13 +125,13 @@ export function MultiEventSection() {
             {events.map((evt) => (
               <li key={evt.name} data-fx-event>
                 <div
-                  className={`${fx.slab} ${fx.eventCard} flex h-full flex-col justify-between rounded-2xl border-3 border-[var(--expo-navy)] bg-white p-6 [--slab-offset:7px] ${
+                  className={`${fx.slab} ${fx.eventCard} flex h-full flex-col justify-between rounded-2xl border border-black/5 bg-white p-6 [--slab-offset:13px] ${
                     evt.active ? fx.pilot : ""
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                      <span className={`rounded border border-[var(--expo-navy)] px-2.5 py-0.5 font-mono text-[10px] font-black uppercase ${evt.statusColor}`}>
+                      <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wide uppercase ${evt.statusColor}`}>
                         {evt.status}
                       </span>
                       {evt.active && <PixelStar className="h-4 w-4" />}

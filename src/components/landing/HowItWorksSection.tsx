@@ -37,19 +37,19 @@ const steps = [
   },
 ];
 
-const cardClass = "relative flex flex-col justify-between rounded-2xl border-3 border-[var(--expo-navy)] bg-white p-6 shadow-[6px_6px_0_var(--expo-navy)]";
-const hoverClass = "transition-all hover:-translate-y-1";
+const cardClass = "relative flex flex-col justify-between rounded-2xl border border-black/5 bg-white p-6 shadow-[0_16px_40px_-20px_rgba(47,45,76,0.3)]";
+const hoverClass = "transition-transform duration-200 ease-out hover:-translate-y-1";
 
 function Card({ step, index }: { step: (typeof steps)[number]; index: number }) {
   return (
     <>
       <div>
         {/* Top Number Header */}
-        <div className="flex items-center justify-between border-b-2 border-slate-100 pb-4">
-          <span className="font-mono text-4xl font-black text-[var(--expo-blue)] drop-shadow-[2px_2px_0_var(--expo-navy)]">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <span className="text-4xl font-extrabold text-[var(--expo-blue)]">
             {step.num}
           </span>
-          <div className="rounded-lg border-2 border-[var(--expo-navy)] bg-[var(--expo-bg)] p-2 shadow-[2px_2px_0_var(--expo-navy)]">
+          <div className="rounded-xl bg-[var(--expo-bg)] p-2.5">
             {step.icon}
           </div>
         </div>
@@ -67,10 +67,10 @@ function Card({ step, index }: { step: (typeof steps)[number]; index: number }) 
 
       {/* Step tag */}
       <div className="mt-6 pt-3 flex items-center justify-between">
-        <span className="font-mono text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-slate-500 uppercase">
           {step.tag}
         </span>
-        <span className="text-xs font-mono text-[var(--expo-blue)] font-bold">
+        <span className="text-xs font-bold text-[var(--expo-blue)]">
           Paso {index + 1}/4
         </span>
       </div>
@@ -87,9 +87,9 @@ export function HowItWorksBody({ scripted = false }: { scripted?: boolean }) {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className={`${styles.header} mx-auto max-w-3xl text-center`} data-arrival-header={scripted ? "" : undefined}>
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-[var(--expo-yellow)] px-3 py-1 font-mono text-xs font-black uppercase text-[var(--expo-navy)] border-2 border-[var(--expo-navy)] shadow-[2px_2px_0_var(--expo-navy)] mb-4">
+        <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-[var(--expo-blue)]/15 bg-white px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-navy)] shadow-sm">
           <PixelStar className="w-3.5 h-3.5" />
-          DATOS DE DEMOSTRACIÓN · PASO A PASO
+          Datos de demostración · paso a paso
         </div>
 
         <h2 className="text-3xl font-black tracking-tight text-[var(--expo-navy)] sm:text-5xl">
@@ -129,7 +129,7 @@ export function HowItWorksBody({ scripted = false }: { scripted?: boolean }) {
 /** Normal document flow. On the desktop entrance it only remains as the `#como-funciona` anchor (see the CSS module). */
 export function HowItWorksSection() {
   return (
-    <section id="como-funciona" className={`${styles.section} scroll-mt-24 bg-white py-16 md:py-24 border-t-2 border-[var(--expo-line)]`}>
+    <section id="como-funciona" className={`${styles.section} scroll-mt-24 border-t border-[var(--expo-line)] bg-white py-16 md:py-24`}>
       <HowItWorksBody />
     </section>
   );

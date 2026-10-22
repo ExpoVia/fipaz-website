@@ -10,7 +10,7 @@ const linkClass = `${fx.underline} text-sm font-bold transition-colors duration-
 
 export function LandingFooter() {
   return (
-    <footer className="border-t-2 border-[var(--expo-navy)] bg-white py-12 text-[var(--expo-navy)]">
+    <footer className="border-t border-[var(--expo-line)] bg-white py-12 text-[var(--expo-navy)]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           {/* Brand & tagline */}
@@ -18,7 +18,7 @@ export function LandingFooter() {
             <span className={`${fx.lift} inline-flex`}>
               <Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={1254} height={388} className="h-10 w-auto" />
             </span>
-            <p className="font-mono text-xs font-bold text-slate-500">Eventos que te mueven.</p>
+            <p className="text-xs font-bold text-slate-500">Eventos que te mueven.</p>
           </div>
 
           {/* Links */}
@@ -45,7 +45,7 @@ export function LandingFooter() {
 
           {/* Mandatory badge tag */}
           <div
-            className={`${fx.slab} inline-flex items-center gap-1.5 rounded-full border-2 border-[var(--expo-navy)] bg-[var(--expo-bg)] px-3 py-1 font-mono text-xs font-black [--slab-lift:1px] [--slab-offset:2px]`}
+            className={`${fx.slab} inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-[var(--expo-bg)] px-3.5 py-1.5 text-xs font-bold [--slab-lift:1px] [--slab-offset:4px]`}
           >
             <PixelStar className="h-3.5 w-3.5" />
             Demo conceptual · 2026

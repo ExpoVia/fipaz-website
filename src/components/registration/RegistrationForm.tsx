@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -262,10 +262,12 @@ interface Step2Props {
   contactEmail: string;
   /** Sin él (acceso con contraseña deshabilitado) solo se ofrece Google. */
   onPasswordSubmit?: (values: PasswordAuthValues, mode: PasswordAuthMode) => Promise<void>;
+  /** La ilustración se tapa los ojos mientras el campo de contraseña tiene el foco. */
+  onPasswordFocusChange: (focused: boolean) => void;
 }
 
 function Step2({
-  participation, setParticipation, loading, error, onBack, onCredential, contactEmail, onPasswordSubmit,
+  participation, setParticipation, loading, error, onBack, onCredential, contactEmail, onPasswordSubmit, onPasswordFocusChange,
 }: Step2Props) {
   return (
     <StepPanel stepKey="step2">
@@ -357,6 +359,7 @@ function Step2({
             submitLabels={{ register: "Crear cuenta y registrar empresa", login: "Iniciar sesión y registrar empresa" }}
             busyLabel="Registrando tu empresa…"
             onSubmit={onPasswordSubmit}
+            onPasswordFocusChange={onPasswordFocusChange}
           />
         </div>
       )}
@@ -470,6 +473,14 @@ export function RegistrationForm() {
     (description.trim().length >= 20 ? 1 : 0)
   ) / 4;
 
+  // Mientras el campo de contraseña del paso 2 tiene el foco, el personaje se tapa los ojos.
+  // El onBlur del propio campo ya lo apaga; este efecto es una red de seguridad si el
+  // paso cambia por otra vía (por ejemplo, "Atrás") mientras el campo seguía enfocado.
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  useEffect(() => {
+    if (step !== 1) setPasswordFocused(false);
+  }, [step]);
+
   // ── Validación paso 1 ──────────────────────────────────────────────────────
   function handleNextStep() {
     setError("");
@@ -576,7 +587,7 @@ export function RegistrationForm() {
 
                 {/* Inline (no <img>): se funde con el degradado de la página y reacciona a lo que se llena en el formulario. */}
                 <div className="relative mt-8 hidden xl:block">
-                  <CompanyIllustration progress={formProgress} typing={typing} step={step} />
+                  <CompanyIllustration progress={formProgress} typing={typing} step={step} coverEyes={passwordFocused} />
                 </div>
               </div>
             </section>
@@ -610,6 +621,7 @@ export function RegistrationForm() {
                     onCredential={handleGoogleCredential}
                     contactEmail={email.trim()}
                     onPasswordSubmit={isPasswordLoginEnabled() ? handlePasswordAuth : undefined}
+                    onPasswordFocusChange={setPasswordFocused}
                   />
                 )}
                 {step === 2 && <StepSuccess key="success" companyName={name} />}

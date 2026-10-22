@@ -32,6 +32,8 @@ interface PasswordAuthFormProps {
   busyLabel?: string;
   /** Lanza un `Error` con el mensaje que se muestra en el formulario. */
   onSubmit: (values: PasswordAuthValues, mode: PasswordAuthMode) => Promise<void>;
+  /** Avisa mientras el campo de contraseña tiene el foco (p. ej. para una ilustración que reacciona). */
+  onPasswordFocusChange?: (focused: boolean) => void;
 }
 
 const DEFAULT_LABELS: Record<PasswordAuthMode, string> = {
@@ -49,6 +51,7 @@ export function PasswordAuthForm({
   submitLabels,
   busyLabel = "Validando tu cuenta…",
   onSubmit,
+  onPasswordFocusChange,
 }: PasswordAuthFormProps) {
   const id = useId();
   const [mode, setMode] = useState<PasswordAuthMode>(initialMode);
@@ -158,6 +161,8 @@ export function PasswordAuthForm({
             placeholder={fexpo ? "Ingresa tu contraseña" : undefined}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            onFocus={() => onPasswordFocusChange?.(true)}
+            onBlur={() => onPasswordFocusChange?.(false)}
             disabled={busy}
             aria-describedby={registering ? `${id}-password-hint` : undefined}
             className={`${inputClass} pr-12${fexpo ? " pl-10" : ""}`}

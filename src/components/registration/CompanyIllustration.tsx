@@ -7,6 +7,8 @@ interface CompanyIllustrationProps {
   typing?: boolean;
   /** Paso actual del formulario (0, 1 o 2). Al entrar al paso 1 ("Tipo de participación") el personaje saluda. */
   step?: number;
+  /** El campo de contraseña del paso 2 tiene el foco: el personaje se tapa los ojos. */
+  coverEyes?: boolean;
 }
 
 const clampBar = (value: number) => Math.min(1, Math.max(0.14, value));
@@ -22,7 +24,7 @@ const clampBar = (value: number) => Math.min(1, Math.max(0.14, value));
  *   `prefers-reduced-motion` (globals.css) las alcanza igual que a cualquier otro nodo.
  * Estilo y paleta: ver el pie de la pantalla de registro (`RegistrationForm`).
  */
-export function CompanyIllustration({ progress = 0, typing = false, step = 0 }: CompanyIllustrationProps) {
+export function CompanyIllustration({ progress = 0, typing = false, step = 0, coverEyes = false }: CompanyIllustrationProps) {
   const bar1 = clampBar(progress * 1.2);
   const bar2 = clampBar(progress);
   const bar3 = clampBar(progress * 0.75 + 0.15);
@@ -81,15 +83,18 @@ export function CompanyIllustration({ progress = 0, typing = false, step = 0 }: 
 
       {/* Persona detrás del mostrador: respira y parpadea de a ratos; al entrar al paso 2, saluda */}
       <g className={greeting ? styles.greet : undefined}>
-        <path d="M362,212 Q332,232 322,268" stroke="#12264E" strokeWidth="26" strokeLinecap="round" fill="none" />
-        <path d="M362,212 Q332,232 322,268" stroke="#1479F5" strokeWidth="20" strokeLinecap="round" fill="none" />
-        <circle cx="320" cy="270" r="11" fill="#E7F3FF" stroke="#12264E" strokeWidth="3" />
+        {/* Brazos en reposo (o saludando): se ocultan mientras el personaje se tapa los ojos. */}
+        <g style={{ opacity: coverEyes ? 0 : 1, transition: "opacity 220ms ease" }}>
+          <path d="M362,212 Q332,232 322,268" stroke="#12264E" strokeWidth="26" strokeLinecap="round" fill="none" />
+          <path d="M362,212 Q332,232 322,268" stroke="#1479F5" strokeWidth="20" strokeLinecap="round" fill="none" />
+          <circle cx="320" cy="270" r="11" fill="#E7F3FF" stroke="#12264E" strokeWidth="3" />
 
-        {/* Brazo derecho: se alza y saluda solo al entrar al paso 2 (gira desde el hombro). */}
-        <g className={greeting ? styles.waveArm : undefined}>
-          <path d="M418,214 Q442,238 436,272" stroke="#12264E" strokeWidth="26" strokeLinecap="round" fill="none" />
-          <path d="M418,214 Q442,238 436,272" stroke="#1479F5" strokeWidth="20" strokeLinecap="round" fill="none" />
-          <circle cx="436" cy="274" r="11" fill="#E7F3FF" stroke="#12264E" strokeWidth="3" />
+          {/* Brazo derecho: se alza y saluda solo al entrar al paso 2 (gira desde el hombro). */}
+          <g className={greeting ? styles.waveArm : undefined}>
+            <path d="M418,214 Q442,238 436,272" stroke="#12264E" strokeWidth="26" strokeLinecap="round" fill="none" />
+            <path d="M418,214 Q442,238 436,272" stroke="#1479F5" strokeWidth="20" strokeLinecap="round" fill="none" />
+            <circle cx="436" cy="274" r="11" fill="#E7F3FF" stroke="#12264E" strokeWidth="3" />
+          </g>
         </g>
 
         <g className={styles.breathe}>
@@ -102,6 +107,22 @@ export function CompanyIllustration({ progress = 0, typing = false, step = 0 }: 
           <circle cx="378" cy="152" r="3.5" fill="#12264E" className={styles.blink} />
           <circle cx="402" cy="152" r="3.5" fill="#12264E" className={styles.blink} />
           <path d="M378,164 Q390,172 402,164" stroke="#12264E" strokeWidth="3" fill="none" strokeLinecap="round" />
+        </g>
+
+        {/* Manitos tapando los ojos: aparecen solo mientras el campo de contraseña tiene el foco. */}
+        <g
+          className={styles.coverEyes}
+          style={{
+            opacity: coverEyes ? 1 : 0,
+            transform: coverEyes ? "translateY(0)" : "translateY(14px)",
+          }}
+        >
+          <path d="M362,212 Q345,172 374,152" stroke="#12264E" strokeWidth="24" strokeLinecap="round" fill="none" />
+          <path d="M362,212 Q345,172 374,152" stroke="#1479F5" strokeWidth="18" strokeLinecap="round" fill="none" />
+          <path d="M418,214 Q436,174 406,152" stroke="#12264E" strokeWidth="24" strokeLinecap="round" fill="none" />
+          <path d="M418,214 Q436,174 406,152" stroke="#1479F5" strokeWidth="18" strokeLinecap="round" fill="none" />
+          <ellipse cx="374" cy="151" rx="13" ry="10" fill="#E7F3FF" stroke="#12264E" strokeWidth="3" transform="rotate(-18 374 151)" />
+          <ellipse cx="406" cy="151" rx="13" ry="10" fill="#E7F3FF" stroke="#12264E" strokeWidth="3" transform="rotate(18 406 151)" />
         </g>
       </g>
 

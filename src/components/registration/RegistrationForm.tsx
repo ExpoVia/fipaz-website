@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,6 @@ import {
   MoreHorizontal,
   Rocket,
   ShieldCheck,
-  Store,
   Tag,
   UsersRound,
   UtensilsCrossed,
@@ -29,6 +28,7 @@ import {
 import { motion, AnimatePresence, MotionConfig } from "motion/react";
 
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+import { CompanyIllustration } from "@/components/registration/CompanyIllustration";
 import {
   PasswordAuthForm,
   type PasswordAuthMode,
@@ -74,12 +74,6 @@ const CATEGORY_ICONS: Record<StandCategory, LucideIcon> = {
   startups: Rocket,
   other: MoreHorizontal,
 };
-
-const BENEFITS = [
-  { icon: Building2, title: "Crea tu perfil empresarial", text: "Presenta tu marca, cuenta tu historia y muestra lo que haces." },
-  { icon: Store, title: "Gestiona tus stands asignados", text: "Accede al panel y administra la información de tus stands en un solo lugar." },
-  { icon: UsersRound, title: "Consulta tus visitas verificadas", text: "Conoce el interés en tu negocio y conecta con nuevos clientes." },
-] as const;
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
@@ -460,6 +454,22 @@ export function RegistrationForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // La ilustración reacciona a esto: cuánto del paso 1 está completo (0 a 1) y si hay
+  // tecleo reciente. `typing` se apaga solo tras una pausa sin cambios.
+  const [typing, setTyping] = useState(false);
+  const typingTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  function pingTyping() {
+    setTyping(true);
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    typingTimeout.current = setTimeout(() => setTyping(false), 900);
+  }
+  const formProgress = (
+    (name.trim() ? 1 : 0) +
+    (EMAIL_PATTERN.test(email.trim()) ? 1 : 0) +
+    (category && (category !== "other" || customCategory.trim()) ? 1 : 0) +
+    (description.trim().length >= 20 ? 1 : 0)
+  ) / 4;
+
   // ── Validación paso 1 ──────────────────────────────────────────────────────
   function handleNextStep() {
     setError("");
@@ -564,32 +574,10 @@ export function RegistrationForm() {
                   Registra tu empresa y comienza a preparar tu participación en la feria.
                 </p>
 
-                <div className="relative mt-6 hidden items-center justify-center overflow-hidden rounded-[26px] border border-white bg-white p-4 shadow-[0_24px_56px_-30px_rgba(15,60,140,0.35)] xl:flex">
-                  <img
-                    src="/assets/registration/company-registration.svg"
-                    alt=""
-                    aria-hidden="true"
-                    width={640}
-                    height={460}
-                    loading="eager"
-                    decoding="async"
-                    className="h-[230px] w-full object-contain"
-                  />
+                {/* Inline (no <img>): se funde con el degradado de la página y reacciona a lo que se llena en el formulario. */}
+                <div className="relative mt-8 hidden xl:block">
+                  <CompanyIllustration progress={formProgress} typing={typing} />
                 </div>
-
-                <ul className="mt-5 hidden space-y-3 xl:block">
-                  {BENEFITS.map(({ icon: Icon, title, text }) => (
-                    <li key={title} className="flex items-start gap-3">
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#eaf2ff] text-[#0a62d6]">
-                        <Icon aria-hidden="true" className="h-4 w-4" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-sm font-bold leading-5 text-[#0f1b5c]">{title}</p>
-                        <p className="text-xs leading-4 text-slate-600">{text}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
               </div>
             </section>
 
@@ -602,11 +590,11 @@ export function RegistrationForm() {
                 {step === 0 && (
                   <Step1
                     key="s1"
-                    name={name} setName={setName}
-                    category={category} setCategory={setCategory}
-                    customCategory={customCategory} setCustomCategory={setCustomCategory}
-                    email={email} setEmail={setEmail}
-                    description={description} setDescription={setDescription}
+                    name={name} setName={(v) => { setName(v); pingTyping(); }}
+                    category={category} setCategory={(v) => { setCategory(v); pingTyping(); }}
+                    customCategory={customCategory} setCustomCategory={(v) => { setCustomCategory(v); pingTyping(); }}
+                    email={email} setEmail={(v) => { setEmail(v); pingTyping(); }}
+                    description={description} setDescription={(v) => { setDescription(v); pingTyping(); }}
                     error={error}
                     onNext={handleNextStep}
                   />

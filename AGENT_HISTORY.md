@@ -33,3 +33,17 @@ modifica los correos de soporte y contacto a soporte@fexpo.lat y contacto@fexpo.
 
 **Salida:**
 LegalPage.tsx (paginas /privacidad y /terminos) ahora usa soporte@fexpo.lat; ContactSection.tsx (landing) usa contacto@fexpo.lat. No se toco docs/contact-form-apps-script.md (NOTIFY_EMAIL, destinatario del Apps Script). Commit y push a main.
+
+### 2026-10-22T05:53:15Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+pero que no sea como una imagen que sea una integracion con el fondo que se vea vivido y que tenga movimientos
+
+**Salida:**
+La ilustracion de /registro-empresa paso de <img src=svg> dentro de una tarjeta blanca con borde y sombra a un <svg> inline (nuevo src/components/registration/CompanyIllustration.tsx), sin caja ni fondo blanco propio, apoyada directo sobre el degradado de la pagina para integrarse con el fondo. Se agrego src/components/registration/company-illustration.module.css con animaciones CSS en bucle (tarjetas flotantes, planta con balanceo, personaje que respira y parpadea, anillo de pulso en la insignia verificada, confeti geometrico a la deriva, resplandor ambiental); todas quedan alcanzadas por el reset global de prefers-reduced-motion de globals.css por ir inline en el documento. Se elimino public/assets/registration/company-registration.svg (el SVG estatico anterior). tsc sin errores, detector de Impeccable sin hallazgos, 4/4 tests e2e de registro de empresa en verde. Capturas en xl, desktop y mobile sin scroll horizontal. Sin commits.
+
+### 2026-10-22T06:04:20Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5)
+**Prompt:**
+Crea tu perfil empresarial / Gestiona tus stands asignados / Consulta tus visitas verificadas -- quitale esa parte pero que mi svg cuando estemos llenado el formulaio este racionando
+
+**Salida:**
+Se quito la lista de 3 beneficios (Crea tu perfil empresarial / Gestiona tus stands asignados / Consulta tus visitas verificadas) de la columna izquierda de /registro-empresa; se elimino el const BENEFITS y el icono Store (quedo sin otros usos). La ilustracion (CompanyIllustration.tsx) ahora recibe progress (0 a 1, calculado en vivo con nombre/correo/categoria/descripcion validos del paso 1) y typing (true mientras hay tecleo reciente, se apaga solo tras 900ms de pausa via setTimeout en RegistrationForm). Reacciones: las barras del mini-grafico de la laptop y de la tarjeta flotante de visitas crecen con progress (CSS transition sobre transform:scaleY); la insignia de verificado pasa de gris a azul con un pop (keyframe propio, sin easing elastico) y un anillo de pulso solo al llegar a progress=1; aparece una burbuja de "escribiendo" (3 puntos) junto a la laptop mientras typing=true. Se agregaron las clases .reactiveBar/.badgeCircle/.badgePop/.badgeCheck/.dot a company-illustration.module.css. Iteracion: el detector de Impeccable marco bounce-easing (cubic-bezier con overshoot) en el pop de la insignia; se corrigio a un keyframe con overshoot propio sobre la curva ease-out ya usada en el resto del archivo. tsc sin errores, detector final sin hallazgos, 4/4 tests e2e de registro en verde. Capturas confirmando: barras minimas con el formulario vacio, burbuja de tecleo visible al escribir el nombre, barras crecidas a medio llenar, barras completas + insignia azul con check al completar los 4 campos. Sin commits.

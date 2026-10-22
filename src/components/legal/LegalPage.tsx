@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { PixelLogo } from "../landing/PixelIcons";
 
-export const LEGAL_CONTACT_EMAIL = "quispevargasomar@gmail.com";
+export const LEGAL_CONTACT_EMAIL = "soporte@fexpo.lat";
 
 export type LegalSection = {
   title: string;

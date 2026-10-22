@@ -7,7 +7,7 @@ import { pixelifyFont } from "./fonts";
 import { UI_OUT, revealHeading, useScrollFx } from "./scroll-fx";
 import fx from "./landing-fx.module.css";
 
-const CONTACT_EMAIL = "quispevargasomar@gmail.com";
+const CONTACT_EMAIL = "contacto@fexpo.lat";
 /**
  * Where the form goes. With NEXT_PUBLIC_CONTACT_ENDPOINT (the Google Apps Script web app in docs/contact-form-apps-script.md)
  * every message becomes a row in a Google Sheet plus an email. Without it, FormSubmit delivers straight to CONTACT_EMAIL;

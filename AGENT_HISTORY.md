@@ -26,3 +26,10 @@ crea paginas de politica de privacidad (/privacidad) y terminos de servicio (ter
 
 **Salida:**
 Detectado que fexpo.lat sirve fipaz-website (Next.js). Creados src/components/legal/LegalPage.tsx, src/app/privacidad/page.tsx y src/app/terminos/page.tsx; enlaces añadidos en LandingFooter.tsx. tsc sin errores en archivos nuevos (errores previos por deps faltantes react-qr-code/@zxing no relacionados). Commit y push a main; verificacion del deploy en curso.
+
+### 2026-10-22T04:51:02Z | usuario: saulchoque <saulchoque123@gmail.com> | agente: Claude Code (Sonnet 5.5)
+**Prompt:**
+modifica los correos de soporte y contacto a soporte@fexpo.lat y contacto@fexpo.lat y haz push
+
+**Salida:**
+LegalPage.tsx (paginas /privacidad y /terminos) ahora usa soporte@fexpo.lat; ContactSection.tsx (landing) usa contacto@fexpo.lat. No se toco docs/contact-form-apps-script.md (NOTIFY_EMAIL, destinatario del Apps Script). Commit y push a main.

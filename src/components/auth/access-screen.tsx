@@ -137,26 +137,37 @@ export function AccessScreen({ panel }: AccessScreenProps) {
   return (
     <div className="min-h-dvh bg-white text-[#0f1b5c] antialiased">
       <main className="grid min-h-dvh lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-        <section className="relative flex items-center justify-center bg-gradient-to-b from-white to-[#f1f6ff] px-6 py-20 sm:px-12 lg:bg-none lg:px-16">
-          <Link
-            href="/"
-            className="absolute left-4 top-4 inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-slate-600 transition-colors duration-150 ease-out hover:text-[var(--expo-blue)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--expo-blue)] sm:left-8 sm:top-6 lg:left-12"
-          >
-            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-            Volver al inicio
-          </Link>
+        <section className="relative flex flex-col bg-white lg:items-center lg:justify-center lg:bg-white lg:px-16 lg:py-20">
+          {/* Móvil y tablet: banda de color con ola; en escritorio el contenedor desaparece (lg:contents) y solo queda el texto. */}
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#0a6cf0] via-[#2f5ff0] to-[#6b4df0] px-6 pb-16 pt-20 text-white sm:px-12 lg:contents lg:text-[#0f1b5c]">
+            <Link
+              href="/"
+              aria-label="Volver al inicio"
+              className="absolute left-3 top-3 inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-white transition-colors duration-150 ease-out hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:left-12 lg:top-6 lg:text-slate-600 lg:hover:bg-transparent lg:hover:text-[var(--expo-blue)] lg:focus-visible:outline-[var(--expo-blue)] sm:left-6 sm:top-4"
+            >
+              <ArrowLeft aria-hidden="true" className="h-5 w-5 lg:h-4 lg:w-4" />
+              <span className="hidden lg:inline">Volver al inicio</span>
+            </Link>
 
-          <div className="w-full max-w-[25rem]">
-            <header className="text-center">
-              <Image {...rise(0)} src="/img/landing/fexpo-logo.png" alt="Fexpo" width={132} height={40} priority className="access-rise mx-auto mb-6 h-9 w-auto lg:hidden" />
-              <h1 {...rise(0)} className="access-rise text-balance text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-[2.5rem]">
-                Bienvenido a <span className="text-[#0a6cf0]">Fexpo</span>
+            <svg aria-hidden="true" viewBox="0 0 390 60" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 bottom-0 h-12 w-full lg:hidden">
+              <path d="M0 34C70 6 150 2 230 24S350 48 390 18V60H0Z" fill="white" fillOpacity="0.18" />
+              <path d="M0 46C80 20 170 26 250 40S350 52 390 36V60H0Z" fill="white" />
+            </svg>
+
+            <header className="mx-auto w-full max-w-[25rem] text-center">
+              <span {...rise(0)} className="access-rise mx-auto mb-5 inline-flex rounded-2xl bg-white px-4 py-2.5 shadow-[0_8px_24px_-10px_rgba(15,27,92,0.55)] lg:hidden">
+                <Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={132} height={40} priority className="h-8 w-auto" />
+              </span>
+              <h1 {...rise(0)} className="access-rise text-balance text-[2rem] font-extrabold leading-[1.1] tracking-tight sm:text-4xl lg:text-[2.5rem] lg:leading-[1.05]">
+                Bienvenido a <span className="lg:text-[#0a6cf0]">Fexpo</span>
               </h1>
               <h2 className="sr-only">{copy.title}</h2>
-              <p {...rise(60)} className="access-rise mx-auto mt-3 max-w-xs text-balance text-base text-slate-600 sm:text-lg">{copy.description}</p>
+              <p {...rise(60)} className="access-rise mx-auto mt-2 max-w-xs text-balance text-base text-white/90 sm:text-lg lg:mt-3 lg:text-slate-600">{copy.description}</p>
             </header>
+          </div>
 
-            <div className="mt-8">
+          <div className="mx-auto w-full max-w-[25rem] flex-1 px-6 pb-10 pt-2 sm:px-0 lg:mt-8 lg:flex-none lg:px-0 lg:pb-0 lg:pt-0">
+            <div className="flex flex-col">
               {verification === "unavailable" && session ? (
                 <div {...rise(120)} className="access-rise flex flex-col items-center gap-3 text-center">
                   <p className="text-lg font-extrabold text-[#0f1b5c]">No pudimos validar tu sesión ahora.</p>
@@ -183,7 +194,8 @@ export function AccessScreen({ panel }: AccessScreenProps) {
                 </div>
               ) : (
                 <>
-                  <div {...rise(120)} className="access-rise">
+                  {/* En móvil el correo va primero y Google debajo de "o continúa con"; en escritorio, al revés. */}
+                  <div {...rise(220)} className="access-rise order-4 mt-0 lg:order-1">
                     {busy ? (
                       <div role="status" className="flex min-h-11 items-center justify-center gap-2 text-sm font-bold">
                         <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> Validando tu cuenta…
@@ -194,26 +206,27 @@ export function AccessScreen({ panel }: AccessScreenProps) {
                   </div>
 
                   {error && (
-                    <p role="alert" className="access-rise mt-4 rounded-lg border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800">
+                    <p role="alert" className="access-rise order-1 mb-4 rounded-lg border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800 lg:order-2 lg:mb-0 lg:mt-4">
                       {error}
                     </p>
                   )}
 
                   {passwordLogin && (
                     <>
-                      <div {...rise(170)} className="access-rise my-5 flex items-center gap-3 text-xs font-bold uppercase tracking-wide text-slate-500">
+                      <div {...rise(170)} className="access-rise order-3 my-5 flex items-center gap-3 text-xs font-bold uppercase tracking-wide text-slate-500 lg:order-3">
                         <span className="h-px flex-1 bg-slate-200" aria-hidden="true" />
-                        o con tu correo
+                        <span className="lg:hidden">o continúa con</span>
+                        <span className="hidden lg:inline">o con tu correo</span>
                         <span className="h-px flex-1 bg-slate-200" aria-hidden="true" />
                       </div>
-                      <div {...rise(220)} className="access-rise">
+                      <div {...rise(120)} className="access-rise order-2 lg:order-4">
                         <PasswordAuthForm variant="fexpo" onSubmit={handlePasswordLogin} />
                       </div>
                     </>
                   )}
 
                   {panel !== "organizador" && (
-                    <p {...rise(270)} className="access-rise mt-5 text-center text-sm text-slate-600">
+                    <p {...rise(270)} className="access-rise order-5 mt-6 text-center text-sm text-slate-600 lg:mt-5">
                       ¿Todavía no registraste tu empresa?{" "}
                       <Link href="/registro-empresa" className="whitespace-nowrap rounded font-semibold text-[#0a62d6] underline-offset-4 transition-colors duration-150 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--expo-blue)]">
                         Regístrala aquí

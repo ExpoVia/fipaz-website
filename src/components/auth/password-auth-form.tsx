@@ -92,7 +92,7 @@ export function PasswordAuthForm({
 
   const fexpo = variant === "fexpo";
   const inputClass = fexpo
-    ? "access-field min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3.5 py-3 text-base font-medium text-[#0f1b5c] outline-none transition-[border-color,box-shadow] duration-150 ease-out placeholder:text-slate-500 hover:border-slate-400 focus:border-[#0a62d6] focus:ring-4 focus:ring-[#0a62d6]/15 disabled:opacity-60 sm:text-sm"
+    ? "access-field min-h-12 w-full rounded-lg border border-slate-300 bg-white shadow-[0_1px_2px_rgba(15,27,92,0.05)] px-3.5 py-3 text-base font-medium text-[#0f1b5c] outline-none transition-[border-color,box-shadow] duration-150 ease-out placeholder:text-slate-500 hover:border-slate-400 focus:border-[#0a62d6] focus:ring-4 focus:ring-[#0a62d6]/15 disabled:opacity-60 sm:text-sm"
     : "w-full rounded-xl border-2 border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-[var(--expo-navy)] outline-none transition-colors focus:border-[var(--expo-navy)] disabled:opacity-60";
   const labelClass = fexpo
     ? "mb-1.5 block text-sm font-bold text-[#0f1b5c]"

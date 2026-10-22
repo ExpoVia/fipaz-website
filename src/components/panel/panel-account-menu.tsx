@@ -68,10 +68,10 @@ export function PanelAccountMenu() {
         onClick={() => setOpen((value) => !value)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="inline-flex items-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-white px-2.5 py-1.5 text-xs font-extrabold text-[var(--expo-navy)] hover:bg-[var(--expo-bg)]"
+        className="inline-flex max-w-[230px] items-center gap-2 rounded-xl border border-[#e3ebf7] bg-white px-2.5 py-2 text-xs font-extrabold text-[#17254a] shadow-[0_3px_12px_rgb(34_85_155_/_5%)] hover:bg-[#f7faff] sm:max-w-[290px]"
       >
-        <UserRound aria-hidden="true" className="h-4 w-4 shrink-0" />
-        <span className="hidden max-w-40 truncate sm:inline">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#eaf3ff] text-[#0878f9]"><UserRound aria-hidden="true" className="h-4 w-4" /></span>
+        <span className="hidden max-w-44 truncate sm:inline">
           {activePanel ? PANEL_LABELS[activePanel] : session.displayName}
           {activeRole ? ` · ${describeRole(activeRole)}` : ""}
         </span>
@@ -81,7 +81,7 @@ export function PanelAccountMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-40 mt-2 w-72 rounded-xl border-2 border-[var(--expo-navy)] bg-white p-2 shadow-[4px_4px_0_var(--expo-navy)]"
+          className="absolute right-0 z-40 mt-2 w-72 rounded-2xl border border-[#e3ebf7] bg-white p-2 shadow-[0_20px_55px_rgb(24_57_104_/_16%)]"
         >
           <div className="px-2 py-1.5">
             <p className="truncate text-sm font-black text-[var(--expo-navy)]">{session.displayName}</p>

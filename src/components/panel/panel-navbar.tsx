@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import Image from "next/image";
+import { ArrowUpRight, CalendarDays, ChevronDown, Menu } from "lucide-react";
 
-import { BrandMark } from "@/components/shared/brand-mark";
+import { getActivePanel, getActiveRole, getRolesForPanel } from "@/lib/panel-access";
+import { useCompanyAuthStore } from "@/store/company-auth-store";
+import { useExhibitor } from "./exhibitor-context";
 import { PanelAccountMenu } from "./panel-account-menu";
 
 interface PanelNavbarProps {
@@ -11,29 +14,43 @@ interface PanelNavbarProps {
 }
 
 export function PanelNavbar({ onMenuClick }: PanelNavbarProps) {
+  const session = useCompanyAuthStore((state) => state.session);
+  const activePanel = getActivePanel(session);
+  const activeRole = getActiveRole(session);
+  const { stand } = useExhibitor();
+  const eventName = activePanel === "expositor" ? stand?.eventName ?? "Evento por asignar" : activeRole?.eventName ?? "Evento por seleccionar";
+  const detail = activePanel === "expositor" ? stand ? `Stand ${stand.boothCode}` : "Panel de expositor" : "Panel de organizador";
+  const multipleEvents = activePanel === "organizador" && getRolesForPanel(session, "organizador").filter((role) => role.eventId).length > 1;
+  const eventContent = <>
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#eaf3ff] text-[#0878f9]"><CalendarDays aria-hidden="true" className="h-5 w-5" /></span>
+    <span className="min-w-0 text-left"><span className="block truncate text-sm font-extrabold text-[#17254a]">{eventName}</span><span className="block truncate text-xs font-medium text-[#7185aa]">{detail}</span></span>
+    {multipleEvents && <ChevronDown aria-hidden="true" className="ml-auto h-4 w-4 shrink-0 text-[#6982ab]" />}
+  </>;
+
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b-2 border-[var(--expo-line)] bg-white/90 px-4 py-3 backdrop-blur-md sm:px-6">
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between gap-3 border-b border-[#e5edf8] bg-white/95 px-4 backdrop-blur-md sm:px-7 lg:px-9">
+      <div className="flex min-w-0 items-center gap-3">
         <button
           type="button"
           onClick={onMenuClick}
           aria-label="Abrir navegación del panel"
-          className="inline-flex items-center justify-center rounded-lg border-2 border-[var(--expo-navy)] p-2 text-[var(--expo-navy)] hover:bg-slate-100 lg:hidden"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#dfe8f5] text-[#314b78] hover:bg-[#f1f6fd] lg:hidden"
         >
           <Menu className="h-5 w-5" />
         </button>
-        <BrandMark compact className="lg:hidden" />
-        <BrandMark className="hidden lg:inline-flex" />
+        <Link href="/panel" aria-label="Fexpo, ir al resumen" className="lg:hidden"><Image src="/img/landing/fexpo-logo.png" alt="Fexpo" width={104} height={32} priority className="h-auto w-[104px]" /></Link>
+        {multipleEvents ? <Link href="/panel/eventos" className="panel-surface hidden min-w-0 items-center gap-3 px-3 py-2.5 hover:border-[#b9d8ff] sm:flex sm:w-[340px]">{eventContent}</Link> : <div className="panel-surface hidden min-w-0 items-center gap-3 px-3 py-2.5 sm:flex sm:w-[340px]">{eventContent}</div>}
       </div>
 
-      <div className="flex items-center gap-4">
-        <PanelAccountMenu />
+      <div className="flex shrink-0 items-center gap-3 sm:gap-5">
         <Link
           href="/"
-          className="text-xs font-bold text-[var(--expo-blue)] hover:underline"
+          className="hidden items-center gap-1 text-xs font-bold text-[#667da3] hover:text-[#0878f9] md:inline-flex"
         >
-          Volver al sitio
+          Ir al sitio <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
         </Link>
+        <span aria-hidden="true" className="hidden h-7 w-px bg-[#e3eaf4] md:block" />
+        <PanelAccountMenu />
       </div>
     </header>
   );

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { User, Store, Building2, CheckCircle2, ArrowUpRight } from "lucide-react";
 import { PixelStar } from "./PixelIcons";
-import { pixelifyFont } from "./fonts";
+import { headingFont } from "./fonts";
 import { UI_OUT, depthLayers, disposer, revealHeading, tilt, useScrollFx } from "./scroll-fx";
 import fx from "./landing-fx.module.css";
 
@@ -123,15 +123,15 @@ export function ActorsSection() {
         <div className="mx-auto max-w-4xl text-center">
           <span
             data-fx-intro
-            className="mb-5 inline-flex items-center gap-1.5 rounded-md border-2 border-[var(--expo-navy)] bg-white px-3 py-1 font-mono text-xs font-black tracking-wider text-[var(--expo-navy)] uppercase shadow-[2px_2px_0_var(--expo-navy)]"
+            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-[var(--expo-blue)]/15 bg-white px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-navy)] shadow-sm"
           >
             <PixelStar className="h-3.5 w-3.5" />
-            DATOS DE DEMOSTRACIÓN · FUNCIONES PROPUESTAS
+            Datos de demostración · funciones propuestas
           </span>
 
           <h2
             data-fx-heading
-            className={`${pixelifyFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl lg:text-6xl`}
+            className={`${headingFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl lg:text-6xl`}
           >
             Visitante · Expositor · Organizador: una plataforma para varias ferias.
           </h2>
@@ -146,21 +146,21 @@ export function ActorsSection() {
           {actors.map((actor, idx) => (
             <li key={actor.id} id={actor.id} data-fx-deal className="scroll-mt-24">
               <div
-                className={`${fx.slab} ${fx.actorCard} flex h-full flex-col justify-between overflow-hidden rounded-2xl border-3 border-[var(--expo-navy)] bg-white [--slab-offset:9px]`}
+                className={`${fx.slab} ${fx.actorCard} flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-black/5 bg-white [--slab-offset:14px]`}
                 style={{ "--accent": actor.accent } as CSSProperties}
               >
                 <div>
-                  <div className={`${fx.actorBand} ${actor.headerBg} border-b-3 border-[var(--expo-navy)] p-6 text-white`}>
+                  <div className={`${fx.actorBand} ${actor.headerBg} p-6 text-white`}>
                     <div className="flex items-center justify-between">
-                      <div className={`${fx.actorIcon} rounded-xl border-2 border-[var(--expo-navy)] bg-white/25 p-2.5`}>{actor.icon}</div>
+                      <div className={`${fx.actorIcon} rounded-xl bg-white/20 p-2.5`}>{actor.icon}</div>
                       <span
-                        className={`rounded border border-[var(--expo-navy)] px-2.5 py-1 font-mono text-[10px] font-black uppercase shadow-[2px_2px_0_var(--expo-navy)] ${actor.badgeColor}`}
+                        className={`rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase ${actor.badgeColor}`}
                       >
-                        AUDIENCIA 0{idx + 1}
+                        Audiencia 0{idx + 1}
                       </span>
                     </div>
 
-                    <h3 className={`${pixelifyFont.className} mt-5 text-3xl leading-none font-bold tracking-tight text-slate-900`}>
+                    <h3 className={`${headingFont.className} mt-5 text-3xl leading-none font-bold tracking-tight text-slate-900`}>
                       {actor.title}
                     </h3>
 
@@ -185,8 +185,8 @@ export function ActorsSection() {
                   href={actor.href}
                   className={`${fx.cardLink} flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4`}
                 >
-                  <span className="font-mono text-xs font-bold text-slate-500">Plataforma Fexpo</span>
-                  <span className="flex items-center gap-1 text-right font-mono text-xs font-bold text-[var(--expo-blue)]">
+                  <span className="text-xs font-bold text-slate-500">Plataforma Fexpo</span>
+                  <span className="flex items-center gap-1 text-right text-xs font-bold text-[var(--expo-blue)]">
                     {actor.cta} <ArrowUpRight aria-hidden="true" className={`${fx.arrow} h-3.5 w-3.5`} />
                   </span>
                 </Link>

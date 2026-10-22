@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 import { PixelMapPin } from "./PixelIcons";
 import { Navigation, ArrowRight, Utensils, Compass, Layers, Maximize2, Sparkles } from "lucide-react";
 import { ExpoInteractiveMap, expoStands } from "@/features/map";
-import { pixelifyFont } from "./fonts";
+import { headingFont } from "./fonts";
 import { UI_OUT, disposer, magnetic, revealHeading, useScrollFx } from "./scroll-fx";
 import fx from "./landing-fx.module.css";
 
@@ -47,7 +47,7 @@ function playMap(root: HTMLElement, finePointer: boolean) {
   return cleanup.run;
 }
 
-const toggleBase = `${fx.slab} ${fx.press} inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-[var(--expo-navy)] px-5 py-2 [--slab-lift:2px] [--slab-offset:3px]`;
+const toggleBase = `${fx.slab} ${fx.press} inline-flex min-h-11 items-center gap-2 rounded-full border border-black/5 px-5 py-2 [--slab-lift:2px] [--slab-offset:6px]`;
 
 export function MapShowcaseSection() {
   const root = useRef<HTMLElement>(null);
@@ -59,7 +59,7 @@ export function MapShowcaseSection() {
     <section
       ref={root}
       id="mapa"
-      className="relative scroll-mt-24 overflow-hidden border-t-2 border-[var(--expo-line)] bg-white py-20 md:py-28"
+      className="relative scroll-mt-24 overflow-hidden border-t border-[var(--expo-line)] bg-white py-20 md:py-28"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -74,7 +74,7 @@ export function MapShowcaseSection() {
 
           <h2
             data-fx-heading
-            className={`${pixelifyFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl lg:text-6xl`}
+            className={`${headingFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl lg:text-6xl`}
           >
             Explora un plano de referencia para FIPAZ 2026.
           </h2>
@@ -121,7 +121,7 @@ export function MapShowcaseSection() {
 
         {/* Map frame: the section's one peak */}
         <div data-fx-frame className="mt-12">
-          <div className="relative overflow-hidden rounded-3xl border-3 border-[var(--expo-navy)] bg-slate-900 p-3 shadow-[7px_7px_0_var(--expo-navy)] sm:p-6 sm:shadow-[12px_12px_0_var(--expo-navy)]">
+          <div className="relative overflow-hidden rounded-3xl bg-slate-900 p-3 shadow-[0_40px_90px_-30px_rgba(15,23,42,0.55)] sm:p-6">
             {/* Top bar inside the frame */}
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 text-white">
               <div data-fx-bar className="flex items-center gap-2">
@@ -241,7 +241,7 @@ export function MapShowcaseSection() {
                 <span data-fx-magnet className="inline-block">
                   <Link
                     href="/demo/map"
-                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-2 border-2 border-white bg-[var(--expo-blue)] px-5 py-2.5 text-white [--slab-color:#ffffff] [--slab-lift:2px] [--slab-offset:4px] hover:bg-sky-600`}
+                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-2 rounded-xl bg-[var(--expo-blue)] px-5 py-2.5 text-white [--slab-color:rgba(0,0,0,0.4)] [--slab-lift:2px] [--slab-offset:6px] hover:bg-sky-600`}
                   >
                     <span className="text-sm font-black">Abrir mapa completo</span>
                     <ArrowRight className="h-4 w-4 stroke-[3]" />
@@ -251,7 +251,7 @@ export function MapShowcaseSection() {
                 <span data-fx-magnet className="inline-block">
                   <Link
                     href="/demo"
-                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-2 border-2 border-white bg-[var(--expo-yellow)] px-5 py-2.5 text-[var(--expo-navy)] [--slab-color:#ffffff] [--slab-lift:2px] [--slab-offset:4px] hover:bg-[#FFE066]`}
+                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-2 rounded-xl bg-[var(--expo-yellow)] px-5 py-2.5 text-[var(--expo-navy)] [--slab-color:rgba(0,0,0,0.3)] [--slab-lift:2px] [--slab-offset:6px] hover:bg-[#FFE066]`}
                   >
                     <span className="text-sm font-black">Probar demo</span>
                   </Link>

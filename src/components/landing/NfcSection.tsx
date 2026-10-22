@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import { PixelNfcPlaque, PixelStar, PixelRewardChest } from "./PixelIcons";
 import { Zap, Sparkles, Award } from "lucide-react";
 import { DEMO_FIXTURE } from "@/data/demo-fixture";
-import { pixelifyFont } from "./fonts";
+import { headingFont } from "./fonts";
 import { UI_OUT, depthLayers, revealHeading, useScrollFx } from "./scroll-fx";
 import fx from "./landing-fx.module.css";
 
@@ -115,7 +115,7 @@ export function NfcSection() {
   ];
 
   return (
-    <section ref={root} className="relative overflow-hidden border-t-2 border-[var(--expo-line)] bg-[var(--expo-bg)] py-20 md:py-28">
+    <section ref={root} className="relative overflow-hidden border-t border-[var(--expo-line)] bg-[var(--expo-bg)] py-20 md:py-28">
       <div aria-hidden="true" data-fx-depth="30" className={`${fx.dots} pointer-events-none absolute inset-x-0 -top-24 -bottom-24`} />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -131,7 +131,7 @@ export function NfcSection() {
 
           <h2
             data-fx-heading
-            className={`${pixelifyFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl lg:text-6xl`}
+            className={`${headingFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl lg:text-6xl`}
           >
             Check-in y puntos de ejemplo.
           </h2>
@@ -142,7 +142,7 @@ export function NfcSection() {
 
           {/* Mandatory tag label */}
           <div data-fx-intro className="mt-5 inline-block">
-            <span className="rounded border-2 border-[var(--expo-navy)] bg-white px-3 py-1 font-mono text-[11px] font-black text-[var(--expo-navy)] uppercase shadow-[2px_2px_0_var(--expo-navy)]">
+            <span className="rounded-full border border-[var(--expo-blue)]/15 bg-white px-3.5 py-1.5 text-xs font-bold tracking-wide text-[var(--expo-navy)] shadow-sm">
               Datos de demostración
             </span>
           </div>
@@ -152,8 +152,8 @@ export function NfcSection() {
         <div data-fx-columns className="mt-16 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
           {/* Left: NFC sequence */}
           <div data-fx-in="left" className="lg:col-span-6">
-            <div className={`${fx.slab} rounded-2xl border-3 border-[var(--expo-navy)] bg-white p-6 [--slab-offset:9px]`}>
-              <div className="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+            <div className={`${fx.slab} rounded-2xl border border-black/5 bg-white p-6 [--slab-offset:14px]`}>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div className="flex items-center gap-3">
                   <PixelNfcPlaque className="h-10 w-10" />
                   <div>
@@ -202,13 +202,13 @@ export function NfcSection() {
           {/* Right: mission and reward */}
           <div className="space-y-8 lg:col-span-6">
             <div data-fx-in="right">
-              <div className={`${fx.slab} rounded-2xl border-3 border-[var(--expo-navy)] bg-white p-6 [--slab-offset:9px]`}>
+              <div className={`${fx.slab} rounded-2xl border border-black/5 bg-white p-6 [--slab-offset:14px]`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Award className="h-5 w-5 text-[var(--expo-purple)]" />
-                    <span className="font-mono text-xs font-black text-[var(--expo-purple)] uppercase">MISIÓN DE EJEMPLO</span>
+                    <span className="text-xs font-bold tracking-wide text-[var(--expo-purple)] uppercase">Misión de ejemplo</span>
                   </div>
-                  <span className="rounded border border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-2.5 py-0.5 font-mono text-xs font-extrabold text-[var(--expo-navy)]">
+                  <span className="rounded-full bg-[var(--expo-yellow)] px-2.5 py-0.5 text-xs font-extrabold text-[var(--expo-navy)]">
                     2 / 3 stands
                   </span>
                 </div>
@@ -241,13 +241,13 @@ export function NfcSection() {
 
             <div data-fx-in="right">
               <div
-                className={`${fx.slab} ${fx.rewardCard} rounded-2xl border-3 border-[var(--expo-navy)] bg-[#fdeef4] p-6 [--slab-offset:9px]`}
+                className={`${fx.slab} ${fx.rewardCard} rounded-2xl border border-black/5 bg-[#fdeef4] p-6 [--slab-offset:14px]`}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="mb-2 inline-flex items-center gap-1 rounded border border-[var(--expo-navy)] bg-white px-2 py-0.5 font-mono text-[10px] font-black text-[var(--expo-purple)] uppercase">
+                    <div className="mb-2 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[10px] font-bold tracking-wide text-[var(--expo-purple)] uppercase shadow-sm">
                       <Sparkles className="h-3 w-3 text-amber-500" />
-                      PROPUESTA DE RECOMPENSA
+                      Propuesta de recompensa
                     </div>
                     <h4 className="text-lg font-black text-[var(--expo-navy)]">
                       Propuesta: {DEMO_FIXTURE.stands[0].promotion} en {DEMO_FIXTURE.stands[0].name} · {DEMO_FIXTURE.stands[0].boothCode}
@@ -257,7 +257,7 @@ export function NfcSection() {
 
                   <span data-fx-chest className="ml-2 shrink-0">
                     <span className={`${fx.chest} inline-flex`}>
-                      <PixelRewardChest className="h-12 w-12 drop-shadow-[2px_2px_0_var(--expo-navy)]" />
+                      <PixelRewardChest className="h-12 w-12 drop-shadow-[0_8px_14px_rgba(131,87,165,0.35)]" />
                     </span>
                   </span>
                 </div>
@@ -265,7 +265,7 @@ export function NfcSection() {
             </div>
 
             <div data-fx-in="right">
-              <div className={`${fx.slab} rounded-xl border-2 border-[var(--expo-navy)] bg-white p-4 [--slab-lift:2px] [--slab-offset:4px]`}>
+              <div className={`${fx.slab} rounded-xl border border-black/5 bg-white p-4 [--slab-lift:2px] [--slab-offset:7px]`}>
                 <p className="text-sm leading-snug font-bold text-slate-800">
                   “Cada visita puede convertirse en progreso, descubrimiento y una nueva razón para seguir explorando el recinto.”
                 </p>

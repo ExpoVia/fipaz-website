@@ -3,7 +3,7 @@
 import React, { useRef, useState } from "react";
 import { gsap } from "gsap";
 import { CheckCircle2, Loader2, Mail, Send, TriangleAlert } from "lucide-react";
-import { pixelifyFont } from "./fonts";
+import { headingFont } from "./fonts";
 import { UI_OUT, revealHeading, useScrollFx } from "./scroll-fx";
 import fx from "./landing-fx.module.css";
 
@@ -25,7 +25,7 @@ const roles = ["Visitante", "Expositor", "Organizador", "Otro"] as const;
 type Status = "idle" | "sending" | "sent" | "error";
 
 const fieldClass =
-  "w-full rounded-xl border-2 border-[var(--expo-navy)] bg-white px-4 py-3 text-[var(--expo-navy)] transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 hover:border-[var(--expo-blue)] focus:border-[var(--expo-blue)] focus:shadow-[3px_3px_0_var(--expo-blue)] focus:outline-none";
+  "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[var(--expo-navy)] shadow-[0_1px_2px_rgba(15,27,92,0.05)] transition-[border-color,box-shadow] duration-150 ease-out placeholder:text-slate-400 hover:border-slate-400 focus:border-[var(--expo-blue)] focus:ring-4 focus:ring-[var(--expo-blue)]/15 focus:outline-none";
 
 /** The intro lands first, then the plate rises into place; nothing here owns a hover. */
 function playContact(root: HTMLElement) {
@@ -120,7 +120,7 @@ export function ContactSection() {
     <section
       ref={root}
       id="escribenos"
-      className="relative scroll-mt-24 overflow-hidden border-t-2 border-[var(--expo-line)] bg-[var(--expo-bg)] py-20 md:py-28"
+      className="relative scroll-mt-24 overflow-hidden border-t border-[var(--expo-line)] bg-[var(--expo-bg)] py-20 md:py-28"
     >
       <div aria-hidden="true" className={`${fx.dots} absolute inset-0 opacity-70`} />
 
@@ -128,7 +128,7 @@ export function ContactSection() {
         <div className="lg:col-span-5 lg:pt-6">
           <h2
             data-fx-heading
-            className={`${pixelifyFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl`}
+            className={`${headingFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl`}
           >
             Hablemos de tu próxima feria.
           </h2>
@@ -148,14 +148,14 @@ export function ContactSection() {
         </div>
 
         <div data-fx-plate className="lg:col-span-7">
-          <div className="rounded-3xl border-3 border-[var(--expo-navy)] bg-white p-6 shadow-[9px_9px_0_var(--expo-navy)] sm:p-8">
+          <div className="rounded-3xl border border-black/5 bg-white p-6 shadow-[0_24px_60px_-28px_rgba(47,45,76,0.35)] sm:p-8">
             {status === "sent" ? (
               <div role="status" className="flex flex-col items-start gap-5 py-6">
-                <span className="flex h-14 w-14 items-center justify-center rounded-2xl border-3 border-[var(--expo-navy)] bg-[var(--expo-mint)] shadow-[3px_3px_0_var(--expo-navy)]">
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--expo-mint)]">
                   <CheckCircle2 aria-hidden="true" className="h-8 w-8 text-[var(--expo-navy)]" />
                 </span>
                 <div>
-                  <p className={`${pixelifyFont.className} text-3xl font-bold text-[var(--expo-navy)]`}>Mensaje enviado.</p>
+                  <p className={`${headingFont.className} text-3xl font-bold text-[var(--expo-navy)]`}>Mensaje enviado.</p>
                   <p className="mt-2 max-w-md text-base font-medium text-slate-600">
                     Gracias por escribirnos. Te responderemos al correo que dejaste.
                   </p>
@@ -163,7 +163,7 @@ export function ContactSection() {
                 <button
                   type="button"
                   onClick={() => setStatus("idle")}
-                  className={`${fx.slab} ${fx.press} inline-flex items-center border-2 border-[var(--expo-navy)] bg-white px-5 py-2.5 text-[var(--expo-navy)] [--slab-lift:2px] [--slab-offset:4px] hover:bg-[var(--expo-bg)]`}
+                  className={`${fx.slab} ${fx.press} inline-flex items-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-[var(--expo-navy)] [--slab-lift:2px] [--slab-offset:6px] hover:bg-[var(--expo-bg)]`}
                 >
                   <span className="text-sm font-extrabold">Enviar otro mensaje</span>
                 </button>
@@ -229,7 +229,7 @@ export function ContactSection() {
                     {roles.map((role) => (
                       <label key={role} className="relative cursor-pointer">
                         <input type="radio" name="role" value={role} className="peer sr-only" />
-                        <span className="block rounded-full border-2 border-[var(--expo-navy)] bg-white px-4 py-2.5 text-sm font-bold text-[var(--expo-navy)] transition-[background-color,box-shadow] duration-150 peer-checked:bg-[var(--expo-yellow)] peer-checked:shadow-[2px_2px_0_var(--expo-navy)] peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--expo-blue)] hover:bg-[var(--expo-bg)]">
+                        <span className="block rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-[var(--expo-navy)] transition-[background-color,border-color] duration-150 peer-checked:border-[var(--expo-yellow)] peer-checked:bg-[var(--expo-yellow)] peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--expo-blue)] hover:border-slate-400 hover:bg-[var(--expo-bg)]">
                           {role}
                         </span>
                       </label>
@@ -266,7 +266,7 @@ export function ContactSection() {
                   {status === "error" && (
                     <p
                       role="alert"
-                      className="flex items-start gap-2.5 rounded-xl border-2 border-[var(--expo-coral)] bg-[var(--expo-coral)]/10 px-4 py-3 text-sm font-bold text-[var(--expo-navy)]"
+                      className="flex items-start gap-2.5 rounded-xl border border-[var(--expo-coral)]/40 bg-[var(--expo-coral)]/10 px-4 py-3 text-sm font-bold text-[var(--expo-navy)]"
                     >
                       <TriangleAlert aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--expo-coral)]" />
                       <span>
@@ -287,7 +287,7 @@ export function ContactSection() {
                   <button
                     type="submit"
                     disabled={sending}
-                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-3 border-3 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-7 py-3.5 text-[var(--expo-navy)] [--slab-offset:5px] hover:bg-[#FFE066] disabled:cursor-progress disabled:opacity-70`}
+                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-7 py-3.5 text-[var(--expo-navy)] [--slab-offset:9px] hover:bg-[#FFE066] disabled:cursor-progress disabled:opacity-70`}
                   >
                     <span className="text-base font-black">{sending ? "Enviando…" : "Enviar mensaje"}</span>
                     {sending ? (

@@ -1,14 +1,17 @@
-import { Pixelify_Sans, Plus_Jakarta_Sans, Press_Start_2P, Sora, Space_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Sora, Space_Mono } from "next/font/google";
 
-export const pixelifyFont = Pixelify_Sans({
+// Tipografía de la landing: antes una fuente "pixel art" (Pixelify Sans / Press Start 2P),
+// ahora una grotesca limpia y moderna. `headingFont` viste los títulos grandes de cada
+// sección; `eyebrowFont` las etiquetas pequeñas en mayúsculas (el "ojo" sobre el título).
+export const headingFont = Sora({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["600", "700", "800"],
   display: "swap",
 });
 
-export const pressStartFont = Press_Start_2P({
+export const eyebrowFont = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400"],
+  weight: ["600", "700"],
   display: "swap",
 });
 

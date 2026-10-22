@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Building2, Loader2, ShieldAlert, Store } from "lucide-react";
 
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { PasswordAuthForm, type PasswordAuthValues } from "@/components/auth/password-auth-form";
-import { BrandMark } from "@/components/shared/brand-mark";
 import type { PanelRole } from "@/config/panel-navigation";
 import { isPasswordLoginEnabled } from "@/lib/api/company-auth";
 import {
@@ -25,19 +25,27 @@ import "@/store/panel-store";
 const COPY: Record<PanelRole | "any", { title: string; description: string }> = {
   expositor: {
     title: "Acceso de expositor",
-    description: "Entra con la cuenta de Google con la que registraste tu empresa para gestionar tu stand.",
+    description: "Ingresa para gestionar tu participación en la feria.",
   },
   organizador: {
     title: "Acceso de organizador",
-    description: "Entra con la cuenta de Google a la que se le asignó la administración de un evento.",
+    description: "Ingresa para administrar tu evento desde el panel.",
   },
   any: {
     title: "Acceso al panel",
-    description: "Entra con Google. Te llevamos al panel que corresponde a tu cuenta.",
+    description: "Ingresa para gestionar tu participación en la feria.",
   },
 };
 
 const PANEL_ICONS: Record<PanelRole, typeof Store> = { expositor: Store, organizador: Building2 };
+
+/** Retraso de entrada escalonado (ver `.access-rise` en globals.css). */
+const rise = (delayMs: number) => ({ style: { "--access-delay": `${delayMs}ms` } as React.CSSProperties });
+
+const BUTTON_BASE =
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-4 py-3 text-base font-extrabold transition-[filter,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--expo-blue)]";
+const PRIMARY_BUTTON = `${BUTTON_BASE} bg-[var(--expo-yellow)] text-[#0f1b5c] hover:brightness-95`;
+const SECONDARY_BUTTON = `${BUTTON_BASE} bg-[#0a62d6] text-white hover:brightness-110`;
 
 interface AccessScreenProps {
   /** Panel al que la persona intentaba entrar (viene de `/acceso?panel=`). */
@@ -127,83 +135,105 @@ export function AccessScreen({ panel }: AccessScreenProps) {
   const loading = !hydrated || (verification === "checking" && !!session) || (checked && !!session && !!target);
 
   return (
-    <div className="min-h-dvh bg-[var(--expo-bg)] text-[var(--expo-navy)] antialiased">
-      <header className="border-b-2 border-[var(--expo-line)] bg-white py-4">
-        <div className="mx-auto flex max-w-2xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-[var(--expo-blue)]">
+    <div className="min-h-dvh bg-white text-[#0f1b5c] antialiased">
+      <main className="grid min-h-dvh lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+        <section className="relative flex items-center justify-center bg-gradient-to-b from-white to-[#f1f6ff] px-6 py-20 sm:px-12 lg:bg-none lg:px-16">
+          <Link
+            href="/"
+            className="absolute left-4 top-4 inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-slate-600 transition-colors duration-150 ease-out hover:text-[var(--expo-blue)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--expo-blue)] sm:left-8 sm:top-6 lg:left-12"
+          >
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             Volver al inicio
           </Link>
-          <BrandMark />
-        </div>
-      </header>
 
-      <main className="mx-auto max-w-md px-4 py-12 sm:px-6">
-        <div className="rounded-2xl border-2 border-[var(--expo-navy)] bg-white p-6 shadow-[5px_5px_0_var(--expo-navy)]">
-          {verification === "unavailable" && session ? (
-            <div className="flex flex-col items-center gap-3 text-center">
-              <p className="font-black text-[var(--expo-navy)]">No pudimos validar tu sesión ahora.</p>
-              <p className="text-sm text-slate-500">La sesión se conserva. Comprueba la conexión con el servicio e inténtalo de nuevo.</p>
-              <button type="button" onClick={() => void retrySessionVerification()} className="rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-4 py-2 text-sm font-black">
-                Reintentar
-              </button>
-            </div>
-          ) : loading ? (
-            <div className="flex min-h-40 items-center justify-center gap-3 text-sm font-bold text-slate-400">
-              <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin" />
-              {session ? "Entrando a tu panel…" : "Preparando el acceso…"}
-            </div>
-          ) : session ? (
-            <NoAccess
-              panel={panel}
-              email={session.email}
-              roleLabels={session.roles.map(describeRole)}
-              availablePanels={available}
-              onEnter={enter}
-              onLogout={() => void logout()}
-            />
-          ) : (
-            <>
-              <h1 className="text-2xl font-black">{copy.title}</h1>
-              <p className="mt-2 text-sm text-slate-600">{copy.description}</p>
+          <div className="w-full max-w-[25rem]">
+            <header className="text-center">
+              <Image {...rise(0)} src="/img/landing/fexpo-logo.png" alt="Fexpo" width={132} height={40} priority className="access-rise mx-auto mb-6 h-9 w-auto lg:hidden" />
+              <h1 {...rise(0)} className="access-rise text-balance text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-[2.5rem]">
+                Bienvenido a <span className="text-[#0a6cf0]">Fexpo</span>
+              </h1>
+              <h2 className="sr-only">{copy.title}</h2>
+              <p {...rise(60)} className="access-rise mx-auto mt-3 max-w-xs text-balance text-base text-slate-600 sm:text-lg">{copy.description}</p>
+            </header>
 
-              <div className="mt-6">
-                {busy ? (
-                  <div className="flex min-h-11 items-center justify-center gap-2 text-sm font-black">
-                    <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> Validando tu cuenta…
-                  </div>
-                ) : (
-                  <GoogleSignInButton onCredential={(credential) => void handleCredential(credential)} />
-                )}
-              </div>
-
-              {error && (
-                <p role="alert" className="mt-4 rounded-xl border-2 border-rose-500 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
-                  {error}
-                </p>
-              )}
-
-              {passwordLogin && (
+            <div className="mt-8">
+              {verification === "unavailable" && session ? (
+                <div {...rise(120)} className="access-rise flex flex-col items-center gap-3 text-center">
+                  <p className="text-lg font-extrabold text-[#0f1b5c]">No pudimos validar tu sesión ahora.</p>
+                  <p className="text-sm text-slate-600">La sesión se conserva. Comprueba la conexión con el servicio e inténtalo de nuevo.</p>
+                  <button type="button" onClick={() => void retrySessionVerification()} className={`${PRIMARY_BUTTON} mt-1 px-6`}>
+                    Reintentar
+                  </button>
+                </div>
+              ) : loading ? (
+                <div role="status" className="flex min-h-40 items-center justify-center gap-3 text-sm font-semibold text-slate-600">
+                  <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin" />
+                  {session ? "Entrando a tu panel…" : "Preparando el acceso…"}
+                </div>
+              ) : session ? (
+                <div {...rise(120)} className="access-rise">
+                  <NoAccess
+                    panel={panel}
+                    email={session.email}
+                    roleLabels={session.roles.map(describeRole)}
+                    availablePanels={available}
+                    onEnter={enter}
+                    onLogout={() => void logout()}
+                  />
+                </div>
+              ) : (
                 <>
-                  <div className="my-5 flex items-center gap-3 text-xs font-extrabold uppercase tracking-wide text-slate-400">
-                    <span className="h-px flex-1 bg-[var(--expo-line)]" aria-hidden="true" />
-                    o con tu correo
-                    <span className="h-px flex-1 bg-[var(--expo-line)]" aria-hidden="true" />
+                  <div {...rise(120)} className="access-rise">
+                    {busy ? (
+                      <div role="status" className="flex min-h-11 items-center justify-center gap-2 text-sm font-bold">
+                        <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> Validando tu cuenta…
+                      </div>
+                    ) : (
+                      <GoogleSignInButton onCredential={(credential) => void handleCredential(credential)} />
+                    )}
                   </div>
-                  <PasswordAuthForm onSubmit={handlePasswordLogin} />
+
+                  {error && (
+                    <p role="alert" className="access-rise mt-4 rounded-lg border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800">
+                      {error}
+                    </p>
+                  )}
+
+                  {passwordLogin && (
+                    <>
+                      <div {...rise(170)} className="access-rise my-5 flex items-center gap-3 text-xs font-bold uppercase tracking-wide text-slate-500">
+                        <span className="h-px flex-1 bg-slate-200" aria-hidden="true" />
+                        o con tu correo
+                        <span className="h-px flex-1 bg-slate-200" aria-hidden="true" />
+                      </div>
+                      <div {...rise(220)} className="access-rise">
+                        <PasswordAuthForm variant="fexpo" onSubmit={handlePasswordLogin} />
+                      </div>
+                    </>
+                  )}
+
+                  {panel !== "organizador" && (
+                    <p {...rise(270)} className="access-rise mt-5 text-center text-sm text-slate-600">
+                      ¿Todavía no registraste tu empresa?{" "}
+                      <Link href="/registro-empresa" className="whitespace-nowrap rounded font-semibold text-[#0a62d6] underline-offset-4 transition-colors duration-150 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--expo-blue)]">
+                        Regístrala aquí
+                      </Link>
+                    </p>
+                  )}
                 </>
               )}
+            </div>
+          </div>
+        </section>
 
-              {panel !== "organizador" && (
-                <p className="mt-6 text-center text-sm text-slate-500">
-                  ¿Todavía no registraste tu empresa?{" "}
-                  <Link href="/registro-empresa" className="font-black text-[var(--expo-blue)] hover:underline">
-                    Regístrala aquí
-                  </Link>
-                </p>
-              )}
-            </>
-          )}
+        <div className="relative hidden min-h-dvh overflow-hidden bg-[#dbe8ff] lg:block">
+          <Image
+            src="/img/landing/login/login-img1.webp"
+            alt="Una expositora gestiona su stand desde la laptop en una feria Fexpo, con avisos de “Gestiona tu stand” y “Conecta con visitantes”."
+            fill
+            sizes="(min-width: 1024px) 52vw, 0px"
+            className="access-settle object-cover object-[50%_60%]"
+          />
         </div>
       </main>
     </div>
@@ -225,16 +255,16 @@ function NoAccess({ panel, email, roleLabels, availablePanels, onEnter, onLogout
 
   return (
     <div>
-      <span className="flex size-12 items-center justify-center rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-coral)] text-white shadow-[3px_3px_0_var(--expo-navy)]">
+      <span className="flex size-12 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
         <ShieldAlert aria-hidden="true" className="h-6 w-6" />
       </span>
-      <h1 className="mt-4 text-2xl font-black">Sin acceso al panel</h1>
-      <p className="mt-2 text-sm text-slate-600">
+      <h2 className="mt-4 text-2xl font-extrabold">Sin acceso al panel</h2>
+      <p className="mt-2 text-sm text-slate-600 [overflow-wrap:anywhere]">
         La cuenta <strong>{email}</strong> no tiene permisos para {scope}
         {roleLabels.length > 0 ? ` (tus roles: ${roleLabels.join(", ")}).` : "."}
       </p>
 
-      <div className="mt-5 flex flex-col gap-2">
+      <div className="mt-6 flex flex-col gap-3">
         {availablePanels.map((available) => {
           const Icon = PANEL_ICONS[available];
           return (
@@ -242,7 +272,7 @@ function NoAccess({ panel, email, roleLabels, availablePanels, onEnter, onLogout
               key={available}
               type="button"
               onClick={() => onEnter(available)}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-blue)] px-4 py-2.5 text-sm font-black text-white shadow-[3px_3px_0_var(--expo-navy)]"
+              className={SECONDARY_BUTTON}
             >
               <Icon aria-hidden="true" className="h-4 w-4" />
               Entrar como {PANEL_LABELS[available].toLowerCase()}
@@ -252,7 +282,7 @@ function NoAccess({ panel, email, roleLabels, availablePanels, onEnter, onLogout
         {panel !== "organizador" && !availablePanels.includes("expositor") && (
           <Link
             href="/registro-empresa"
-            className="inline-flex items-center justify-center rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-yellow)] px-4 py-2.5 text-sm font-black shadow-[3px_3px_0_var(--expo-navy)]"
+            className={PRIMARY_BUTTON}
           >
             Registrar mi empresa
           </Link>
@@ -260,14 +290,14 @@ function NoAccess({ panel, email, roleLabels, availablePanels, onEnter, onLogout
         <button
           type="button"
           onClick={onLogout}
-          className="rounded-xl border-2 border-slate-300 px-4 py-2.5 text-sm font-black text-slate-600 hover:border-slate-400"
+          className="min-h-11 rounded-lg px-4 py-2 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100 hover:text-[#0f1b5c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--expo-blue)]"
         >
           Cerrar sesión
         </button>
       </div>
 
       {panel === "organizador" && (
-        <p className="mt-4 text-xs text-slate-500">
+        <p className="mt-4 text-sm text-slate-600">
           El rol de organizador lo asigna la administración de la plataforma. Si deberías tenerlo, pídelo con este mismo correo.
         </p>
       )}

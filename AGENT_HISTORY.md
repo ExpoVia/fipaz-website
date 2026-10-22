@@ -54,3 +54,17 @@ Crea tu perfil empresarial / Gestiona tus stands asignados / Consulta tus visita
 
 **Salida:**
 Se quito la lista de 3 beneficios (Crea tu perfil empresarial / Gestiona tus stands asignados / Consulta tus visitas verificadas) de la columna izquierda de /registro-empresa; se elimino el const BENEFITS y el icono Store (quedo sin otros usos). La ilustracion (CompanyIllustration.tsx) ahora recibe progress (0 a 1, calculado en vivo con nombre/correo/categoria/descripcion validos del paso 1) y typing (true mientras hay tecleo reciente, se apaga solo tras 900ms de pausa via setTimeout en RegistrationForm). Reacciones: las barras del mini-grafico de la laptop y de la tarjeta flotante de visitas crecen con progress (CSS transition sobre transform:scaleY); la insignia de verificado pasa de gris a azul con un pop (keyframe propio, sin easing elastico) y un anillo de pulso solo al llegar a progress=1; aparece una burbuja de "escribiendo" (3 puntos) junto a la laptop mientras typing=true. Se agregaron las clases .reactiveBar/.badgeCircle/.badgePop/.badgeCheck/.dot a company-illustration.module.css. Iteracion: el detector de Impeccable marco bounce-easing (cubic-bezier con overshoot) en el pop de la insignia; se corrigio a un keyframe con overshoot propio sobre la curva ease-out ya usada en el resto del archivo. tsc sin errores, detector final sin hallazgos, 4/4 tests e2e de registro en verde. Capturas confirmando: barras minimas con el formulario vacio, burbuja de tecleo visible al escribir el nombre, barras crecidas a medio llenar, barras completas + insignia azul con check al completar los 4 campos. Sin commits.
+
+### 2026-10-22T05:51:57Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5.5)
+**Prompt:**
+de lo que hicimos has commit de los cambios que tenemos
+
+**Salida:**
+Commit d57f708 "feat(panel): mejorar responsividad y pulir formulario de registro": responsividad del panel (tabla de versiones del mapa como lista en movil, grids de KPIs apilables, metric-card, navbar, zonas-categorias-view) y el primer ajuste de /registro-empresa (layout propio sin RegistrationHeader, boton "Continuar", e2e actualizado). Sin push (regla: solo rama de feature, sin push salvo pedido explicito). Sin trailer de co-autoria (regla del usuario).
+
+### 2026-10-22T06:10:21Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Claude Code (Sonnet 5.5)
+**Prompt:**
+has los commit respectivos de cada cambio que se hizo de la mejor manera
+
+**Salida:**
+Tras el commit anterior aparecio en el arbol de trabajo un merge no solicitado (42da715, `git pull origin main`, trajo paginas legales y cambio de correos de otra sesion) mas cambios sin commitear de sesiones previas (ilustracion reactiva del registro, rediseno de /privacidad y /terminos); se pregunto al usuario como tratarlos y pidio incluirlos en la reorganizacion. Se separaron en dos commits ademas de este: 56a3fd5 "feat(registro): ilustracion animada y reactiva en el registro de empresa" (CompanyIllustration.tsx, company-illustration.module.css, borrado de company-registration.svg, RegistrationForm.tsx) y c513263 "feat(legal): redisenar las paginas de privacidad y terminos" (LegalPage.tsx, LegalToc.tsx, legal.module.css, privacidad/page.tsx, terminos/page.tsx). El commit d57f708 ya mergeado no se reescribio (habria requerido rehacer el merge de main). Sin push.

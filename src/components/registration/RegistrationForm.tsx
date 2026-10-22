@@ -576,7 +576,7 @@ export function RegistrationForm() {
 
                 {/* Inline (no <img>): se funde con el degradado de la página y reacciona a lo que se llena en el formulario. */}
                 <div className="relative mt-8 hidden xl:block">
-                  <CompanyIllustration progress={formProgress} typing={typing} />
+                  <CompanyIllustration progress={formProgress} typing={typing} step={step} />
                 </div>
               </div>
             </section>

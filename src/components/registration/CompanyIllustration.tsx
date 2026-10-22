@@ -5,6 +5,8 @@ interface CompanyIllustrationProps {
   progress?: number;
   /** Tecleo reciente en el formulario: muestra una burbuja de "escribiendo" junto a la laptop. */
   typing?: boolean;
+  /** Paso actual del formulario (0, 1 o 2). Al entrar al paso 1 ("Tipo de participación") el personaje saluda. */
+  step?: number;
 }
 
 const clampBar = (value: number) => Math.min(1, Math.max(0.14, value));
@@ -20,11 +22,13 @@ const clampBar = (value: number) => Math.min(1, Math.max(0.14, value));
  *   `prefers-reduced-motion` (globals.css) las alcanza igual que a cualquier otro nodo.
  * Estilo y paleta: ver el pie de la pantalla de registro (`RegistrationForm`).
  */
-export function CompanyIllustration({ progress = 0, typing = false }: CompanyIllustrationProps) {
+export function CompanyIllustration({ progress = 0, typing = false, step = 0 }: CompanyIllustrationProps) {
   const bar1 = clampBar(progress * 1.2);
   const bar2 = clampBar(progress);
   const bar3 = clampBar(progress * 0.75 + 0.15);
   const complete = progress >= 0.999;
+  // Un único gesto, no un bucle: al entrar al paso 2 el personaje saluda y vuelve a su postura.
+  const greeting = step === 1;
 
   return (
     <svg viewBox="0 0 640 460" width="640" height="460" fill="none" role="img" aria-hidden="true" className="h-auto w-full">
@@ -75,15 +79,18 @@ export function CompanyIllustration({ progress = 0, typing = false }: CompanyIll
         <rect x="265" y="212" width="110" height="8" rx="4" fill="#FFFFFF" opacity="0.6" />
       </g>
 
-      {/* Persona detrás del mostrador: respira y parpadea de a ratos */}
-      <g>
+      {/* Persona detrás del mostrador: respira y parpadea de a ratos; al entrar al paso 2, saluda */}
+      <g className={greeting ? styles.greet : undefined}>
         <path d="M362,212 Q332,232 322,268" stroke="#12264E" strokeWidth="26" strokeLinecap="round" fill="none" />
         <path d="M362,212 Q332,232 322,268" stroke="#1479F5" strokeWidth="20" strokeLinecap="round" fill="none" />
         <circle cx="320" cy="270" r="11" fill="#E7F3FF" stroke="#12264E" strokeWidth="3" />
 
-        <path d="M418,214 Q442,238 436,272" stroke="#12264E" strokeWidth="26" strokeLinecap="round" fill="none" />
-        <path d="M418,214 Q442,238 436,272" stroke="#1479F5" strokeWidth="20" strokeLinecap="round" fill="none" />
-        <circle cx="436" cy="274" r="11" fill="#E7F3FF" stroke="#12264E" strokeWidth="3" />
+        {/* Brazo derecho: se alza y saluda solo al entrar al paso 2 (gira desde el hombro). */}
+        <g className={greeting ? styles.waveArm : undefined}>
+          <path d="M418,214 Q442,238 436,272" stroke="#12264E" strokeWidth="26" strokeLinecap="round" fill="none" />
+          <path d="M418,214 Q442,238 436,272" stroke="#1479F5" strokeWidth="20" strokeLinecap="round" fill="none" />
+          <circle cx="436" cy="274" r="11" fill="#E7F3FF" stroke="#12264E" strokeWidth="3" />
+        </g>
 
         <g className={styles.breathe}>
           <rect x="350" y="195" width="80" height="110" rx="26" fill="#1479F5" stroke="#12264E" strokeWidth="3" />

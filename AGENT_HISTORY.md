@@ -103,3 +103,37 @@ has commit de la mejor manera de los cambios realizados
 
 **Salida:**
 Commit 4bb6cd4 "style(landing): rediseño minimalista de la landing pública": los 13 archivos de src/components/landing/ modificados por otra sesion (fonts.ts, landing-fx.module.css, PixelIcons.tsx y las 10 secciones) son un unico cambio de diseño coherente (migracion pixel-art -> minimalista), asi que se commitearon juntos en vez de dividirlos. Incluye la entrada de AGENT_HISTORY.md de esa sesion. Sin push.
+
+### 2026-10-22T07:09:54Z | usuario: JHAMILCALI <jhamilquea@gmail.com> | agente: Antigravity (Gemini 3.8 Flash)
+**Prompt:**
+ok de lo que es el proeyecto web site quiero que hagas un work tre de esta rama y trababajes lo que es el modo dark que se vea de la mejor manera y que esta sugerencia de paleta de colores Background: #0B1220
+Surface: #101A2E
+Surface 2: #16233D
+Primary: #1479F5
+Primary soft: #A9D0FF
+Text main: #F5F9FF
+Text secondary: #B8C7E6
+Border: #223354
+Accent: #FFCA35
+que sea de la mejor manera sin afectar a lo que es mi proyecto actual que estoy trabajando
+
+**Salida:**
+1. Creado Git Worktree aislado en `C:\proyectos 2026\fipaz proyecto\fipaz-website-dark` en la rama `feat/dark-mode` basada en `feat/rbac-panel-session` (c1765fa) para proteger 100% el workspace activo actual (`fipaz-website`).
+2. Instaladas dependencias en el worktree con `pnpm install` para evitar problemas con symlinks/junctions en Turbopack (Next.js 16.3.4).
+3. Sistema de diseño y tema:
+   - `src/app/globals.css`: integración de `@custom-variant dark (&:where(.dark, .dark *));`, CSS variables semánticas en `:root` y `.dark` con la paleta exacta solicitada (Background: `#0B1220`, Surface: `#101A2E`, Surface 2: `#16233D`, Primary: `#1479F5`, Primary soft: `#A9D0FF`, Text main: `#F5F9FF`, Text secondary: `#B8C7E6`, Border: `#223354`, Accent: `#FFCA35`).
+   - `src/app/panel/panel-theme.css`: soporte de `.dark .fexpo-panel`, `.panel-surface`, `.panel-sidebar`, `.panel-nav-link`, inputs y tablas.
+   - `src/components/theme/theme-context.tsx`: `ThemeProvider`, `useTheme()`, persistencia en `localStorage` (`fexpo-theme`), y escucha de `prefers-color-scheme`.
+   - `src/components/theme/ThemeToggle.tsx`: componente con variantes `icon`, `pill` y `segmented`, anti-flicker e iconos Lucide.
+   - `src/app/layout.tsx`: script inline anti-FOUC para prevenir cualquier destello blanco al cargar la página en modo oscuro.
+4. Adaptación completa a modo oscuro:
+   - Landing pública: `LandingHeader` (toggle integrado en desktop y móvil), `HeroSection`, `HowItWorksSection`, `ActorsSection`, `MapShowcaseSection`, `NfcSection`, `MultiEventSection`, `ContactSection`, `FinalCTASection`, `LandingFooter`.
+   - Panel B2B y Admin: `panel-navbar`, `panel-sidebar`, `panel-mobile-drawer`, `metric-card`, `panel-page-header`, `panel-dashboard-client`, `expositores-list`, `zonas-categorias-view`, `mapa-evento-view`, `gamificacion-view`, `panel-account-menu`, `admin-shell`.
+   - Acceso y Registro: `access-screen.tsx`, `password-auth-form.tsx`, `RegistrationForm.tsx` con soporte de `ThemeToggle` integrado.
+   - Legal y Feedback: `LegalPage.tsx`, `LegalToc.tsx`, `legal.module.css`, `FeedbackHeader.tsx`, `FeedbackForm.tsx`, `FeedbackSuccess.tsx`.
+5. Documentación en Obsidian:
+   - Creado documento de arquitectura completo en `C:\proyectos 2026\fipaz proyecto\fexpo_global_docs\architecture\dark-mode-palette-system.md` con especificación de la paleta, variables CSS, componentes, flujo de trabajo y buenas prácticas.
+6. Verificación:
+   - `npm run build`: compilación de producción exitosa en Turbopack (30/30 rutas estáticas/dinámicas generadas con 0 errores).
+   - `npm test`: 31/31 pruebas unitarias aprobadas.
+   - Commit d52ab72 en `feat/dark-mode` dentro del worktree `fipaz-website-dark`. Sin tocar ni alterar el repositorio original.

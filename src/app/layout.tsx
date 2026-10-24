@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/theme/theme-context";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,17 +30,28 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  colorScheme: "light",
-  themeColor: "#1677b8",
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#1677b8" },
+    { media: "(prefers-color-scheme: dark)", color: "#0B1220" },
+  ],
 };
+
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('fexpo-theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d){document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-theme','dark');document.documentElement.style.colorScheme='dark';}else{document.documentElement.classList.remove('dark');document.documentElement.setAttribute('data-theme','light');document.documentElement.style.colorScheme='light';}}catch(e){}})()`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
+      <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-200">
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

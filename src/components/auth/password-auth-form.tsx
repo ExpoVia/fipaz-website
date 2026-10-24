@@ -98,18 +98,18 @@ export function PasswordAuthForm({
 
   const fexpo = variant === "fexpo";
   const inputClass = fexpo
-    ? "access-field min-h-12 w-full rounded-lg border border-slate-300 bg-white shadow-[0_1px_2px_rgba(15,27,92,0.05)] px-3.5 py-3 text-base font-medium text-[#0f1b5c] outline-none transition-[border-color,box-shadow] duration-150 ease-out placeholder:text-slate-500 hover:border-slate-400 focus:border-[#0a62d6] focus:ring-4 focus:ring-[#0a62d6]/15 disabled:opacity-60 sm:text-sm"
-    : "w-full rounded-xl border-2 border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-[var(--expo-navy)] outline-none transition-colors focus:border-[var(--expo-navy)] disabled:opacity-60";
+    ? "access-field min-h-12 w-full rounded-lg border border-slate-300 bg-white shadow-[0_1px_2px_rgba(15,27,92,0.05)] px-3.5 py-3 text-base font-medium text-[#0f1b5c] outline-none transition-[border-color,box-shadow] duration-150 ease-out placeholder:text-slate-500 hover:border-slate-400 focus:border-[#0a62d6] focus:ring-4 focus:ring-[#0a62d6]/15 disabled:opacity-60 sm:text-sm dark:border-[#223354] dark:bg-[#16233D] dark:text-[#F5F9FF] dark:placeholder:text-[#B8C7E6]/50 dark:hover:border-[#1479F5]/70 dark:focus:border-[#1479F5]"
+    : "w-full rounded-xl border-2 border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-[var(--expo-navy)] outline-none transition-colors focus:border-[var(--expo-navy)] disabled:opacity-60 dark:border-[#223354] dark:bg-[#16233D] dark:text-[#F5F9FF] dark:focus:border-[#1479F5]";
   const labelClass = fexpo
-    ? "mb-1.5 block text-sm font-bold text-[#0f1b5c]"
-    : "mb-1 block text-xs font-extrabold text-[var(--expo-navy)]";
+    ? "mb-1.5 block text-sm font-bold text-[#0f1b5c] dark:text-[#F5F9FF]"
+    : "mb-1 block text-xs font-extrabold text-[var(--expo-navy)] dark:text-[#F5F9FF]";
   const submitClass = fexpo
     ? `group inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-4 py-3 text-base font-extrabold transition-[filter,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--expo-blue)] disabled:opacity-70 ${
         tone === "blue"
-          ? "bg-[#0a62d6] text-white shadow-[0_8px_20px_-10px_rgba(10,98,214,0.9)] hover:brightness-110"
-          : "bg-[var(--expo-yellow)] text-[#0f1b5c] shadow-[0_6px_16px_-8px_rgba(217,150,0,0.9)] hover:brightness-95"
+          ? "bg-[#0a62d6] text-white shadow-[0_8px_20px_-10px_rgba(10,98,214,0.9)] hover:brightness-110 dark:bg-[#1479F5]"
+          : "bg-[var(--expo-yellow)] text-[#0f1b5c] shadow-[0_6px_16px_-8px_rgba(217,150,0,0.9)] hover:brightness-95 dark:bg-[#FFCA35] dark:text-[#0B1220]"
       }`
-    : "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-blue)] px-4 py-2.5 text-sm font-black text-white shadow-[3px_3px_0_var(--expo-navy)] transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-70";
+    : "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border-2 border-[var(--expo-navy)] bg-[var(--expo-blue)] px-4 py-2.5 text-sm font-black text-white shadow-[3px_3px_0_var(--expo-navy)] transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-70 dark:border-[#223354] dark:bg-[#1479F5]";
 
   return (
     <form onSubmit={(event) => void handleSubmit(event)} noValidate aria-label={labels[mode]} className="flex flex-col gap-3">
@@ -132,7 +132,7 @@ export function PasswordAuthForm({
       <div>
         <label htmlFor={`${id}-email`} className={labelClass}>Correo</label>
         <div className="relative">
-          {fexpo && <Mail aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />}
+          {fexpo && <Mail aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-[#B8C7E6]" />}
           <input
             id={`${id}-email`}
             name="email"
@@ -151,7 +151,7 @@ export function PasswordAuthForm({
       <div>
         <label htmlFor={`${id}-password`} className={labelClass}>Contraseña</label>
         <div className="relative">
-          {fexpo && <Lock aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />}
+          {fexpo && <Lock aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-[#B8C7E6]" />}
           <input
             id={`${id}-password`}
             name="password"
@@ -172,13 +172,13 @@ export function PasswordAuthForm({
             onClick={() => setShowPassword((value) => !value)}
             aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
             aria-pressed={showPassword}
-            className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-lg text-slate-500 transition-[color,transform] duration-150 ease-out hover:text-[var(--expo-navy)] active:scale-90 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--expo-blue)]"
+            className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-lg text-slate-500 transition-[color,transform] duration-150 ease-out hover:text-[var(--expo-navy)] active:scale-90 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--expo-blue)] dark:text-[#B8C7E6] dark:hover:text-[#F5F9FF]"
           >
             {showPassword ? <EyeOff aria-hidden="true" className="h-4 w-4" /> : <Eye aria-hidden="true" className="h-4 w-4" />}
           </button>
         </div>
         {registering && (
-          <p id={`${id}-password-hint`} className="mt-1 text-xs text-slate-500">Mínimo 8 caracteres.</p>
+          <p id={`${id}-password-hint`} className="mt-1 text-xs text-slate-500 dark:text-[#B8C7E6]">Mínimo 8 caracteres.</p>
         )}
       </div>
 
@@ -186,8 +186,8 @@ export function PasswordAuthForm({
         <p
           role="alert"
           className={fexpo
-            ? "access-rise rounded-lg border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800"
-            : "rounded-xl border-2 border-rose-500 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700"}
+            ? "access-rise rounded-lg border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300"
+            : "rounded-xl border-2 border-rose-500 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300"}
         >
           {error}
         </p>
@@ -212,9 +212,9 @@ export function PasswordAuthForm({
       </button>
 
       {allowModeSwitch && (
-        <p className="text-center text-xs text-slate-500">
+        <p className="text-center text-xs text-slate-500 dark:text-[#B8C7E6]">
           {registering ? "¿Ya tienes una cuenta?" : "¿Todavía no tienes cuenta?"}{" "}
-          <button type="button" onClick={switchMode} disabled={busy} className="font-black text-[var(--expo-blue)] hover:underline">
+          <button type="button" onClick={switchMode} disabled={busy} className="font-black text-[var(--expo-blue)] hover:underline dark:text-[#A9D0FF]">
             {registering ? "Inicia sesión" : "Créala con tu correo"}
           </button>
         </p>

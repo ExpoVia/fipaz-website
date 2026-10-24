@@ -25,7 +25,7 @@ const roles = ["Visitante", "Expositor", "Organizador", "Otro"] as const;
 type Status = "idle" | "sending" | "sent" | "error";
 
 const fieldClass =
-  "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[var(--expo-navy)] shadow-[0_1px_2px_rgba(15,27,92,0.05)] transition-[border-color,box-shadow] duration-150 ease-out placeholder:text-slate-400 hover:border-slate-400 focus:border-[var(--expo-blue)] focus:ring-4 focus:ring-[var(--expo-blue)]/15 focus:outline-none";
+  "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[var(--expo-navy)] shadow-[0_1px_2px_rgba(15,27,92,0.05)] transition-[border-color,box-shadow] duration-150 ease-out placeholder:text-slate-400 hover:border-slate-400 focus:border-[var(--expo-blue)] focus:ring-4 focus:ring-[var(--expo-blue)]/15 focus:outline-none dark:border-[#223354] dark:bg-[#16233D] dark:text-[#F5F9FF] dark:placeholder:text-[#B8C7E6]/50 dark:hover:border-[#1479F5]/70 dark:focus:border-[#1479F5]";
 
 /** The intro lands first, then the plate rises into place; nothing here owns a hover. */
 function playContact(root: HTMLElement) {
@@ -120,27 +120,27 @@ export function ContactSection() {
     <section
       ref={root}
       id="escribenos"
-      className="relative scroll-mt-24 overflow-hidden border-t border-[var(--expo-line)] bg-[var(--expo-bg)] py-20 md:py-28"
+      className="relative scroll-mt-24 overflow-hidden border-t border-[var(--expo-line)] bg-[var(--expo-bg)] py-20 md:py-28 dark:border-[#223354]"
     >
-      <div aria-hidden="true" className={`${fx.dots} absolute inset-0 opacity-70`} />
+      <div aria-hidden="true" className={`${fx.dots} absolute inset-0 opacity-70 dark:opacity-20`} />
 
       <div className="relative mx-auto grid max-w-7xl items-start gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
         <div className="lg:col-span-5 lg:pt-6">
           <h2
             data-fx-heading
-            className={`${headingFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl`}
+            className={`${headingFont.className} text-4xl leading-[1.15] font-bold tracking-tight text-balance text-[var(--expo-navy)] sm:text-5xl dark:text-[#F5F9FF]`}
           >
             Hablemos de tu próxima feria.
           </h2>
 
-          <p data-fx-intro className="mt-6 max-w-md text-base font-medium text-slate-600 sm:text-lg">
+          <p data-fx-intro className="mt-6 max-w-md text-base font-medium text-slate-600 sm:text-lg dark:text-[#B8C7E6]">
             Cuéntanos quién eres y qué necesitas. Leemos cada mensaje y te respondemos por correo.
           </p>
 
           <a
             data-fx-intro
             href={`mailto:${CONTACT_EMAIL}`}
-            className={`${fx.underline} mt-8 inline-flex items-center gap-2.5 text-[var(--expo-navy)] transition-colors duration-150 hover:text-[var(--expo-blue)]`}
+            className={`${fx.underline} mt-8 inline-flex items-center gap-2.5 text-[var(--expo-navy)] transition-colors duration-150 hover:text-[var(--expo-blue)] dark:text-[#F5F9FF] dark:hover:text-[#A9D0FF]`}
           >
             <Mail aria-hidden="true" className="h-5 w-5 shrink-0" />
             <span className="text-sm font-black break-all sm:text-base">{CONTACT_EMAIL}</span>
@@ -148,22 +148,22 @@ export function ContactSection() {
         </div>
 
         <div data-fx-plate className="lg:col-span-7">
-          <div className="rounded-3xl border border-black/5 bg-white p-6 shadow-[0_24px_60px_-28px_rgba(47,45,76,0.35)] sm:p-8">
+          <div className="rounded-3xl border border-black/5 bg-white p-6 shadow-[0_24px_60px_-28px_rgba(47,45,76,0.35)] sm:p-8 dark:border-[#223354] dark:bg-[#101A2E] dark:shadow-none">
             {status === "sent" ? (
               <div role="status" className="flex flex-col items-start gap-5 py-6">
-                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--expo-mint)]">
-                  <CheckCircle2 aria-hidden="true" className="h-8 w-8 text-[var(--expo-navy)]" />
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--expo-mint)] dark:bg-emerald-950/60">
+                  <CheckCircle2 aria-hidden="true" className="h-8 w-8 text-[var(--expo-navy)] dark:text-emerald-400" />
                 </span>
                 <div>
-                  <p className={`${headingFont.className} text-3xl font-bold text-[var(--expo-navy)]`}>Mensaje enviado.</p>
-                  <p className="mt-2 max-w-md text-base font-medium text-slate-600">
+                  <p className={`${headingFont.className} text-3xl font-bold text-[var(--expo-navy)] dark:text-[#F5F9FF]`}>Mensaje enviado.</p>
+                  <p className="mt-2 max-w-md text-base font-medium text-slate-600 dark:text-[#B8C7E6]">
                     Gracias por escribirnos. Te responderemos al correo que dejaste.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setStatus("idle")}
-                  className={`${fx.slab} ${fx.press} inline-flex items-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-[var(--expo-navy)] [--slab-lift:2px] [--slab-offset:6px] hover:bg-[var(--expo-bg)]`}
+                  className={`${fx.slab} ${fx.press} inline-flex items-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-[var(--expo-navy)] [--slab-lift:2px] [--slab-offset:6px] hover:bg-[var(--expo-bg)] dark:border-[#223354] dark:bg-[#16233D] dark:text-[#F5F9FF] dark:hover:bg-[#223354]`}
                 >
                   <span className="text-sm font-extrabold">Enviar otro mensaje</span>
                 </button>
@@ -172,7 +172,7 @@ export function ContactSection() {
               <form onSubmit={onSubmit} aria-busy={sending} className="grid gap-5">
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div className="grid gap-2">
-                    <label htmlFor="contact-name" className="text-sm font-black text-[var(--expo-navy)]">
+                    <label htmlFor="contact-name" className="text-sm font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">
                       Nombre
                     </label>
                     <input
@@ -188,7 +188,7 @@ export function ContactSection() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <label htmlFor="contact-email" className="text-sm font-black text-[var(--expo-navy)]">
+                    <label htmlFor="contact-email" className="text-sm font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">
                       Correo
                     </label>
                     <input
@@ -206,8 +206,8 @@ export function ContactSection() {
                 </div>
 
                 <div className="grid gap-2">
-                  <label htmlFor="contact-organization" className="text-sm font-black text-[var(--expo-navy)]">
-                    Empresa u organización <span className="font-medium text-slate-500">(opcional)</span>
+                  <label htmlFor="contact-organization" className="text-sm font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">
+                    Empresa u organización <span className="font-medium text-slate-500 dark:text-[#B8C7E6]">(opcional)</span>
                   </label>
                   <input
                     id="contact-organization"
@@ -222,14 +222,14 @@ export function ContactSection() {
                 </div>
 
                 <fieldset className="grid gap-2" disabled={sending}>
-                  <legend className="mb-2 text-sm font-black text-[var(--expo-navy)]">
-                    Soy <span className="font-medium text-slate-500">(opcional)</span>
+                  <legend className="mb-2 text-sm font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">
+                    Soy <span className="font-medium text-slate-500 dark:text-[#B8C7E6]">(opcional)</span>
                   </legend>
                   <div className="flex flex-wrap gap-2.5">
                     {roles.map((role) => (
                       <label key={role} className="relative cursor-pointer">
                         <input type="radio" name="role" value={role} className="peer sr-only" />
-                        <span className="block rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-[var(--expo-navy)] transition-[background-color,border-color] duration-150 peer-checked:border-[var(--expo-yellow)] peer-checked:bg-[var(--expo-yellow)] peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--expo-blue)] hover:border-slate-400 hover:bg-[var(--expo-bg)]">
+                        <span className="block rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-[var(--expo-navy)] transition-[background-color,border-color] duration-150 peer-checked:border-[var(--expo-yellow)] peer-checked:bg-[var(--expo-yellow)] peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--expo-blue)] hover:border-slate-400 hover:bg-[var(--expo-bg)] dark:border-[#223354] dark:bg-[#16233D] dark:text-[#F5F9FF] dark:hover:border-[#1479F5]/50 dark:hover:bg-[#101A2E] peer-checked:dark:border-[#FFCA35] peer-checked:dark:bg-[#FFCA35] peer-checked:dark:text-[#0B1220]">
                           {role}
                         </span>
                       </label>
@@ -238,7 +238,7 @@ export function ContactSection() {
                 </fieldset>
 
                 <div className="grid gap-2">
-                  <label htmlFor="contact-message" className="text-sm font-black text-[var(--expo-navy)]">
+                  <label htmlFor="contact-message" className="text-sm font-black text-[var(--expo-navy)] dark:text-[#F5F9FF]">
                     Mensaje
                   </label>
                   <textarea
@@ -266,14 +266,14 @@ export function ContactSection() {
                   {status === "error" && (
                     <p
                       role="alert"
-                      className="flex items-start gap-2.5 rounded-xl border border-[var(--expo-coral)]/40 bg-[var(--expo-coral)]/10 px-4 py-3 text-sm font-bold text-[var(--expo-navy)]"
+                      className="flex items-start gap-2.5 rounded-xl border border-[var(--expo-coral)]/40 bg-[var(--expo-coral)]/10 px-4 py-3 text-sm font-bold text-[var(--expo-navy)] dark:border-rose-500/40 dark:bg-rose-950/30 dark:text-rose-300"
                     >
-                      <TriangleAlert aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--expo-coral)]" />
+                      <TriangleAlert aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--expo-coral)] dark:text-rose-400" />
                       <span>
                         No pudimos enviar tu mensaje. Inténtalo de nuevo o{" "}
                         <a
                           href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Contacto desde la landing de Fexpo")}&body=${encodeURIComponent(failedBody)}`}
-                          className="underline underline-offset-2 hover:text-[var(--expo-blue)]"
+                          className="underline underline-offset-2 hover:text-[var(--expo-blue)] dark:hover:text-[#A9D0FF]"
                         >
                           escríbenos desde tu correo
                         </a>
@@ -287,7 +287,7 @@ export function ContactSection() {
                   <button
                     type="submit"
                     disabled={sending}
-                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-7 py-3.5 text-[var(--expo-navy)] [--slab-offset:9px] hover:bg-[#FFE066] disabled:cursor-progress disabled:opacity-70`}
+                    className={`${fx.slab} ${fx.press} inline-flex items-center gap-3 rounded-xl bg-[var(--expo-yellow)] px-7 py-3.5 text-[var(--expo-navy)] [--slab-offset:9px] hover:bg-[#FFE066] disabled:cursor-progress disabled:opacity-70 dark:bg-[#FFCA35] dark:text-[#0B1220] dark:hover:bg-[#ffe066]`}
                   >
                     <span className="text-base font-black">{sending ? "Enviando…" : "Enviar mensaje"}</span>
                     {sending ? (
@@ -296,7 +296,7 @@ export function ContactSection() {
                       <Send aria-hidden="true" className="h-5 w-5 stroke-[2.5]" />
                     )}
                   </button>
-                  <p className="text-xs font-medium text-slate-500">Solo usamos tus datos para responderte.</p>
+                  <p className="text-xs font-medium text-slate-500 dark:text-[#B8C7E6]">Solo usamos tus datos para responderte.</p>
                 </div>
               </form>
             )}

@@ -31,6 +31,10 @@
   background-size: 16px 16px;
 }
 
+:global(.dark) .dots {
+  background-image: radial-gradient(color-mix(in srgb, #1479F5 20%, transparent) 1.5px, transparent 1.5px);
+}
+
 /* Rombos del logotipo, sueltos a la derecha de la cabecera. */
 .diamond {
   position: absolute;
@@ -71,14 +75,26 @@
   transition: text-decoration-color 160ms ease;
 }
 
+:global(.dark) .prose a {
+  color: #1479F5;
+  text-decoration-color: color-mix(in srgb, #1479F5 45%, transparent);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .prose a:hover {
     text-decoration-color: var(--expo-blue);
+  }
+  :global(.dark) .prose a:hover {
+    text-decoration-color: #A9D0FF;
   }
 }
 
 .prose strong {
   color: var(--expo-navy);
+}
+
+:global(.dark) .prose strong {
+  color: #F5F9FF;
 }
 
 /* Enlaces de lectura y del índice: el color cambia, nada viaja. */
@@ -90,6 +106,12 @@
   background: white;
   color: var(--expo-blue);
   box-shadow: 2px 2px 0 color-mix(in srgb, var(--expo-navy) 14%, transparent);
+}
+
+:global(.dark) .tocLink[aria-current="location"] {
+  background: #16233D;
+  color: #A9D0FF;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
 }
 
 /* La flecha de "Volver" da un paso hacia atrás solo con puntero fino. */

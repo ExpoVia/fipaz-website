@@ -144,3 +144,83 @@
     background: rgb(255 255 255 / 74%);
   }
 }
+
+/* ── Modo Oscuro del Panel ─────────────────────────────────────────── */
+
+.dark .fexpo-panel {
+  --panel-ink: var(--text-main);
+  --panel-muted: var(--text-secondary);
+  --panel-blue: var(--primary);
+  --panel-border: var(--border);
+  color: var(--panel-ink);
+  background: var(--background);
+  background-image: radial-gradient(circle at 58% 0, var(--surface) 0, transparent 40%);
+}
+
+.dark .fexpo-panel .pixel-card,
+.dark .fexpo-panel .panel-surface {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 30%);
+}
+
+.dark .fexpo-panel form.pixel-card input,
+.dark .fexpo-panel form.pixel-card textarea,
+.dark .fexpo-panel form.pixel-card select {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-main);
+}
+
+.dark .fexpo-panel form.pixel-card input:focus,
+.dark .fexpo-panel form.pixel-card textarea:focus,
+.dark .fexpo-panel form.pixel-card select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgb(20 121 245 / 20%);
+}
+
+.dark .panel-sidebar {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: 6px 0 30px rgb(0 0 0 / 25%);
+}
+
+.dark .panel-nav-link {
+  color: var(--text-secondary);
+}
+
+.dark .panel-nav-link:hover {
+  background: var(--surface-2);
+  color: var(--primary-soft);
+}
+
+.dark .panel-nav-link[aria-current="page"] {
+  background: linear-gradient(100deg, var(--surface-2), #1c2b4a);
+  color: var(--primary-soft);
+}
+
+.dark .panel-nav-link[aria-current="page"]::before {
+  background: var(--primary);
+}
+
+.dark .panel-hero {
+  border-color: var(--border);
+  background: linear-gradient(100deg, var(--surface) 0%, var(--surface-2) 52%, rgb(22 35 61 / 75%) 100%);
+}
+
+.dark .panel-hero::before {
+  opacity: 0.18;
+}
+
+.dark .panel-hero::after {
+  background: linear-gradient(90deg, var(--surface) 0%, rgb(16 26 46 / 95%) 35%, rgb(16 26 46 / 55%) 78%, rgb(16 26 46 / 75%) 100%);
+}
+
+.dark .panel-chart-grid line {
+  stroke: var(--border);
+}
+
+.dark .panel-chart-grid text {
+  fill: var(--text-secondary);
+}
+
